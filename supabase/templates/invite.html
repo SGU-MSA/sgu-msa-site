@@ -1,7 +1,8 @@
-<!-- Subject: You're invited to the SGU MSA website dashboard -->
+<!-- Subject: You are invited to the SGU MSA website dashboard -->
 <!-- Supabase "Invite user" template (PR3 contract, D-1, D-3). The dashboard's invite sends the
-     person's name and the inviter's name as full_name and invited_by. -->
-<p>Assalamu alaikum {{ .Data.full_name }}.</p>
-<p>{{ .Data.invited_by }} added you to the SGU MSA board dashboard. Choose your password here:</p>
+     person's name and the inviter's name as full_name and invited_by;
+     an invite sent from the Supabase dashboard has neither, so both lines read well without them. -->
+<p>Assalamu alaikum{{ if .Data.full_name }} {{ .Data.full_name }}{{ end }},</p>
+<p>{{ if .Data.invited_by }}{{ .Data.invited_by }} added you{{ else }}You have been added{{ end }} to the SGU MSA board dashboard. Choose your password here:</p>
 <p><a href="{{ .SiteURL }}/admin/auth/confirm?token_hash={{ .TokenHash }}&amp;type=invite">Set my password</a></p>
 <p>The link works once and expires in 24 hours. If you were not expecting this, you can ignore this email.</p>

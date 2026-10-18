@@ -46,7 +46,7 @@ export async function signInToSandbox(
 ) {
   await page.goto("/admin");
   await page.getByLabel("Username").fill(as);
-  await page.getByLabel("Password").fill(as);
+  await page.getByLabel("Password", { exact: true }).fill(as);
   await submit(page, "Sign In");
   await expect(page).toHaveURL(/\/admin\/dashboard/);
 }

@@ -1,4 +1,6 @@
 import { defineConfig } from "@playwright/test";
+import { demoSeed } from "./tests/support/demo-seed";
+import { viewportSize } from "./tests/support/viewports";
 import { createPlaywrightConfig } from "./tests/support/playwright-config";
 
 const baseURL = "http://127.0.0.1:3217";
@@ -21,7 +23,7 @@ export default defineConfig({
     {
       name: "phone-dark",
       use: {
-        viewport: { width: 390, height: 844 },
+        viewport: viewportSize("390x844"),
         isMobile: true,
         hasTouch: true,
         colorScheme: "dark",
@@ -36,7 +38,7 @@ export default defineConfig({
     env: {
       SITE_URL: baseURL,
       SITE_DEMO_MODE: "true",
-      SITE_DEMO_DATE: "2026-10-14T12:00:00.000Z",
+      SITE_DEMO_DATE: demoSeed,
       // The daily warning check is an external job and stays off in QA.
       CRON_SECRET: "off",
     },

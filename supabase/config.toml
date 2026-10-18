@@ -246,7 +246,7 @@ otp_expiry = 86400
 # Invite and password-reset emails (PR3 contract, D-1). Keep the subjects equal to the first line
 # of each template file; the owner pastes both into the hosted project.
 [auth.email.template.invite]
-subject = "You're invited to the SGU MSA website dashboard"
+subject = "You are invited to the SGU MSA website dashboard"
 content_path = "./supabase/templates/invite.html"
 
 [auth.email.template.recovery]

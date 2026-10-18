@@ -34,6 +34,23 @@ for (const [type, file] of [
   });
 }
 
+test("invite email reads well when the name or inviter is missing", () => {
+  const template = readFileSync("supabase/templates/invite.html", "utf8");
+  assert.ok(
+    template.includes(
+      "Assalamu alaikum{{ if .Data.full_name }} {{ .Data.full_name }}{{ end }},",
+    ),
+    "the greeting drops the name cleanly",
+  );
+  assert.ok(
+    template.includes(
+      "{{ if .Data.invited_by }}{{ .Data.invited_by }} added you{{ else }}You have been added{{ end }} to the SGU MSA board dashboard.",
+    ),
+    "the inviter line has a fallback",
+  );
+  assert.doesNotMatch(template, /alaikum \{\{ \.Data\.full_name \}\}\./);
+});
+
 test("auth settings: 24-hour links and the D-16 password rule", () => {
   assert.equal(setting("otp_expiry"), "86400");
   assert.equal(setting("minimum_password_length"), "12");

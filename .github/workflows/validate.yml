@@ -58,6 +58,27 @@ jobs:
           path: test-results/
           if-no-files-found: ignore
           retention-days: 3
+  layout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Every public page on every device size, light and dark, with screenshot baselines.
+      # npm run test:layout runs inside the official Playwright image so renders match the
+      # committed baselines. Its own job, in parallel with browser-smoke.
+      - run: npm run test:layout
+      - name: Upload layout failure evidence (diffs)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: layout-failures
+          path: test-results-layout/
+          if-no-files-found: ignore
+          retention-days: 3
   database:
     runs-on: ubuntu-latest
     steps:
