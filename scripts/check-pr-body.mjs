@@ -8,33 +8,15 @@ import { fileURLToPath } from "node:url";
 
 const TEMPLATE_PATH = ".github/pull_request_template.md";
 
-// min/max: how many choices may be ticked. When `trigger` is ticked, its
-// `fields` need text and its `boxes` need a tick.
-const RULES = [
-  {
-    group: "Type",
-    choices: ["Feature", "Fix", "Design", "Docs or process"],
-    min: 1,
-    max: 1,
-  },
-  {
-    group: "Who notices",
-    choices: ["Visitors", "Board (dashboard)", "Developers only"],
-    min: 1,
-    max: 3,
-  },
-  {
-    group: "Risk",
-    choices: ["Low", "Medium", "High"],
-    min: 1,
-    max: 1,
-    needs: [{ triggers: ["Medium", "High"], fields: ["Why"], boxes: [] }],
-  },
-  {
-    group: "Database migration",
-    choices: ["None", "Yes"],
-    min: 1,
-    max: 1,
+// Rule metadata only. The groups' options come from the template: every
+// checkbox in a group is a choice, except the follow-up boxes named in `needs`.
+// `many`: more than one choice may be ticked (otherwise exactly one).
+// When a choice in `triggers` is ticked, its `fields` need text and its `boxes` a tick.
+const RULES = {
+  Type: {},
+  "Who notices": { many: true },
+  Risk: { needs: [{ triggers: ["Medium", "High"], fields: ["Why"] }] },
+  "Database migration": {
     needs: [
       {
         triggers: ["Yes"],
@@ -43,38 +25,26 @@ const RULES = [
       },
     ],
   },
-  {
-    group: "Hosted settings",
-    choices: ["None", "Before merge", "After merge"],
-    min: 1,
-    max: 1,
+  "Hosted settings": {
     needs: [
       {
         triggers: ["Before merge"],
         fields: ["What"],
         boxes: ["Done (before merge only)"],
       },
-      { triggers: ["After merge"], fields: ["What"], boxes: [] },
+      { triggers: ["After merge"], fields: ["What"] },
     ],
   },
-  {
-    group: "Rollback",
-    choices: ["Vercel Instant Rollback is enough", "Needs more"],
-    min: 1,
-    max: 1,
-    needs: [{ triggers: ["Needs more"], fields: ["How"], boxes: [] }],
-  },
-  {
-    group: "Preview",
-    choices: ["No visible change", "Check these pages"],
-    min: 1,
-    max: 1,
-    needs: [{ triggers: ["Check these pages"], fields: ["Pages"], boxes: [] }],
-  },
-];
+  Rollback: { needs: [{ triggers: ["Needs more"], fields: ["How"] }] },
+  Preview: { needs: [{ triggers: ["Check these pages"], fields: ["Pages"] }] },
+};
 
 const norm = (text) =>
   text.replace(/\*\*/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+
+const needsOf = (group) => RULES[group].needs ?? [];
+const followUpBoxes = (group) => needsOf(group).flatMap((n) => n.boxes ?? []);
+const followUpFields = (group) => needsOf(group).flatMap((n) => n.fields ?? []);
 
 /** Returns Map(group -> { boxes: Map(label -> ticked), fields: Map(name -> text) }), or null if the section is missing. */
 export function parseGlance(markdown) {
@@ -88,7 +58,7 @@ export function parseGlance(markdown) {
     if (/^##\s/.test(line)) break;
     const heading = line.match(/^###\s+(.+?)\s*$/);
     if (heading) {
-      current = { boxes: new Map(), fields: new Map() };
+      current = { name: heading[1], boxes: new Map(), fields: new Map() };
       groups.set(norm(heading[1]), current);
       continue;
     }
@@ -104,35 +74,59 @@ export function parseGlance(markdown) {
   return groups;
 }
 
-/** Problems with the template itself (it must contain every group, option and field the rules use). */
+/** Choices of a template group: its checkboxes except the follow-up ones. */
+const choicesOf = (group, templateGroup) => {
+  const follow = followUpBoxes(group).map(norm);
+  return [...templateGroup.boxes.keys()].filter((l) => !follow.includes(l));
+};
+
+/** Problems with the template itself: it and the rules must describe the same groups. */
 function templateProblems(template) {
   if (!template)
     return [
       'The pull request template has no "## At a glance" section, so the body cannot be checked.',
     ];
+  const out = "The template and the PR body check are out of sync";
   const problems = [];
-  for (const rule of RULES) {
-    const group = template.get(norm(rule.group));
-    if (!group) {
-      problems.push(`The pull request template has no "${rule.group}" group.`);
+  for (const group of Object.keys(RULES)) {
+    const t = template.get(norm(group));
+    if (!t) {
+      problems.push(`${out}: the template has no "${group}" group.`);
       continue;
     }
-    const wanted = [
-      ...rule.choices,
-      ...(rule.needs ?? []).flatMap((n) => n.boxes),
+    const choices = choicesOf(group, t);
+    if (choices.length === 0)
+      problems.push(`${out}: "${group}" has no options in the template.`);
+    const labels = [
+      ...needsOf(group).flatMap((n) => n.triggers),
+      ...followUpBoxes(group),
     ];
-    for (const label of wanted) {
-      if (!group.boxes.has(norm(label)))
+    for (const label of labels) {
+      if (!t.boxes.has(norm(label)))
         problems.push(
-          `The template's "${rule.group}" group lacks the option "${label}".`,
+          `${out}: the template's "${group}" group lacks the option "${label}".`,
         );
     }
-    for (const field of (rule.needs ?? []).flatMap((n) => n.fields)) {
-      if (!group.fields.has(norm(field)))
+    const known = followUpFields(group).map(norm);
+    for (const field of known) {
+      if (!t.fields.has(field))
         problems.push(
-          `The template's "${rule.group}" group lacks the "${field}:" line.`,
+          `${out}: the template's "${group}" group lacks its "${field}:" line.`,
         );
     }
+    for (const field of t.fields.keys()) {
+      if (!known.includes(field))
+        problems.push(
+          `${out}: the template's "${group}" group has an unknown "${field}:" line.`,
+        );
+    }
+  }
+  const ruleNames = Object.keys(RULES).map(norm);
+  for (const [key, t] of template) {
+    if (!ruleNames.includes(key))
+      problems.push(
+        `${out}: the template has a group "${t.name}" that the check does not know.`,
+      );
   }
   return problems;
 }
@@ -146,37 +140,36 @@ export function checkPrBody(body, templateText) {
   if (!parsed) return ['The "## At a glance" section is missing.'];
 
   const problems = [];
-  for (const rule of RULES) {
-    const group = parsed.get(norm(rule.group));
+  for (const [name, rule] of Object.entries(RULES)) {
+    const group = parsed.get(norm(name));
     if (!group) {
-      problems.push(`"${rule.group}" is missing from "At a glance".`);
+      problems.push(`"${name}" is missing from "At a glance".`);
       continue;
     }
-    const ticked = rule.choices.filter((c) => group.boxes.get(norm(c)));
-    if (ticked.length < rule.min) {
+    const choices = choicesOf(name, template.get(norm(name)));
+    const ticked = choices.filter((c) => group.boxes.get(c));
+    if (ticked.length === 0) {
       problems.push(
-        `${rule.group}: tick ${rule.max === 1 ? "one option" : "at least one option"}.`,
+        `${name}: tick ${rule.many ? "at least one option" : "one option"}.`,
       );
       continue;
     }
-    if (ticked.length > rule.max) {
-      problems.push(
-        `${rule.group}: tick only one option (found ${ticked.length}).`,
-      );
+    if (!rule.many && ticked.length > 1) {
+      problems.push(`${name}: tick only one option (found ${ticked.length}).`);
       continue;
     }
-    for (const need of rule.needs ?? []) {
-      const hit = ticked.find((t) => need.triggers.includes(t));
+    for (const need of needsOf(name)) {
+      const hit = need.triggers.find((t) => ticked.includes(norm(t)));
       if (!hit) continue;
-      for (const field of need.fields) {
+      for (const field of need.fields ?? []) {
         if (!group.fields.get(norm(field)))
           problems.push(
-            `${rule.group}: "${hit}" needs the "${field}:" line filled in.`,
+            `${name}: "${hit}" needs the "${field}:" line filled in.`,
           );
       }
-      for (const label of need.boxes) {
+      for (const label of need.boxes ?? []) {
         if (!group.boxes.get(norm(label)))
-          problems.push(`${rule.group}: "${hit}" needs "${label}" ticked.`);
+          problems.push(`${name}: "${hit}" needs "${label}" ticked.`);
       }
     }
   }

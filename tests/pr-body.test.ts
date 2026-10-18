@@ -146,6 +146,36 @@ test("a broken template fails closed", () => {
   assert.match((checkPrBody(filled, noRisk) as string[])[0], /High/);
 });
 
+test("a new option in the template is accepted without a code change", () => {
+  const withRefactor = template.replace(
+    "- [ ] Design\n",
+    "- [ ] Design\n- [ ] Refactor\n",
+  );
+  const body = tick(
+    filled.replace("- [ ] Design\n", "- [ ] Design\n- [ ] Refactor\n"),
+    "Refactor",
+  ).replace("- [x] Docs or process", "- [ ] Docs or process");
+  assert.deepEqual(checkPrBody(body, withRefactor), []);
+  // Ticking two single-choice options is still refused.
+  assert.match(
+    (checkPrBody(tick(body, "Fix"), withRefactor) as string[]).join("\n"),
+    /tick only one/,
+  );
+});
+
+test("a renamed or unknown group makes the template and the check out of sync", () => {
+  const renamed = template.replace("### Rollback", "### Undo");
+  const problems = checkPrBody(filled, renamed) as string[];
+  assert.ok(problems.every((p) => /out of sync/.test(p)));
+  assert.match(problems.join("\n"), /no "Rollback" group/);
+  assert.match(problems.join("\n"), /group "Undo"/);
+});
+
+test("an unknown follow-up line in the template is out of sync", () => {
+  const extra = template.replace("Why:\n", "Why:\n\nOwner:\n");
+  assert.match((checkPrBody(filled, extra) as string[])[0], /"owner:"/);
+});
+
 test("bot author is skipped, human with empty body fails", () => {
   const dir = mkdtempSync(join(tmpdir(), "prbody-"));
   const event = join(dir, "event.json");
