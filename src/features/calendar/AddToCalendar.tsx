@@ -1,8 +1,8 @@
 "use client";
 
-import { CalendarPlus } from "lucide-react";
+import { Check, CalendarPlus } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 import {
   calendarTarget,
@@ -11,6 +11,7 @@ import {
 } from "@/lib/calendar/targets";
 
 import c from "./calendar.module.css";
+import { copyMessages, copyText, type CopyResult } from "./copy-link";
 
 type AddToCalendarProps = {
   /** The event's file, Google Calendar and Outlook addresses (`calendarLinks`). */
@@ -21,6 +22,11 @@ type AddToCalendarProps = {
    * action; "outline" sits beside a filled ticket button (PR6 D-82).
    */
   variant?: "underline" | "ink" | "outline";
+  /**
+   * "event" adds one event; "feed" subscribes to every public event (the
+   * links are `calendarFeedLinks`): the same menu and device choice, other words.
+   */
+  kind?: "event" | "feed";
 };
 
 /** The menu's choices on a computer that is not a Mac (review 2, 2026-10-05). */
@@ -28,6 +34,13 @@ export const calendarChoices = [
   ["google", "Google Calendar"],
   ["outlook", "Outlook"],
   ["file", "Apple or other (file)"],
+] as const satisfies readonly (readonly [keyof CalendarLinks, string])[];
+
+/** The same choices when subscribing to the feed. */
+const feedChoices = [
+  ["file", "Apple Calendar or other (subscribe)"],
+  ["google", "Google Calendar"],
+  ["outlook", "Outlook"],
 ] as const satisfies readonly (readonly [keyof CalendarLinks, string])[];
 
 /** Nothing to subscribe to: the device does not change on a page. */
@@ -48,7 +61,18 @@ export function AddToCalendar({
   links,
   title,
   variant = "underline",
+  kind = "event",
 }: AddToCalendarProps) {
+  const feed = kind === "feed";
+  const [copy, setCopy] = useState<CopyResult | null>(null);
+  const address = links.file.replace(/^webcal:/, "https:");
+  // A copied confirmation fades after 2 seconds; a failure stays so the
+  // link can be copied by hand.
+  useEffect(() => {
+    if (copy !== "copied") return;
+    const timer = setTimeout(() => setCopy(null), 2000);
+    return () => clearTimeout(timer);
+  }, [copy]);
   const target = useSyncExternalStore(noChanges, onThisDevice, onServer);
   const className =
     variant === "ink"
@@ -63,8 +87,8 @@ export function AddToCalendar({
         className={c.addIcon}
         strokeWidth={1.35}
       />
-      Add to Calendar
-      <span className="sr-only">{` — ${title}`}</span>
+      {feed ? "Subscribe to calendar" : "Add to Calendar"}
+      {feed ? null : <span className="sr-only">{` — ${title}`}</span>}
     </>
   );
 
@@ -74,13 +98,25 @@ export function AddToCalendar({
         <DropdownMenu.Trigger className={className}>
           {label}
         </DropdownMenu.Trigger>
+        <p
+          className={
+            copy === "failed" ? c.copyFailed : copy ? c.copyNote : "sr-only"
+          }
+          role="status"
+          aria-live="polite"
+        >
+          {copy ? copyMessages[copy] : ""}
+          {copy === "failed" ? (
+            <code className={c.copyAddress}>{address}</code>
+          ) : null}
+        </p>
         <DropdownMenu.Portal>
           <DropdownMenu.Content
             className={c.addMenu}
             align="start"
             sideOffset={6}
           >
-            {calendarChoices.map(([key, name]) => (
+            {(feed ? feedChoices : calendarChoices).map(([key, name]) => (
               <DropdownMenu.Item key={key} asChild className={c.addMenuItem}>
                 <a
                   href={links[key]}
@@ -92,6 +128,24 @@ export function AddToCalendar({
                 </a>
               </DropdownMenu.Item>
             ))}
+            {feed ? (
+              <DropdownMenu.Item
+                className={c.addMenuItem}
+                onSelect={(event) => {
+                  event.preventDefault();
+                  void copyText(address).then(setCopy);
+                }}
+              >
+                {copy === "copied" ? (
+                  <>
+                    <Check aria-hidden="true" className={c.addIcon} />
+                    <span className={c.copyDone}>Link copied</span>
+                  </>
+                ) : (
+                  "Copy link"
+                )}
+              </DropdownMenu.Item>
+            ) : null}
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>

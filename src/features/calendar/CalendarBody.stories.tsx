@@ -36,6 +36,18 @@ type Story = StoryObj<typeof meta>;
 
 export const NoEvents: Story = {};
 export const NoEventsDark: Story = { globals: { theme: "dark" } };
+const subscribe = {
+  file: "webcal://msa.example/calendar.ics",
+  google:
+    "https://calendar.google.com/calendar/render?cid=webcal%3A%2F%2Fmsa.example%2Fcalendar.ics",
+  outlook:
+    "https://outlook.live.com/calendar/0/addfromweb?url=https%3A%2F%2Fmsa.example%2Fcalendar.ics&name=MSA",
+};
+export const WithSubscribe: Story = { args: { subscribe } };
+export const WithSubscribeDark: Story = {
+  ...WithSubscribe,
+  globals: { theme: "dark" },
+};
 export const Unavailable: Story = { args: { unavailable: true } };
 export const UnavailableDark: Story = {
   ...Unavailable,

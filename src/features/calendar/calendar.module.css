@@ -17,6 +17,9 @@
 .head .title {
   font-size: clamp(3.25rem, 8vw, 6.5rem);
 }
+.subscribe {
+  margin-top: 1.5rem;
+}
 .head .lede {
   margin: 0 0 0.75rem;
   max-width: 40ch;
@@ -473,6 +476,33 @@
 .addMenuItem:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: -2px;
+}
+
+/* "Copy link" feedback: the same success and danger tokens as the board's notices. */
+.copyNote,
+.copyFailed {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+.copyNote {
+  color: var(--status-success);
+}
+.copyFailed {
+  color: var(--status-danger);
+}
+.copyAddress {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--ink);
+  user-select: all;
+  -webkit-user-select: all;
+}
+.copyDone {
+  color: var(--status-success);
+}
+.addMenuItem:has(.copyDone) {
+  gap: 0.5rem;
 }
 
 /* Single event page ---------------------------------------------------- */

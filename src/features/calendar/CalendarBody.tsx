@@ -1,4 +1,5 @@
 import { shownIds } from "@/lib/content/page-layouts";
+import type { CalendarLinks } from "@/lib/calendar/targets";
 import type { Lists } from "@/lib/community/lists";
 import type { EventsContent, Reminder } from "@/lib/content/schemas";
 import { PageSection } from "@/shared/layout/PageSection";
@@ -7,6 +8,7 @@ import { MarginNote } from "@/shared/ui/MarginNote";
 import quiet from "@/shared/ui/page.module.css";
 
 import c from "./calendar.module.css";
+import { AddToCalendar } from "./AddToCalendar";
 import { CalendarExplorer } from "./CalendarExplorer";
 import type { CalendarEntry } from "./types";
 
@@ -22,6 +24,7 @@ export function CalendarBody({
   today,
   unavailable,
   verse,
+  subscribe,
 }: {
   content: EventsContent;
   entries: CalendarEntry[];
@@ -31,6 +34,8 @@ export function CalendarBody({
   today: string | null;
   unavailable: boolean;
   verse?: Reminder | null;
+  /** The feed's subscribe addresses (`calendarFeedLinks`); absent hides the button. */
+  subscribe?: CalendarLinks;
 }) {
   return (
     <Container>
@@ -43,6 +48,16 @@ export function CalendarBody({
             <h1 className={`${quiet.display} ${c.title}`}>
               {content.hero.title}
             </h1>
+            {subscribe ? (
+              <div className={c.subscribe}>
+                <AddToCalendar
+                  links={subscribe}
+                  title="all MSA events"
+                  variant="outline"
+                  kind="feed"
+                />
+              </div>
+            ) : null}
           </div>
           {content.hero.description ? (
             <p className={`${quiet.lede} ${c.lede}`}>

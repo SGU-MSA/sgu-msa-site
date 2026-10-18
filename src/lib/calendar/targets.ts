@@ -74,5 +74,25 @@ export function calendarLinks(event: SiteEvent): CalendarLinks {
   };
 }
 
+/**
+ * The subscribe addresses of the calendar feed (D-7): `file` is the webcal
+ * address (Apple Calendar and any app that takes webcal), `google` and
+ * `outlook` open their add-by-URL pages with the feed filled in.
+ */
+export function calendarFeedLinks(origin: string, name: string): CalendarLinks {
+  const feed = new URL("/calendar.ics", origin);
+  const webcal = `webcal://${feed.host}${feed.pathname}`;
+  const google = new URL("https://calendar.google.com/calendar/render");
+  google.searchParams.set("cid", webcal);
+  const outlook = new URL("https://outlook.live.com/calendar/0/addfromweb");
+  outlook.searchParams.set("url", feed.href);
+  outlook.searchParams.set("name", name);
+  return {
+    file: webcal,
+    google: google.toString(),
+    outlook: outlook.toString(),
+  };
+}
+
 /** Every "Add to Calendar" address of one event. */
 export type CalendarLinks = { file: string; google: string; outlook: string };
