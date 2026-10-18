@@ -83,7 +83,8 @@ Never choose the look yourself. Present 2-3 directions plus a recommendation.
 
 1. Shortlist with the `applying-design-styles` skill, filtered by brand fit
    (a university mosque: calm, welcoming, dignified, readable).
-2. Show pictures, not paragraphs:
+2. Show pictures, not paragraphs. Early exploration only (the decision is
+   made on the in-context previews below):
    - **Claude Code with Claude Design:** run `/design-login` once per
      machine, then `/design <brief>` for 2-3 artboards with real site
      content. Bring the chosen design back through its handoff bundle and
@@ -91,11 +92,10 @@ Never choose the look yourself. Present 2-3 directions plus a recommendation.
    - **Don't run `/design-sync` until a direction is chosen** and its tokens
      and components are in the repo. Before that it would upload the
      discarded themes and pull the artboards back toward them.
-   - **Codex, or Claude Design unavailable:** write quick static HTML
-     mockups using the real token values under `.plans/mockups/<feature>/`,
-     and capture them with `mcp__chrome-devtools__take_screenshot` at 390 px
-     and 1440 px (or a Playwright screenshot script if chrome-devtools is
-     unavailable). Screenshots go in the ignored `artifacts/` folder.
+   - **Codex, or Claude Design unavailable:** quick static HTML mockups with
+     the real token values under `.plans/mockups/<feature>/`, captured with
+     `mcp__chrome-devtools__take_screenshot` at 390 px and 1440 px (or a
+     Playwright screenshot script), saved in the ignored `artifacts/` folder.
    - **Judge options in real context, on real devices.** Build each option
      in the real component or page at its real size and push it as its own
      throwaway branch `option/<topic>-<n>`; Vercel gives it a preview link
