@@ -54,6 +54,13 @@ export function postCard(
 }
 
 /**
+ * The card's design version: bump it whenever the card's layout, fonts or
+ * colours change (src/lib/seo/og-card.tsx), so every card address changes and
+ * CDNs and chat apps fetch the new design (contract D-12).
+ */
+export const CARD_DESIGN_VERSION = 1;
+
+/**
  * A short version of the card's words and site name: it is part of the card's
  * address, so an edit changes the address at once (CDNs and chat apps keep a
  * given address for a long time) while an unchanged card keeps its address.
@@ -62,6 +69,7 @@ export function cardVersion(words: Words, site: Brand): string {
   return createHash("sha256")
     .update(
       JSON.stringify([
+        CARD_DESIGN_VERSION,
         words.kicker,
         words.heading,
         words.subheading ?? "",
