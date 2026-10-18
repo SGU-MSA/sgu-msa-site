@@ -327,3 +327,22 @@ test("admin content editor supports keyboard focus and passes axe", async ({
     fullPage: true,
   });
 });
+
+test("the sign-in password can be shown and hidden by mouse and keyboard", async ({
+  page,
+}) => {
+  await page.goto("/admin");
+  const field = page.getByLabel("Password", { exact: true });
+  await field.fill("not-a-real-password");
+  await expect(field).toHaveAttribute("type", "password");
+  const toggle = page.getByRole("button", { name: "Show password" });
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  await toggle.click();
+  await expect(field).toHaveAttribute("type", "text");
+  const hide = page.getByRole("button", { name: "Hide password" });
+  await expect(hide).toHaveAttribute("aria-pressed", "true");
+  await hide.focus();
+  await page.keyboard.press("Enter");
+  await expect(field).toHaveAttribute("type", "password");
+  await expectAccessible(page);
+});

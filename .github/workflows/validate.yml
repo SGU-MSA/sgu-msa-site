@@ -50,6 +50,18 @@ jobs:
       - run: npx playwright install --with-deps chromium
       # This command owns a fresh loopback-only sample server and browser contexts.
       - run: npm run test:smoke
+      # Every public page on every device size, light and dark, with screenshot baselines.
+      # It runs inside the official Playwright image so renders match the committed baselines;
+      # it stays a step of this job, so the required checks do not change.
+      - run: npm run test:layout
+      - name: Upload layout failure evidence (diffs)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: layout-failures
+          path: test-results-layout/
+          if-no-files-found: ignore
+          retention-days: 3
       - name: Upload browser failure evidence
         if: failure()
         uses: actions/upload-artifact@v4
