@@ -89,6 +89,9 @@ export function AddToCalendar({
         <DropdownMenu.Trigger className={className}>
           {label}
         </DropdownMenu.Trigger>
+        <span className="sr-only" role="status" aria-live="polite">
+          {copied ? "Link copied" : ""}
+        </span>
         <DropdownMenu.Portal>
           <DropdownMenu.Content
             className={c.addMenu}
@@ -122,9 +125,6 @@ export function AddToCalendar({
                 Copy link
               </DropdownMenu.Item>
             ) : null}
-            <span className="sr-only" role="status" aria-live="polite">
-              {copied ? "Link copied" : ""}
-            </span>
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
