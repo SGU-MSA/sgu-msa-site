@@ -98,9 +98,6 @@ export const imageSchema = z.object({
   alt: z.string().min(1),
   focal_point: z.string().nullish(),
   credit: z.string().nullish(),
-  /** Archive imagery must never be presented as current. */
-  historical: z.boolean().default(false),
-  year: z.union([z.number().int(), z.string()]).nullish(),
 });
 export type ContentImage = z.infer<typeof imageSchema>;
 

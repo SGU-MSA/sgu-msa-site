@@ -65,7 +65,6 @@ at_sgu:
   image:
     src: "/images/community/campus-aerial.webp"
     alt: "Aerial view of the St. George’s University True Blue campus"
-    historical: true
 
 contact:
   heading: "Contact"

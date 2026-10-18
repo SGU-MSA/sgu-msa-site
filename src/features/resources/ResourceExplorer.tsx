@@ -6,7 +6,6 @@ import { useMemo, useState } from "react";
 
 import { externalLinkProps } from "@/lib/url";
 import { InkRing } from "@/shared/ui/InkRing";
-import { ArchiveTag } from "@/shared/ui/Meta";
 
 import {
   categoryCounts,
@@ -124,9 +123,6 @@ export function ResourceExplorer({
                   <p className={r.updated}>
                     {resource.updated_label ?? "SGU MSA resource"}
                   </p>
-                  {resource.image?.historical ? (
-                    <ArchiveTag year={resource.image.year} />
-                  ) : null}
                 </div>
                 <div className={r.action}>
                   <ResourceAction resource={resource} />

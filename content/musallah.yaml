@@ -67,10 +67,7 @@ helper_cta:
 gallery:
   - src: "/images/prayer/route-path.webp"
     alt: "The open path along the route, a few minutes from the Charter Hall bus stop"
-    historical: false
   - src: "/images/prayer/route-st-john.webp"
     alt: "St. John’s Hall — the landmark you pass before the first right"
-    historical: false
   - src: "/images/prayer/musallah-interior.webp"
     alt: "Inside the SGU Musallah, prayer rugs laid across the hall"
-    historical: false

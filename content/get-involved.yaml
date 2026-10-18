@@ -62,7 +62,6 @@ pathways:
     image:
       src: "/images/community/gathering-dusk.webp"
       alt: "MSA students gathered on the lawn at dusk above the campus"
-      historical: true
 
   - id: mentor
     number: "05"

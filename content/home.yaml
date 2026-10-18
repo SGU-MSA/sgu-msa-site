@@ -73,7 +73,6 @@ visit:
   image:
     src: "/images/prayer/musallah-interior.webp"
     alt: "Inside the SGU Musallah"
-    historical: false
 
 features:
   - id: ramadan
@@ -86,7 +85,6 @@ features:
       src: "/images/ramadan/hero-lanterns.webp"
       alt: "Ramadan Mubarak sign lit by candlelight inside the SGU Musallah"
       focal_point: "40% 50%"
-      historical: true
   - id: shukr
     eyebrow: "MSA collection"
     title: "The Shukr Collection"
