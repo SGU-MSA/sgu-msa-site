@@ -3,14 +3,23 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { InkRing } from "@/shared/ui/InkRing";
 
 import c from "./calendar.module.css";
+import { DayEvents } from "./DayEvents";
 import type { CalendarEntry } from "./types";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 type Dated = Pick<
   CalendarEntry,
-  "id" | "date" | "title" | "category_name" | "category_tone"
+  | "id"
+  | "date"
+  | "title"
+  | "category_name"
+  | "category_tone"
+  | "start_time"
+  | "end_date"
+  | "end_time"
 >;
+export type DayEvent = Dated;
 
 /**
  * The almanac (D-1): a small month on a paper sheet, always open beside the
@@ -82,7 +91,8 @@ export function MiniMonth({
           {cells.map((day, index) => {
             if (!day) return <span key={`blank-${index}`} />;
             const key = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-            const first = events.find((event) => event.date === key);
+            const onDay = events.filter((event) => event.date === key);
+            const first = onDay[0];
             const isToday = key === today;
             const ring = isToday ? <InkRing className={c.cellRing} /> : null;
             if (!first)
@@ -96,6 +106,28 @@ export function MiniMonth({
                   <span className={c.cellDay}>{day}</span>
                   {isToday ? <span className="sr-only"> (today)</span> : null}
                 </span>
+              );
+            // OPTION calendar-dots: a day with several events shows up to three
+            // dots and opens a list of all of them instead of jumping to one.
+            if (onDay.length > 1)
+              return (
+                <DayEvents
+                  key={key}
+                  day={day}
+                  isToday={isToday}
+                  ring={ring}
+                  className={`${c.cell} ${c.cellEvent} ${c.cellButton}${isToday ? ` ${c.cellToday}` : ""}`}
+                  label={`${day} ${name}${isToday ? " (today)" : ""}: ${onDay.length} events: ${onDay.map((event) => event.title).join("; ")}`}
+                  heading={new Intl.DateTimeFormat("en", {
+                    weekday: "short",
+                    day: "numeric",
+                    month: "long",
+                  }).format(new Date(year, monthIndex, day))}
+                  events={onDay.map((event) => ({
+                    ...event,
+                    href: hrefFor(event),
+                  }))}
+                />
               );
             return (
               <a
