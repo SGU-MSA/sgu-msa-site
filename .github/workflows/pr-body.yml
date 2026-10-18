@@ -1,0 +1,21 @@
+name: PR body
+on:
+  pull_request:
+    branches: [main, "integration/**"]
+    types: [opened, edited, synchronize, reopened]
+permissions:
+  contents: read
+concurrency:
+  group: pr-body-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  pr-body:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # The PR description must answer the "At a glance" table. The script reads the
+      # event file itself; PR text is never interpolated into a command.
+      - run: node scripts/check-pr-body.mjs

@@ -61,7 +61,7 @@ Data sources sit behind ports (`<capability>/providers/contract.ts`). Only `src/
 
 - Skills live only in `.agents/skills/<name>/SKILL.md`; `.claude/skills` and `.codex/skills` are compatibility symlinks. Both clients read the same rules and skills; client-specific files are adapters, never independent policy sources. Each `description` says when to use the skill.
 - Start with: `managing-project-work` (tracking), `planning-engineering-changes` (before code), `reviewing-engineering-changes` (before a PR), `designing-ui-components` (any new or restyled UI), `rendering-strategy-app-architecture` (server/client; board edits appear without a rebuild), `frontend-testing-visual-qa`, `frontend-security`.
-- Vendored skills (`motion` from Motion's AI Kit; `applying-design-styles`, authored by the maintainer) carry `metadata.vendored: "true"` and a `NOTICE`; edit only their "Project notes" sections.
+- Vendored skills (`motion` from Motion's AI Kit; `applying-design-styles`, authored by the maintainer) carry `metadata.vendored: "true"` and a `NOTICE`; edit only their "Project notes" sections. Vendored reference files inside a project skill (e.g. the web interface guidelines in `reviewing-engineering-changes`) carry an upstream header and that skill's `NOTICE`; edit only their "Project notes".
 - Size budgets (tested in `tests/agent-config.test.ts`): this file ≤ 150 lines, SKILL.md ≤ 200 (vendored ≤ 500), references ≤ 150.
 
 ## Design SOP
@@ -70,7 +70,7 @@ Data sources sit behind ports (`<capability>/providers/contract.ts`). Only `src/
 - A dashboard feature is not done until it passes the [admin UX gate](.agents/skills/reviewing-engineering-changes/references/admin-ux-gate.md).
 - Reuse `src/shared/ui` and `src/styles/tokens.css` first; new UI must work in light and dark (`data-theme`; ADR 0018) and gets a Storybook story in both.
 - Registries are free only, configured in `components.json`. Always `--dry-run` first. A new dependency needs the user's approval, recorded in the feature contract's Decisions; write an ADR only if it affects several features or is hard to reverse ([ADR 0001](docs/adr/0001-record-architecture-decisions.md)).
-- The user picks the look from pictures: Claude Design (`/design`) in Claude Code, HTML mockups/screenshots in Codex.
+- Early exploration may use Claude Design (`/design`) or HTML mockups/screenshots, but the user decides on in-context option preview links (`option/<topic>-<n>` branches, Vercel previews).
 
 ## MCP servers
 
