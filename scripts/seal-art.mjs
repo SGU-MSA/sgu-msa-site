@@ -4,23 +4,37 @@
 //     shapes take their colour in their own `style` from the theme's
 //     --seal-ink, --seal-mint and --seal-cream (a <use> passes the page's
 //     variables into the shapes; the file's own <style> block never reaches
-//     them), and
+//     them),
 //   - src/shared/ui/seal-art.ts: the sprite's address with a content hash,
 //     so browsers keep the file for a year and a new drawing gets a new
-//     address.
+//     address, plus the hash of the icon inputs (sprite + three colours), and
+//   - the committed icons rasterised from the seal in the Green Ink colours of
+//     src/styles/tokens.css: src/app/favicon.ico, src/app/apple-icon.png and
+//     public/icons/icon-{192,512,maskable-512}.png (site-essentials contract,
+//     D-2).
 //
-//   node scripts/seal-art.mjs          → rewrites both files
+//   node scripts/seal-art.mjs          → rewrites all of them
 //
-// tests/seal-art.test.ts fails when they drift from seal.svg.
+// tests/seal-art.test.ts fails when they drift from seal.svg or tokens.css.
 import { createHash } from "node:crypto";
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import * as prettier from "prettier";
+import sharp from "sharp";
 
 const root = new URL("../", import.meta.url);
 export const sealFile = new URL("public/images/brand/seal.svg", root);
 export const spriteFile = new URL("public/images/brand/seal-sprite.svg", root);
 export const artFile = new URL("src/shared/ui/seal-art.ts", root);
+export const tokensFile = new URL("src/styles/tokens.css", root);
+/** The committed icon files, keyed as `renderIcons` returns them. */
+export const iconFiles = {
+  favicon: new URL("src/app/favicon.ico", root),
+  apple: new URL("src/app/apple-icon.png", root),
+  icon192: new URL("public/icons/icon-192.png", root),
+  icon512: new URL("public/icons/icon-512.png", root),
+  maskable: new URL("public/icons/icon-maskable-512.png", root),
+};
 /** The sprite's public address (`spriteFile` under public/). */
 const spritePath = "/images/brand/seal-sprite.svg";
 export const symbolId = "msa-seal";
@@ -55,12 +69,100 @@ export function sealSprite(svg) {
   ].join("\n");
 }
 
+/** The light (Green Ink) paper, ink and seal-mint colours: the first :root block of tokens.css. */
+export function lightColours(css) {
+  const block = /:root\s*\{([\s\S]*?)\n\}/.exec(css)?.[1] ?? "";
+  const read = (name) => {
+    const hex = new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6})\\s*;`).exec(
+      block,
+    )?.[1];
+    if (!hex) throw new Error(`tokens.css: no --${name} hex in :root`);
+    return hex.toLowerCase();
+  };
+  return {
+    paper: read("paper"),
+    ink: read("ink"),
+    sealMint: read("seal-mint"),
+  };
+}
+
+/** The seal with fixed fills (librsvg does not resolve the file's CSS variables reliably). */
+function solidSeal(svg, colours) {
+  return svg.replace(
+    /<style>[\s\S]*?<\/style>/,
+    `<style>.ink{fill:${colours.ink}}.mint{fill:${colours.sealMint}}.cream{fill:${colours.paper}}</style>`,
+  );
+}
+
+/** Hash of everything the icons are drawn from: the sprite and the three colours. */
+export function iconsHash(svg, colours) {
+  return createHash("sha256")
+    .update(sealSprite(svg))
+    .update(JSON.stringify([colours.paper, colours.ink, colours.sealMint]))
+    .digest("hex")
+    .slice(0, 10);
+}
+
+/** The ICO container around PNG payloads (PNG entries, Windows Vista and later). */
+function ico(pngs) {
+  const head = Buffer.alloc(6 + 16 * pngs.length);
+  head.writeUInt16LE(1, 2);
+  head.writeUInt16LE(pngs.length, 4);
+  let offset = head.length;
+  pngs.forEach(({ size, data }, i) => {
+    const at = 6 + 16 * i;
+    head.writeUInt8(size, at);
+    head.writeUInt8(size, at + 1);
+    head.writeUInt16LE(1, at + 4);
+    head.writeUInt16LE(32, at + 6);
+    head.writeUInt32LE(data.length, at + 8);
+    head.writeUInt32LE(offset, at + 12);
+    offset += data.length;
+  });
+  return Buffer.concat([head, ...pngs.map((png) => png.data)]);
+}
+
+/** The icon files' bytes, keyed as `iconFiles`. */
+export async function renderIcons(svg, colours) {
+  const source = Buffer.from(solidSeal(svg, colours));
+  const seal = (size) =>
+    sharp(source, { density: 300 })
+      .resize(size, size, { fit: "contain", background: "#00000000" })
+      .png()
+      .toBuffer();
+  const onPaper = async (size, share) =>
+    sharp({
+      create: {
+        width: size,
+        height: size,
+        channels: 4,
+        background: colours.paper,
+      },
+    })
+      .composite([
+        { input: await seal(Math.round(size * share)), gravity: "center" },
+      ])
+      .png()
+      .toBuffer();
+  const small = await Promise.all(
+    [16, 32, 48].map(async (size) => ({ size, data: await seal(size) })),
+  );
+  return {
+    favicon: ico(small),
+    apple: await onPaper(180, 0.84),
+    icon192: await seal(192),
+    icon512: await seal(512),
+    maskable: await onPaper(512, 0.8),
+  };
+}
+
 /** The generated module's text for the seal file's text. */
 export async function sealArtSource(svg) {
   const sprite = sealSprite(svg);
   const viewBox = /<symbol[^>]*\sviewBox="([^"]+)"/.exec(sprite)[1];
   const [, , width, height] = viewBox.split(/\s+/);
   const hash = createHash("sha256").update(sprite).digest("hex").slice(0, 10);
+  const colours = lightColours(readFileSync(tokensFile, "utf8"));
   const code = [
     "// Generated by `node scripts/seal-art.mjs` from public/images/brand/seal.svg.",
     "// Do not edit: change the SVG and run the script again.",
@@ -71,6 +173,9 @@ export async function sealArtSource(svg) {
     "/** The box of an <svg> showing the symbol: the symbol's own size, from 0 0 (the symbol places its art). */",
     `export const SEAL_VIEWBOX = ${JSON.stringify(`0 0 ${width} ${height}`)};`,
     "",
+    "/** Hash of the icon inputs (sprite + Green Ink colours); a test fails when the committed icons were not regenerated. */",
+    `export const SEAL_ICONS_HASH = ${JSON.stringify(iconsHash(svg, colours))};`,
+    "",
   ].join("\n");
   const options = await prettier.resolveConfig(fileURLToPath(artFile));
   return prettier.format(code, { ...options, parser: "typescript" });
@@ -80,7 +185,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const svg = readFileSync(sealFile, "utf8");
   writeFileSync(spriteFile, sealSprite(svg));
   writeFileSync(artFile, await sealArtSource(svg));
+  const icons = await renderIcons(
+    svg,
+    lightColours(readFileSync(tokensFile, "utf8")),
+  );
+  mkdirSync(new URL("public/icons/", root), { recursive: true });
+  for (const [name, file] of Object.entries(iconFiles))
+    writeFileSync(file, icons[name]);
   console.log(
-    "Wrote public/images/brand/seal-sprite.svg and src/shared/ui/seal-art.ts",
+    "Wrote the seal sprite, src/shared/ui/seal-art.ts, favicon.ico, apple-icon.png and public/icons/*.png",
   );
 }

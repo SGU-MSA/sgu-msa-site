@@ -1,4 +1,5 @@
-import { placedReminder } from "@/lib/content";
+import { getSite, placedReminder } from "@/lib/content";
+import { cardImages, postCard } from "@/features/seo/card-text";
 import { CommunityPost } from "@/features/community/CommunityPost";
 import {
   findCommunityPost,
@@ -16,12 +17,28 @@ type Props = { params: Promise<{ kind: string; id: string }> };
 
 export async function generateMetadata({ params }: Props) {
   const { kind, id } = await params;
-  const row = (await findCommunityPost(kind, id))?.row;
+  const [site, post] = await Promise.all([
+    getSite(),
+    findCommunityPost(kind, id),
+  ]);
+  const row = post?.row;
+  const images = post
+    ? cardImages(`/community/${kind}/${id}`, postCard(post, site), site)
+    : undefined;
   return {
     title: row?.title ?? "Update not found",
     description: row?.summary,
     alternates: { canonical: `/community/${kind}/${id}` },
-    openGraph: { title: row?.title, description: row?.summary },
+    openGraph: {
+      title: row?.title,
+      description: row?.summary,
+      ...images?.openGraph,
+    },
+    twitter: {
+      title: row?.title,
+      description: row?.summary,
+      ...images?.twitter,
+    },
   };
 }
 

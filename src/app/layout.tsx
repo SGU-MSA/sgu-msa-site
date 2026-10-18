@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 
-import { siteUrl } from "@/lib/site-config";
+import { searchConsoleToken, siteUrl } from "@/lib/site-config";
+import { searchConsoleVerification } from "@/lib/seo/structured-data";
+import { pageColours } from "@/styles/page-colours";
 import { deploymentProfile } from "@/lib/runtime/providers";
 import { Measurements } from "@/shared/layout/Measurements";
 import { MotionRoot } from "@/shared/layout/MotionRoot";
@@ -26,6 +28,10 @@ export async function generateMetadata(): Promise<Metadata> {
       : { index: false, follow: false },
     metadataBase: new URL(siteUrl),
     alternates: { canonical: "/" },
+    verification: searchConsoleVerification(
+      searchConsoleToken,
+      deploymentProfile().indexable,
+    ),
     openGraph: {
       type: "website",
       siteName: site.brand.short_name,
@@ -33,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: site.meta?.description,
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: site.brand.name,
       description: site.meta?.description,
     },
@@ -48,12 +54,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-/** Green Ink and Dusk page colours from src/styles/tokens.css (keep in sync). */
+/** Green Ink and Dusk page colours (src/styles/page-colours.ts, checked against tokens.css). */
 export const viewport: Viewport = {
   colorScheme: "light dark",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f6f3ec" },
-    { media: "(prefers-color-scheme: dark)", color: "#24221e" },
+    { media: "(prefers-color-scheme: light)", color: pageColours.light.paper },
+    { media: "(prefers-color-scheme: dark)", color: pageColours.dark.paper },
   ],
 };
 

@@ -505,6 +505,8 @@ flowchart LR
 
 The seal is one cached file, `public/images/brand/seal-sprite.svg` (a `<symbol>` generated from `seal.svg` by `node scripts/seal-art.mjs`; each shape's `style` takes `--seal-ink`, `--seal-mint` or `--seal-cream`, which the `<use>` passes in from the page). `Seal` draws it in an `<svg>` whose box is the symbol's size from 0 0, so the art is placed once; the address carries a hash of the drawing and is cached for a year (`next.config.ts` headers). Motion loads through `LazyMotion` with only its animation features (`domAnimation`); animated components use `m` from `motion/react-m`.
 
+Metadata routes for machines ([contract](contracts/site-essentials.md)): link-preview cards (`opengraph-image`/`twitter-image` on the root, and `/calendar/[eventId]/card` and `/community/[kind]/[id]/card`, whose address the page versions, drawn by `ogCard` in `src/lib/seo/og-card.tsx` with `next/og`), `manifest.ts`, `/llms.txt` and `/.well-known/security.txt` are built from `getSite()` (so a board save shows on the next request) and from the event or post row; schema.org Event data (`src/lib/seo/structured-data.ts`) is written into the event page only where `deploymentProfile().indexable`. App icons are committed files generated from the seal by `scripts/seal-art.mjs`.
+
 ## 9. Database tables (ER diagram)
 
 Every table, column, type and key that the files in `supabase/migrations/` create, in their final state (all files applied in order). **Update this diagram in the same PR that changes a migration.** `auth_users` and `storage_objects` stand for Supabase's own `auth.users` and `storage.objects`, with only the columns this site uses.

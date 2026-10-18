@@ -17,3 +17,10 @@ export const publicRoutes = [
   "/merch",
   "/privacy",
 ];
+
+/**
+ * Google Search Console's "HTML tag" verification token (a public value the
+ * owner reads from Search Console). Null until the owner verifies the site;
+ * the live site then emits it (`searchConsoleVerification`).
+ */
+export const searchConsoleToken: string | null = null;

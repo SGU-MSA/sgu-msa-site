@@ -61,3 +61,41 @@ test("no page carries the seal's drawing inline", () => {
     assert.doesNotMatch(source, /SealSymbol|SEAL_ART|<symbol/);
   }
 });
+
+// Site essentials: the app icons are committed files generated from the seal
+// and the Green Ink tokens; they must not go stale.
+const pngSize = (file: URL) => {
+  const data = readFileSync(file);
+  assert.equal(data.subarray(1, 4).toString(), "PNG");
+  return [data.readUInt32BE(16), data.readUInt32BE(20)];
+};
+
+test("the icons exist at their sizes and were generated from the current seal and colours", async () => {
+  const { iconFiles, sealFile, tokensFile, iconsHash, lightColours } =
+    (await import(script.href)) as {
+      iconFiles: Record<string, URL>;
+      sealFile: URL;
+      tokensFile: URL;
+      iconsHash: (svg: string, colours: unknown) => string;
+      lightColours: (css: string) => unknown;
+    };
+  const { SEAL_ICONS_HASH } = await import("../src/shared/ui/seal-art");
+  assert.equal(
+    SEAL_ICONS_HASH,
+    iconsHash(
+      readFileSync(sealFile, "utf8"),
+      lightColours(readFileSync(tokensFile, "utf8")),
+    ),
+  );
+  assert.deepEqual(pngSize(iconFiles.apple), [180, 180]);
+  assert.deepEqual(pngSize(iconFiles.icon192), [192, 192]);
+  assert.deepEqual(pngSize(iconFiles.icon512), [512, 512]);
+  assert.deepEqual(pngSize(iconFiles.maskable), [512, 512]);
+  const ico = readFileSync(iconFiles.favicon);
+  assert.equal(ico.readUInt16LE(2), 1);
+  const count = ico.readUInt16LE(4);
+  assert.deepEqual(
+    Array.from({ length: count }, (_, i) => ico.readUInt8(6 + 16 * i)),
+    [16, 32, 48],
+  );
+});

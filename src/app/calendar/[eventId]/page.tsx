@@ -3,10 +3,15 @@ import { notFound } from "next/navigation";
 
 import { EventDetail } from "@/features/calendar/EventDetail";
 import { managedEvents } from "@/lib/community/managed";
-import { placedReminder } from "@/lib/content";
+import { getSite, placedReminder } from "@/lib/content";
 import { loadEventTicket } from "@/lib/integrations/payments";
 import { localDate } from "@/lib/community/schema";
+import { deploymentProfile } from "@/lib/runtime/providers";
 import { requestNow } from "@/lib/runtime/public-cache";
+import { cardImages, eventCard } from "@/features/seo/card-text";
+import { eventJsonLd } from "@/lib/seo/structured-data";
+import { siteUrl } from "@/lib/site-config";
+import { JsonLd } from "@/shared/ui/JsonLd";
 
 /**
  * One update or event per address: the menu reads the address, which is
@@ -28,8 +33,16 @@ export async function generateMetadata({
 }: {
   params: Promise<Params>;
 }): Promise<Metadata> {
-  const event = await findEvent((await params).eventId);
+  const [site, event] = await Promise.all([
+    getSite(),
+    findEvent((await params).eventId),
+  ]);
   if (!event) return { title: "Event not found" };
+  const images = cardImages(
+    `/calendar/${event.id}`,
+    eventCard(event, site),
+    site,
+  );
   return {
     title: event.title,
     description: event.description ?? undefined,
@@ -37,6 +50,12 @@ export async function generateMetadata({
     openGraph: {
       title: event.title,
       description: event.description ?? undefined,
+      ...images.openGraph,
+    },
+    twitter: {
+      title: event.title,
+      description: event.description ?? undefined,
+      ...images.twitter,
     },
   };
 }
@@ -54,12 +73,18 @@ export default async function EventPage({
   if (!event) notFound();
   const now = await requestNow();
   const ticket = await loadEventTicket(event, now);
+  const data = deploymentProfile().indexable
+    ? eventJsonLd(event, await getSite(), siteUrl)
+    : null;
   return (
-    <EventDetail
-      event={event}
-      ticket={ticket}
-      verse={verse}
-      today={localDate(now)}
-    />
+    <>
+      {data && <JsonLd data={data} />}
+      <EventDetail
+        event={event}
+        ticket={ticket}
+        verse={verse}
+        today={localDate(now)}
+      />
+    </>
   );
 }
