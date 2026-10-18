@@ -362,3 +362,43 @@ figure.sguPhoto {
     letter-spacing: 0.1em;
   }
 }
+
+/* OPTION buttons-lift (throwaway) — About contact band: one shape for every button
+   (12px corners, Apple-style continuous corners where the browser supports
+   them, 48px tall) and one hover/press language per button type. */
+.button {
+  min-height: 48px;
+  border-radius: 12px;
+  transition:
+    transform 150ms ease-out,
+    box-shadow 150ms ease-out,
+    background-size 150ms ease-out,
+    background-color 150ms ease-out,
+    border-color 150ms ease-out;
+}
+@supports (corner-shape: squircle) {
+  .button {
+    border-radius: 19.2px;
+    corner-shape: squircle;
+  }
+}
+@media (hover: hover) {
+  .button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.35);
+  }
+}
+/* Pressed: works on touch screens too. */
+.button:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+  .button:hover,
+  .button:active {
+    transform: none;
+  }
+}

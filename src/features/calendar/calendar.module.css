@@ -640,3 +640,53 @@
   text-decoration: line-through;
   text-decoration-thickness: 1px;
 }
+
+/* OPTION buttons-lift (throwaway) — event page: one shape for every button
+   (12px corners, Apple-style continuous corners where the browser supports
+   them, 48px tall) and one hover/press language per button type. */
+.addInk,
+.addOutline {
+  min-height: 48px;
+  border-radius: 12px;
+  transition:
+    transform 150ms ease-out,
+    box-shadow 150ms ease-out,
+    background-size 150ms ease-out,
+    background-color 150ms ease-out,
+    border-color 150ms ease-out;
+}
+@supports (corner-shape: squircle) {
+  .addInk,
+  .addOutline {
+    border-radius: 19.2px;
+    corner-shape: squircle;
+  }
+}
+@media (hover: hover) {
+  .addInk:hover,
+  .addOutline:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.35);
+  }
+  .addUnderline:hover {
+    border-bottom-width: 2.5px;
+  }
+}
+/* Pressed: works on touch screens too. */
+.addInk:active,
+.addOutline:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .addInk,
+  .addOutline {
+    transition: none;
+  }
+  .addInk:hover,
+  .addOutline:hover,
+  .addInk:active,
+  .addOutline:active {
+    transform: none;
+  }
+}
