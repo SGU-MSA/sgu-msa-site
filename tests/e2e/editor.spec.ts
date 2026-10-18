@@ -240,7 +240,7 @@ test("access lifecycle: invite email, set password, reset signs out other device
   const inviteLink = await emailLink(
     request,
     email,
-    "You're invited to the SGU MSA website dashboard",
+    "You are invited to the SGU MSA website dashboard",
     baseURL!,
   );
   const scanned = await request.get(inviteLink, { maxRedirects: 0 });
