@@ -69,31 +69,23 @@ test("an event and an update have their own cards", async ({ page }) => {
   const event = page.locator('a[href^="/calendar/"]').first();
   const href = await event.getAttribute("href");
   await page.goto(href!);
-  expect(await expectCard(page, "og:image")).toContain(
-    `${href}/opengraph-image`,
-  );
+  expect(await expectCard(page, "og:image")).toContain(`${href}/card?v=`);
   await page.goto("/community");
   const post = page.locator('a[href^="/community/"]').first();
   const postHref = await post.getAttribute("href");
   await page.goto(postHref!);
-  expect(await expectCard(page, "og:image")).toContain(
-    `${postHref}/opengraph-image`,
-  );
+  expect(await expectCard(page, "og:image")).toContain(`${postHref}/card?v=`);
 });
 
 test("a card for an event or update that does not exist is a 404, not an image", async ({
   page,
 }) => {
   expect(
-    (
-      await page.request.get("/calendar/no-such-event/opengraph-image")
-    ).status(),
+    (await page.request.get("/calendar/no-such-event/card")).status(),
   ).toBe(404);
   expect(
     (
-      await page.request.get(
-        "/community/announcements/no-such-update/opengraph-image",
-      )
+      await page.request.get("/community/announcements/no-such-update/card")
     ).status(),
   ).toBe(404);
 });

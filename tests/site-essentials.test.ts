@@ -10,7 +10,7 @@ import {
   searchConsoleVerification,
 } from "../src/lib/seo/structured-data";
 import { llmsTxt, securityTxt } from "../src/lib/seo/text-files";
-import { clampText } from "../src/lib/seo/og-card";
+import { cardText, drawable } from "../src/lib/seo/og-card";
 import { pageColours } from "../src/styles/page-colours";
 
 const origin = "https://msa.example";
@@ -183,19 +183,21 @@ test("the Search Console tag needs both a token and the live site", () => {
   assert.deepEqual(searchConsoleVerification("abc", true), { google: "abc" });
 });
 
-test("the card's text is clamped with an ellipsis and whitespace collapsed", () => {
-  assert.equal(clampText("  a\n b ", 10), "a b");
-  const clamped = clampText("x".repeat(100), 90);
+test("the card's text is clamped with an ellipsis and whitespace collapsed", async () => {
+  assert.equal(await cardText("  a\n b ", 10), "a b");
+  const clamped = await cardText("x".repeat(100), 90);
   assert.equal(Array.from(clamped).length, 90);
   assert.ok(clamped.endsWith("…"));
 });
 
 test("Arabic, emoji and other scripts are removed before rendering", async () => {
-  const { drawable } = await import("../src/lib/seo/og-card");
-  assert.equal(drawable("Iftar 🌙 night ✨ 日本語"), "Iftar night");
-  assert.equal(drawable("Jumu’ah الجمعة"), "Jumu’ah");
-  assert.equal(drawable("الجمعة"), "");
-  assert.equal(drawable("Jumu’ah — الجمعة — Iftar"), "Jumu’ah — Iftar");
+  assert.equal(await drawable("Iftar 🌙 night ✨ 日本語"), "Iftar night");
+  assert.equal(await drawable("Jumu’ah الجمعة"), "Jumu’ah");
+  assert.equal(await drawable("الجمعة"), "");
+  const latin = "Café Ramadān ā ñ é";
+  assert.equal(await drawable("Café Ramaḍān ā ñ é"), latin);
+
+  assert.equal(await drawable("Jumu’ah — الجمعة — Iftar"), "Jumu’ah — Iftar");
 });
 
 test("cards render as 1200×630 PNGs without touching the network (Latin, Arabic, emoji, very long)", async () => {
@@ -211,6 +213,7 @@ test("cards render as 1200×630 PNGs without touching the network (Latin, Arabic
   try {
     for (const heading of [
       "Cancelled: Iftar",
+      "Café Ramaḍān ā ñ é",
       "Jumu'ah الجمعة",
       "الجمعة المباركة",
       "Iftar night 🌙✨ 👨‍👩‍👧 日本語 😀",
@@ -234,7 +237,32 @@ test("cards render as 1200×630 PNGs without touching the network (Latin, Arabic
   } finally {
     globalThis.fetch = realFetch;
   }
-  assert.deepEqual(attempts, []);
+  assert.deepEqual(
+    attempts.map((a) => a.slice(0, 120)),
+    [],
+  );
+});
+
+test("an edit changes a card's address version; no edit keeps it", async () => {
+  const { cardVersion, eventCard, cardImages } =
+    await import("../src/features/seo/card-text");
+  const url = (e: SiteEvent) =>
+    cardImages("/calendar/iftar", eventCard(e, site), site).openGraph.images[0]
+      .url;
+  assert.match(url(event()), /^\/calendar\/iftar\/card\?v=[0-9a-f]{10}$/);
+  assert.notEqual(url(event()), url(event({ title: "Iftar night" })));
+  assert.equal(url(event()), url(event()));
+  const before = cardVersion(eventCard(event(), site), site);
+  assert.equal(cardVersion(eventCard(event(), site), site), before);
+  assert.match(before, /^[0-9a-f]{10}$/);
+  assert.notEqual(
+    cardVersion(eventCard(event({ title: "Iftar night" }), site), site),
+    before,
+  );
+  assert.notEqual(
+    cardVersion(eventCard(event({ status: "cancelled" }), site), site),
+    before,
+  );
 });
 
 test("page-colours.ts mirrors the tokens", () => {

@@ -1,5 +1,6 @@
 import { getSite } from "@/lib/content";
-import { ogCard, siteCard } from "@/lib/seo/og-card";
+import { siteCard } from "@/features/seo/card-text";
+import { ogCard } from "@/lib/seo/og-card";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
