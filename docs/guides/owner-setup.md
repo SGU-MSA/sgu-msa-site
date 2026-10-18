@@ -70,6 +70,8 @@ A repository can be public while the historical repository and its tracker stay 
 
 The Vercel Hobby project `sgu-msa-site` publishes the public repository's `main` branch. Pull requests and other branches do not publish production; merging a pull request into `main` does ([ADR 0010](../adr/0010-production-deploys-from-main-only.md), [ADR 0033](../adr/0033-pull-requests-merge-to-main.md)).
 
+Every pull request also gets a preview link on staging ([ADR 0034](../adr/0034-pull-request-previews-on-staging.md)); production keys never go in Preview.
+
 1. **Developers test on their own computers**, against Supabase staging or sample data, before asking for review.
 2. **Pull requests target `main`** in `SGU-MSA/sgu-msa-site`. After checks and independent review, the maintainer merges them, which publishes the live site.
 3. Once, and after any repository change, open Vercel → project `sgu-msa-site` → **Settings → Git**. Verify the connected repository is exactly `SGU-MSA/sgu-msa-site` and the production branch is `main`. If either is wrong, stop and have a Vercel project owner correct it; do not connect the private-history repository.
@@ -154,7 +156,7 @@ Do this once **sgu-msa-production** exists and §8 has been run on it. The live 
 
 ### Required variables
 
-Every setting below must be present: there are no defaults ([ADR 0012](../adr/0012-ports-adapters-and-fail-fast-configuration.md)). For the live site, add them in Vercel → project → **Settings → Environment Variables**, environment **Production**, then redeploy (step 4). Developers put the "your computer" values in their private `.env.local` (template: `.env.example`). Type values exactly as shown, in lower case, without quotes.
+Every setting below must be present: there are no defaults ([ADR 0012](../adr/0012-ports-adapters-and-fail-fast-configuration.md)). For the live site, add them in Vercel → project → **Settings → Environment Variables**, environment **Production**, then redeploy (step 4). Pull request **previews** use the **Preview** environment with the values listed under the table (staging data, never production keys). Developers put the "your computer" values in their private `.env.local` (template: `.env.example`). Type values exactly as shown, in lower case, without quotes.
 
 | Name | What it controls | Allowed values | Example | Live site (Vercel, Production) | Your computer (`.env.local`) |
 | --- | --- | --- | --- | --- | --- |
@@ -169,6 +171,8 @@ Every setting below must be present: there are no defaults ([ADR 0012](../adr/00
 | `MSA_GMAIL_ADDRESS` | The MSA Gmail that sends the nightly warning emails to itself | A `…@gmail.com` address, or `off` | the MSA Gmail address | Required; `off` only together with the next line, until the club Gmail is set up: the deploy log then warns, the dashboard says "Warning emails are off: set up the MSA Gmail" and no warning email is sent | Required with real data; `off` (together with the next line). Ignored with sample data |
 | `GMAIL_APP_PASSWORD` | The Gmail app password `SGU MSA daily check` for those emails | 16 letters (spaces do not matter), or `off` | `abcd efgh ijkl mnop` | Required; `off` only together with `MSA_GMAIL_ADDRESS=off` (one `off` alone stops the deploy) | Required with real data; `off`. Even real values never send email from a computer or preview: only the live site sends |
 | `ENABLE_VERCEL_MEASUREMENTS` | Visitor statistics | `true` or `false` | `false` | Required | Not needed; local runs are never measured |
+
+**Preview environment (pull request previews, [ADR 0034](../adr/0034-pull-request-previews-on-staging.md)).** In Vercel → **Settings → Environment Variables**, each of the ten variables above (all except `SITE_DEMO_DATE`) exists a second time with environment **Preview** only: `SITE_DEMO_MODE` `false`; `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` of the **staging** project; `SUPABASE_SECRET_KEY`, `GO2PAY_API_KEY`, `CRON_SECRET`, `MSA_GMAIL_ADDRESS` and `GMAIL_APP_PASSWORD` all `off`; `ENABLE_VERCEL_MEASUREMENTS` `false`; `SITE_URL` the live address (so canonical links are right). Previews are not indexed. **Vercel Authentication** (Settings → Deployment Protection) is off so board members can open a preview link without a Vercel account. **Never put a production key, the production database or a secret key in Preview.**
 
 `VERCEL`, `VERCEL_ENV` and `NODE_ENV` are set automatically; do not add them. Keep “Automatically expose System Environment Variables” turned on (Settings → Environment Variables): if Vercel stops providing `VERCEL_ENV`, the deploy fails with a message saying so. `SITE_DESIGN` is no longer used (the site has one design, light and dark): you may delete it from Vercel; leaving it is harmless. `DONATION_URL` is no longer read either (the Donate page lists the board's funds): delete it from Vercel once the release with the Donate page is live. If a deploy fails with "The site configuration has … problems", the message lists each missing or wrong name: add or correct it here, then redeploy. The live site keeps the previous version meanwhile.
 

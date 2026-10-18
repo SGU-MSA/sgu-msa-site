@@ -4,6 +4,7 @@ One living record of what changes, how to test it, which settings it needs, and 
 
 ## Latest changes
 
+- **Pull request previews on staging** ([ADR 0034](adr/0034-pull-request-previews-on-staging.md), [contract](contracts/pr-previews.md)): every pull request now gets a Vercel preview link, posted on the PR, showing the change against the staging database. Production still deploys from `main` only. Search engines index only the live production site (previews and staging runs are `noindex`). Previews never send email, take payments, run the daily check or measure visits. Test: open a pull request and open the Vercel preview link on it; public pages load with staging content and the page source has `noindex`. Settings: the ten Preview variables are already set in Vercel (staging URL and publishable key, the rest `off`/`false`, `SITE_URL` the live address) and Vercel Authentication is off for previews; production keys must never be added to Preview. Needs your confirmation: Vercel Authentication is off for the whole project so board members can open preview links without a Vercel account; previews (staging data, including the staging /admin sign-in page) are public to anyone with the link. Production was already public.
 - **Pull requests merge to `main`** ([#3](https://github.com/SGU-MSA/sgu-msa-site/pull/3), [ADR 0033](adr/0033-pull-requests-merge-to-main.md)): the standing `integration` branch and Release PR are retired. Branch from `main`, open the PR against `main`; merging publishes. Several dependent PRs use a temporary `integration/<feature>` branch. Test: open a PR against `main` and confirm the required checks run. No site or board change.
 
 ## 2026-10-18: first public release (SGU-MSA/sgu-msa-site#1)
@@ -663,7 +664,7 @@ From review 3 B on (step 82), Pages is for people in the Executive board group (
 2. Open the live site: Home, Prayer, Calendar, Community and Contact load normally.
 3. Open **/privacy**: the "Basic measurement" section says statistics run only when the site owner switches them on.
 4. Sign in at **/admin** and open **Help**: the Events, Photos and "When something goes wrong" cards show the new tips.
-5. Open any new pull request on GitHub: no Vercel preview check appears.
+5. Open any new pull request on GitHub: Vercel posts a preview link (changed by [ADR 0034](adr/0034-pull-request-previews-on-staging.md); previews run on staging).
 6. Settings check: Vercel → **Deployments** → the deployment from this release shows **Ready**, and **/donate** opens (with no fund listed yet it says "There are no open appeals right now."; the colours and fonts are the new Quiet Paper ones, step 20).
 7. Open **/admin** (signed out): the email and password form shows. The words "awaiting setup" appear nowhere.
 8. Open **/ramadan**: the **Tonight** box says "Ramadan schedule will be published here." (as before; no sample times, no "Demonstration data" label).
