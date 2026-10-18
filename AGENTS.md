@@ -70,7 +70,7 @@ Data sources sit behind ports (`<capability>/providers/contract.ts`). Only `src/
 - A dashboard feature is not done until it passes the [admin UX gate](.agents/skills/reviewing-engineering-changes/references/admin-ux-gate.md).
 - Reuse `src/shared/ui` and `src/styles/tokens.css` first; new UI must work in light and dark (`data-theme`; ADR 0018) and gets a Storybook story in both.
 - Registries are free only, configured in `components.json`. Always `--dry-run` first. A new dependency needs the user's approval, recorded in the feature contract's Decisions; write an ADR only if it affects several features or is hard to reverse ([ADR 0001](docs/adr/0001-record-architecture-decisions.md)).
-- The user picks the look from pictures: Claude Design (`/design`) in Claude Code, HTML mockups/screenshots in Codex.
+- Early exploration may use Claude Design (`/design`) or HTML mockups/screenshots, but the user decides on in-context option preview links (`option/<topic>-<n>` branches, Vercel previews).
 
 ## MCP servers
 
