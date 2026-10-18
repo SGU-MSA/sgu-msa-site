@@ -148,7 +148,7 @@ export function UrgentNoticeRotator({
   if (!count) return null;
   if (count === 1)
     return (
-      <section className={s.band} data-urgent-band aria-label="Urgent notices">
+      <section className={s.band} aria-label="Urgent notices">
         <Container className={s.inner}>
           <div className={s.meta}>
             <span className={s.label}>Urgent</span>
@@ -184,7 +184,6 @@ export function UrgentNoticeRotator({
   return (
     <section
       className={s.band}
-      data-urgent-band
       aria-roledescription="carousel"
       aria-label="Urgent notices"
       onPointerEnter={() => setPointerOn(true)}

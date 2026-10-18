@@ -11,8 +11,8 @@ import {
 /**
  * The cross-device layout gate (home-centering D-4). Every public page is
  * checked at every device size in light and dark: nothing overflows
- * sideways, the menu stays above the content, and the Home hero sits in the
- * middle of the first screen. A few pages also keep a screenshot baseline.
+ * sideways, the menu stays above the content, and the Home hero's two columns
+ * are centred against each other with the next section right after them. A few pages also keep a screenshot baseline.
  * Only `npm run test:layout` runs this: it renders in the Playwright image.
  */
 test.beforeEach(({}, testInfo) => {
@@ -45,12 +45,16 @@ type Geometry = {
   nav: { top: number; bottom: number } | null;
   mainTop: number | null;
   chromeBottom: number;
-  /** The urgent band: its height and the height its own CSS promises. */
-  band: { height: number; promised: number } | null;
   hero: {
     contentTop: number;
     contentBottom: number;
     eyebrowTop: number;
+    /** Vertical centres of the headline and prayer columns, and whether they sit side by side. */
+    mainCentre: number;
+    asideCentre: number;
+    sideBySide: boolean;
+    /** Top of the first thing under the hero, or null when nothing follows. */
+    nextTop: number | null;
   } | null;
 };
 
@@ -60,16 +64,9 @@ function measure(page: Page): Promise<Geometry> {
     const nav = box(
       document.querySelector('nav[aria-label="Primary navigation"]'),
     );
-    const bandEl = document.querySelector("[data-urgent-band]");
-    const band = box(bandEl);
-    let promised = 0;
-    if (bandEl) {
-      const probe = document.createElement("div");
-      probe.style.height = "var(--urgent-band-h)";
-      document.body.append(probe);
-      promised = probe.getBoundingClientRect().height;
-      probe.remove();
-    }
+    const band = box(
+      document.querySelector('section[aria-label="Urgent notices"]'),
+    );
     const main = box(document.querySelector("main"));
     const hero = document.querySelector("[data-hero]");
     let heroBox: Geometry["hero"] = null;
@@ -78,10 +75,30 @@ function measure(page: Page): Promise<Geometry> {
         child.getBoundingClientRect(),
       );
       const eyebrow = hero.querySelector("p");
+      const [first, second] = parts;
+      const rect = hero.getBoundingClientRect();
+      let nextTop: number | null = null;
+      const walker = document.createTreeWalker(
+        document.querySelector("main")!,
+        NodeFilter.SHOW_ELEMENT,
+      );
+      walker.currentNode = hero;
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        if (hero.contains(node)) continue;
+        const r = (node as Element).getBoundingClientRect();
+        if (r.height > 0 && r.top >= rect.bottom - 1) {
+          nextTop = r.top;
+          break;
+        }
+      }
       heroBox = {
         contentTop: Math.min(...parts.map((r) => r.top)),
         contentBottom: Math.max(...parts.map((r) => r.bottom)),
         eyebrowTop: eyebrow?.getBoundingClientRect().top ?? 0,
+        mainCentre: (first.top + first.bottom) / 2,
+        asideCentre: (second.top + second.bottom) / 2,
+        sideBySide: first.right <= second.left + 1,
+        nextTop,
       };
     }
     return {
@@ -91,7 +108,6 @@ function measure(page: Page): Promise<Geometry> {
       nav: nav && { top: nav.top, bottom: nav.bottom },
       mainTop: main?.top ?? null,
       chromeBottom: Math.max(nav?.bottom ?? 0, band?.bottom ?? 0),
-      band: band && { height: band.height, promised },
       hero: heroBox,
     };
   });
@@ -111,6 +127,8 @@ for (const viewport of layoutViewports) {
         test(`${path} lays out`, async ({ page }) => {
           await page.clock.setFixedTime(new Date(demoSeed));
           await page.goto(path);
+          // The sign-in address redirects to /admin: let that finish first.
+          if (path === "/admin/login") await page.waitForURL(/\/admin$/);
           await expect(page.locator("html")).toHaveAttribute(
             "data-theme",
             theme,
@@ -123,12 +141,6 @@ for (const viewport of layoutViewports) {
             g.innerWidth,
           );
 
-          // The band never grows past the height its CSS promises (the hero relies on it).
-          if (g.band)
-            expect(g.band.height, "urgent band height").toBeLessThanOrEqual(
-              g.band.promised + 1,
-            );
-
           // The menu is in view and the page content starts below it.
           if (path !== "/admin/login") {
             expect(g.nav, "menu present").not.toBeNull();
@@ -137,25 +149,31 @@ for (const viewport of layoutViewports) {
             expect(g.mainTop!).toBeGreaterThanOrEqual(g.nav!.bottom - 1);
           }
 
-          // Home: the hero is centred in the first screen, or keeps a fixed gap.
+          // Home: the columns are centred against each other, the next section
+          // follows without a big empty band, and phones keep a steady gap under the menu.
           if (path === "/") {
             expect(g.hero, "hero present").not.toBeNull();
             const hero = g.hero!;
-            const available = g.innerHeight - g.chromeBottom;
-            const contentHeight = hero.contentBottom - hero.contentTop;
-            const fits = contentHeight + 2 * 48 <= available;
-            if (fits) {
-              const centre = (hero.contentTop + hero.contentBottom) / 2;
-              const target = g.chromeBottom + available / 2;
+            if (hero.sideBySide)
               expect(
-                Math.abs(centre - target) / available,
-                `hero centre ${centre} vs first-screen centre ${target}`,
-              ).toBeLessThanOrEqual(0.06);
-            } else {
+                Math.abs(hero.mainCentre - hero.asideCentre),
+                "hero columns' centres",
+              ).toBeLessThanOrEqual(3);
+            if (viewport.width < 1024) {
               const gap = hero.eyebrowTop - g.chromeBottom;
               expect(gap, "gap under the menu").toBeGreaterThanOrEqual(40);
               expect(gap, "gap under the menu").toBeLessThanOrEqual(56);
+            } else {
+              expect(
+                hero.contentTop - g.chromeBottom,
+                "gap under the menu",
+              ).toBeGreaterThanOrEqual(40);
             }
+            if (viewport.width >= 1920 && hero.nextTop !== null)
+              expect(
+                hero.nextTop - hero.contentBottom,
+                "gap between the hero and the next section",
+              ).toBeLessThanOrEqual(0.15 * g.innerHeight);
           }
 
           // Screenshot baselines (viewport only).

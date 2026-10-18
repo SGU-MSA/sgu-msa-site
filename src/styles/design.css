@@ -7,11 +7,6 @@
 
 /* ---------------------------------------------------------------- chrome */
 
-/* The menu's height (its 5.25rem bar and 1px rule), in one place: Navbar draws it and
-   pages that fill the first screen subtract it. */
-:root {
-  --site-header-h: calc(5.25rem + 1px);
-}
 .site-nav {
   z-index: var(--z-sticky);
   background: var(--paper);

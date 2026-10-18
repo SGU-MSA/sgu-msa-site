@@ -1,16 +1,7 @@
 /* The urgent band (PR5a D-18, D-30; .plans/mockups/urgent-rotation variant D):
    the ink surface of page.module.css `.ink`, under the menu on every page.
    Its height never changes between notices, so the page below never jumps. */
-/* The band's height, from its own parts (padding, the 2rem label row, the two fixed
-   lines below). The root carries it while a band is on the page, so pages that fill
-   the first screen (the Home hero) can subtract it as `--urgent-band-h`. */
-:global(:root:has([data-urgent-band])) {
-  --urgent-band-h: calc(
-    0.45rem + 0.7rem + 2rem + 0.25rem + 2 * 1.45 * 0.9375rem
-  );
-}
 .band {
-  min-height: var(--urgent-band-h);
   --on-surface: var(--paper);
   --surface: var(--ink);
   position: relative;

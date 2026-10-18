@@ -21,21 +21,24 @@
 }
 
 /* Hero ---------------------------------------------------------------- */
-/* The hero fills the first screen below the sticky menu (and the urgent band
-   when one is shown) and its content sits in the middle of it. The headline
-   and the prayer block start level at the top (review 3 A-1) and are centred
-   together as one block (home-centering D-1). When the content is taller than
-   the screen (phones, short laptops) the hero grows and keeps the same
-   comfortable gap above and below instead. Pure CSS: no script measures it. */
+/* The hero is as tall as its content: no forced full-screen height, so a big
+   monitor has no empty band under it and the next section follows straight
+   after (home-centering D-1, option 1). Side by side, the shorter headline
+   column is centred against the taller prayer column; when they stack
+   (phones, tablets) each keeps its own height. Padding is a steady 3rem
+   (the gap under the menu on phones) and grows a little with the screen's
+   height on wide layouts. Pure CSS: no script measures it. */
 .hero {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
-  align-content: center;
+  align-items: center;
   gap: 4rem;
   padding-block: 3rem;
-  min-height: calc(100vh - var(--site-header-h) - var(--urgent-band-h, 0rem));
-  min-height: calc(100svh - var(--site-header-h) - var(--urgent-band-h, 0rem));
+}
+@media (min-width: 64rem) {
+  .hero {
+    padding-block: clamp(3rem, 7vh, 6rem);
+  }
 }
 .heroMain {
   flex: 999 1 32rem;
