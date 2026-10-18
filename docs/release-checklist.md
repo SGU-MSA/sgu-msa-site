@@ -4,9 +4,11 @@ One living record of what changes, how to test it, which settings it needs, and 
 
 ## Latest changes
 
-- **Pull requests merge to `main`** ([ADR 0033](adr/0033-pull-requests-merge-to-main.md)): the standing `integration` branch and Release PR are retired. Branch from `main`, open the PR against `main`; merging publishes. Several dependent PRs use a temporary `integration/<feature>` branch. Test: open a PR against `main` and confirm the required checks run. No site or board change.
+- **Pull requests merge to `main`** ([#3](https://github.com/SGU-MSA/sgu-msa-site/pull/3), [ADR 0033](adr/0033-pull-requests-merge-to-main.md)): the standing `integration` branch and Release PR are retired. Branch from `main`, open the PR against `main`; merging publishes. Several dependent PRs use a temporary `integration/<feature>` branch. Test: open a PR against `main` and confirm the required checks run. No site or board change.
 
 ## 2026-10-18: first public release (SGU-MSA/sgu-msa-site#1)
+
+Everything in this section is live. Items under its **Needs your confirmation** headings stay open until answered; answered items move to the matching **Answered** list.
 
 ### What changed
 

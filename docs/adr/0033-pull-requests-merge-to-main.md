@@ -3,6 +3,7 @@
 - Status: Accepted
 - Date: 2026-10-18
 - Supersedes: [ADR 0016](0016-integration-branch-and-release-pr.md)
+- Partially supersedes: [ADR 0010](0010-production-deploys-from-main-only.md), only its "signed in as the Vercel account owner" merge clause; `main`-only deploys and merge commits stand
 
 ## Context
 
@@ -10,7 +11,7 @@
 
 ## Decision
 
-- **Pull requests branch from `main` and target `main`.** Merging one publishes it: the Vercel project still deploys only `main` ([ADR 0010](0010-production-deploys-from-main-only.md)). Merge with **Create a merge commit**.
+- **Pull requests branch from `main` and target `main`.** Merging one publishes it: the Vercel project still deploys only `main` ([ADR 0010](0010-production-deploys-from-main-only.md)). Merge with **Create a merge commit**. Any maintainer with write access to the public repository may merge; the Vercel account owner no longer has to.
 - Before merging: required CI checks pass, an independent review passes, the maintainer reviews and merges ([ADR 0032](0032-delegated-implementation-and-human-merge.md)), and anything the PR needs on hosted services (migration, setting) is ready first.
 - **Temporary integration branches only for several dependent PRs** that must go live together: name it `integration/<feature>`, branch it from `main`, merge the parts into it, and merge it into `main` in one reviewed PR. Delete it afterwards. CI runs on PRs into `main` and `integration/**`.
 - The standing `integration` branch is retired.

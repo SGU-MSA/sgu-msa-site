@@ -237,7 +237,7 @@ The board's how-to lives only in the handbook (`handover/SGU-MSA-Website-Handboo
 
 ## Quality and CI
 
-`npm run check` (lint, typecheck, unit tests, format check), `npm run validate:content` and `npm run build` are the local checks. The PR workflow (`.github/workflows/validate.yml`, PRs to `main` and `integration`) runs the first two and, in a second job, `npm run test:db` (free GitHub-hosted runner with Docker), providing checks Vercel’s build does not cover. Vercel remains the sole deployment/build integration. No GitHub Actions → Vercel deployment pipeline was added.
+`npm run check` (lint, typecheck, unit tests, format check), `npm run validate:content` and `npm run build` are the local checks. The PR workflow (`.github/workflows/validate.yml`, PRs to `main` and `integration/**`) runs the first two and, in a second job, `npm run test:db` (free GitHub-hosted runner with Docker), providing checks Vercel’s build does not cover. Vercel remains the sole deployment/build integration. No GitHub Actions → Vercel deployment pipeline was added.
 
 Unit coverage targets content expiry, invalid dates/URLs, event completion, prayer settings without coordinates, the fixed calculation, Jumu'ah changes, the Hijri adjustment, midnight calculation behavior, and UTC/UTF-8 ICS correctness. Backend tests use real Auth/Postgres/Storage rather than mocks. Browser automation does not replace physical-device or screen-reader validation; record those limitations explicitly.
 
