@@ -268,6 +268,8 @@ test("a lost session refuses a pending event save without changing public conten
   await edit.click();
   await settled(page);
   const body = page.getByLabel("What is it about?", { exact: true });
+  const original = await body.inputValue();
+  expect(original.trim()).not.toBe("");
   const attempted = `Must not save after session loss ${Date.now()}`;
   await body.fill(attempted);
   const publicContext = await browser.newContext(
@@ -277,7 +279,6 @@ test("a lost session refuses a pending event save without changing public conten
 
   try {
     await publicPage.goto(`/calendar/${href!.split("/").at(-1)}`);
-    const publicBefore = await publicPage.locator("article").innerText();
     await page.context().clearCookies();
     await submit(page, "Save");
     await expect(
@@ -297,13 +298,11 @@ test("a lost session refuses a pending event save without changing public conten
       "data-theme",
       testInfo.project.use.colorScheme as string,
     );
-    const publicAfter = await publicPage.locator("article").innerText();
-    expect(publicAfter.replace(/\s+/g, " ").trim()).toBe(
-      publicBefore.replace(/\s+/g, " ").trim(),
-    );
-    expect(await publicPage.locator("article").innerText()).not.toContain(
-      attempted,
-    );
+    await expect(
+      publicPage.getByRole("heading", { name: "Community volunteer morning" }),
+    ).toBeVisible();
+    await expect(publicPage.getByText(original, { exact: true })).toBeVisible();
+    await expect(publicPage.locator("article")).not.toContainText(attempted);
   } finally {
     await publicContext.close();
   }

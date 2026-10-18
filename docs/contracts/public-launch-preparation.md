@@ -51,7 +51,7 @@ D-1: Publish clean source under the current website repository name; retain hist
 D-2: MIT for project code, preserve independent third-party terms and exclude separately owned media/branding from the blanket code license (maintainer requested MIT, 2026-10-17).
 D-3: Authorize staging test invitations/resets and disposable account cleanup; use the owner-controlled alias stored only in ignored local state (maintainer, 2026-10-17).
 D-4: Authorize release integration to main after staging acceptance, independent review and passing gates; use existing Vercel address, purchase nothing (maintainer, 2026-10-17).
-D-5: Retain existing staging President; use a free Executive role with equivalent people-management permission for rehearsal, with no public listing. Never displace an existing member. This is test-fixture isolation, not a change to board roles.
+D-5: Retain the existing staging President. Use one synthetic disposable person. In General, disable public listing and verify both sensitive permissions are cleared. Manager scenarios may temporarily move only this person into the verified free Vice President (Brothers) role; Executive members are always public and General members cannot hold sensitive permissions. The synthetic name/role will therefore briefly appear in staging's anonymously callable public team data as well as the local About page. Never put a real name, email, contact details or photo in public fixture fields. Return the fixture to hidden General promptly after manager tests, verify public absence, and delete it after the rehearsal. This operational correction was independently reviewed; it changes no product, listing or permission rules.
 
 ## Board Self-Sufficiency Check
 
@@ -108,7 +108,7 @@ Cleanup/license/docs work may run while staging preflight proceeds; local stagin
 - Depends on: temporary inbox and safe staging-only runtime.
 - Expected files: private artifacts only; report discoveries before any proposed source fix.
 - Reuse: existing app and People/Auth ports, browser accessibility queries and submit helper.
-- Required changes: baseline snapshot IDs privately; create hidden temporary manager in a free role; invite the controlled inbox; verify link origin, Continue, password rules, sign-in, one-use link rejection, reset and session revocation; test permission refusals; remove only disposable entries/accounts and verify original counts/roles restored.
+- Required changes: baseline snapshot IDs privately; use the single synthetic fixture and bounded General/Executive role cycle in D-5; invite the controlled inbox; verify link origin, Continue, password rules, sign-in, one-use link rejection, reset and session revocation; test permission refusals against existing page/action policies; remove only disposable entries/accounts and verify original counts/roles restored.
 - Must not: use production, displace President, delete existing users, run local-only backend tests against hosted staging, send messages outside the approved test inbox, promise log erasure, store passwords or email in Git/tickets.
 - Tests: recorded intentional browser scenarios and read-only cleanup checks; human inbox/password entry is private.
 - Done when: delivery and browser outcomes are observed, or a concrete missing user action is identified; temporary identities/keys/server are removed when testing completes.
