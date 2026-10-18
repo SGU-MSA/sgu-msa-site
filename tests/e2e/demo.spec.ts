@@ -361,7 +361,7 @@ test("sandbox: the preview route is gone and a wrong password is rejected", asyn
   expect(preview?.status()).toBe(404);
   await page.goto("/admin");
   await page.getByLabel("Username").fill("admin");
-  await page.getByLabel("Password").fill("wrong");
+  await page.getByLabel("Password", { exact: true }).fill("wrong");
   await submit(page, "Sign In");
   await expect(
     page.getByRole("alert").filter({ hasText: "Sign-in unsuccessful" }),

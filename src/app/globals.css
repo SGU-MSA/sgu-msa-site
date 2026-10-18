@@ -2057,3 +2057,33 @@ p.verse-meaning {
 .verse-preview-note > aside {
   margin-top: 0;
 }
+
+/* Password show/hide button (PasswordInput): the eye sits inside the right edge of the field. */
+.password-input {
+  position: relative;
+  display: block;
+}
+.password-input > input {
+  width: 100%;
+  padding-inline-end: 3rem;
+}
+.password-toggle {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.password-toggle:hover {
+  color: var(--text-primary);
+}
+.password-toggle:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -4px;
+}
