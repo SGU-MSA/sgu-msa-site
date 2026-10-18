@@ -2,6 +2,7 @@ name: Validate pull request
 on:
   pull_request:
     branches: [main, "integration/**"]
+    types: [opened, synchronize, reopened, edited]
 permissions:
   contents: read
 jobs:
@@ -27,6 +28,8 @@ jobs:
           if-no-files-found: ignore
           retention-days: 3
       - run: npm run validate:content
+      # The PR description must answer the "At a glance" table (edited events re-run this job).
+      - run: node scripts/check-pr-body.mjs
   storybook:
     runs-on: ubuntu-latest
     steps:

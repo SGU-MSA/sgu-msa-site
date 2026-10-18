@@ -1,0 +1,63 @@
+---
+status: approved
+mode: light
+---
+
+# PR template "At a glance", its CI check, and side-by-side design options
+
+Ticket: SGU-MSA/sgu-msa-site-private-history#109 (process). Base: `origin/main`. PR target: `main`.
+
+## Capability
+
+Every pull request states in five seconds what it is, who notices, its risk, database and hosted-setting needs, how to roll it back and what to look at; CI refuses a PR whose "At a glance" table was left at the template defaults. Design choices are always shown side by side.
+
+## Requested Behavior
+
+1. Replace `.github/pull_request_template.md` with this structure (keep the existing merge note paragraph at the end, updated wording ok):
+   - `## At a glance` table, rows: **Type** (`Feature · Fix · Design · Docs/process`), **Who notices** (`Visitors · Board (dashboard) · Developers only`), **Risk** (`Low · Medium · High: one line why`), **Database migration** (`None · Yes: file.sql, applied to staging ☐ production ☐ before merge`), **Hosted settings** (`None · list (Vercel/Supabase), done ☐`), **Rollback** (`Vercel Instant Rollback is enough · Needs more: explain (e.g. migration is additive, old code still works)`), **Preview** (`Vercel posts the link; pages to check: …`).
+   - `## What changed and why` (plain language, 2–5 lines), `## What to look at` (numbered steps on the preview: pages, light/dark, phone/desktop), `## Screenshots (UI changes)` (before/after, phone + desktop), `## Links` (ticket · contract · ADR), `## Checks` (`npm run check`/CI green/independent review; release-checklist Latest changes entry; no secrets or personal data; board can manage it or gap ticketed), `## Handbook notes` (or "none").
+2. New `scripts/check-pr-body.mjs` (Node, no dependencies): reads the PR body (from `GITHUB_EVENT_PATH` → `pull_request.body`, or a file path argument for tests) and the template; fails with a clear message listing each problem when: the `## At a glance` section is missing; any of the seven rows is missing; any row's value is still exactly the template default. Skips (exit 0 with a note) when the PR author is a bot (`user.type === "Bot"`). Export a pure function for tests.
+3. CI: add a step to the existing `quality` job in `.github/workflows/validate.yml` that runs the script on `pull_request` events (no new required check, no new job). Make sure `pull_request` `edited` events re-run it (add `types: [opened, synchronize, reopened, edited]`) — confirm this does not disturb the other jobs' triggers or required checks.
+4. Unit tests `tests/pr-body.test.ts`: template defaults fail; filled body passes; missing section fails; bot skipped.
+5. Side-by-side design options: in `.agents/skills/designing-ui-components/SKILL.md` (respect the ≤200-line budget), change the pictured-options step so options are shown **side by side on one interactive page** — a throwaway Storybook comparison story ("Design options/…") with light and dark panels and plain captions, plus the real page in context if useful — never as query-string switches or one-option-at-a-time previews. Mirror one line in `docs/guides/developer.md` where design options are described.
+6. `docs/release-checklist.md`: top of **Latest changes** entry. `docs/guides/developer.md`: one sentence that the PR body is checked.
+
+## Existing System Evidence
+
+`.github/pull_request_template.md`, `.github/workflows/validate.yml` (`quality` job, PR triggers `main` and `integration/**`), `.agents/skills/designing-ui-components/SKILL.md`, `tests/agent-config.test.ts` (skill size budgets), `tests/documentation.test.ts`.
+
+## Owner
+
+`.github` owns the template and CI; the script lives in `scripts/`; the design skill owns how options are presented.
+
+## Source of Truth
+
+The template file itself is the source of the default values the script compares against (no second copy of the defaults in code).
+
+## Product Decisions Required
+
+None.
+
+## Decisions
+
+- D-1 (maintainer, 2026-10-18): adopt the proposed template and the CI check.
+- D-2 (maintainer, 2026-10-18): design options are always presented side by side on one interactive page.
+
+## Board Self-Sufficiency Check
+
+Not applicable: this changes only the developer pull request process, so board members and the handbook are unaffected.
+
+## Implementation Constraints
+
+- Allowed files: `.github/pull_request_template.md`, `.github/workflows/validate.yml`, `scripts/check-pr-body.mjs`, `tests/pr-body.test.ts`, `package.json` (format-check path list only, if the script must be covered), `.agents/skills/designing-ui-components/SKILL.md`, `docs/guides/developer.md`, `docs/release-checklist.md`, this contract copied to `docs/contracts/pr-template.md`.
+- Do not add dependencies. Do not add a new required status check or job. Do not change other workflow jobs.
+- Branch `chore/pr-template` from `origin/main`. Fill the new template in the PR body you prepare (`.plans/pr-template-body.md`), so the PR passes its own check.
+
+## Test Strategy
+
+`npm run check`; run the script locally against the filled body file and against the raw template (must fail).
+
+## Acceptance Criteria
+
+- New template in place; script fails on defaults and passes on a filled body; CI runs it in `quality`.
+- Skill and developer guide state the side-by-side rule.

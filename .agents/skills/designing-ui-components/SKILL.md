@@ -98,6 +98,11 @@ Never choose the look yourself. Present 2-3 directions plus a recommendation.
      `mcp__chrome-devtools__take_screenshot` at 390 px and 1440 px. If
      chrome-devtools is unavailable, use a Playwright screenshot script.
      Screenshots go in the ignored `artifacts/` folder.
+   - **Always side by side:** put all options on one interactive page (a
+     throwaway Storybook comparison story, "Design options/<feature>", with a
+     light and a dark panel per option and plain captions; add the real page
+     in context if useful). Never show options through query-string
+     switches or one at a time.
 3. Ask the user to choose. Record the choice in the feature contract's
    Decisions section (`docs/contracts/<feature>.md`). Only if it affects
    several features or is hard to reverse (site-wide palette, type, motion
