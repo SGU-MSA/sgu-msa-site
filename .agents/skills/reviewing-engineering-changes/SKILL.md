@@ -1,6 +1,9 @@
 ---
 name: reviewing-engineering-changes
 description: Reviews a diff or branch in this Next.js + Supabase repo against its implementation contract in docs/contracts, checking scope, Must-not constraints, semantic duplication and ownership, single-sourced data contracts, RLS and server authorization, secrets, board self-sufficiency, docs and ADR updates, tests, and the required admin UX gate for dashboard changes. Use when asked to review a change, a pull request or a delegated agent's work before merge, or to check that an implementation matches its plan. Not for designing tooling such as CI gates or regression budgets, or writing visual, accessibility or end-to-end tests (frontend-testing-visual-qa), or planning a new change (planning-engineering-changes).
+metadata:
+  vendored-references: "references/web-interface-guidelines-interactions.md references/web-interface-guidelines-presentation.md"
+  upstream-commit: 434b7f91364665f2f733b310ec54809bf8f37937
 allowed-tools:
   - Read
   - Grep
@@ -46,6 +49,7 @@ Copy and tick:
 - [ ] **Failure modes.** The behaviors listed in the contract's Failure Modes section exist in code (unavailable state, version conflict message, session-expired message, idempotency).
 - [ ] **Docs.** When a flow, data path or ownership changed: `docs/architecture.md` diagrams, the relevant guide in `docs/guides/`, `docs/roadmap.md`, the handbook ("Handbook notes", including its "Only a developer can do this" table), and a new ADR if a cross-cutting decision was made. Contract `status` becomes `done` on merge.
 - [ ] **Tests and gate.** Tests named in the contract exist and assert observable behavior; `npm run check` passes (run it, or state that it was not run).
+- [ ] **Web interface guidelines.** For any diff touching UI (`src/app/**` pages, `src/features/**`, `src/shared/**`, CSS), check it against [interactions](references/web-interface-guidelines-interactions.md) and [presentation](references/web-interface-guidelines-presentation.md), honouring their Project notes. A MUST or NEVER violation is a Medium finding, High when it blocks keyboard or screen-reader use.
 
 ## Required: admin UX gate
 

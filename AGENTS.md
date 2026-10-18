@@ -61,7 +61,7 @@ Data sources sit behind ports (`<capability>/providers/contract.ts`). Only `src/
 
 - Skills live only in `.agents/skills/<name>/SKILL.md`; `.claude/skills` and `.codex/skills` are compatibility symlinks. Both clients read the same rules and skills; client-specific files are adapters, never independent policy sources. Each `description` says when to use the skill.
 - Start with: `managing-project-work` (tracking), `planning-engineering-changes` (before code), `reviewing-engineering-changes` (before a PR), `designing-ui-components` (any new or restyled UI), `rendering-strategy-app-architecture` (server/client; board edits appear without a rebuild), `frontend-testing-visual-qa`, `frontend-security`.
-- Vendored skills (`motion` from Motion's AI Kit; `applying-design-styles`, authored by the maintainer) carry `metadata.vendored: "true"` and a `NOTICE`; edit only their "Project notes" sections.
+- Vendored skills (`motion` from Motion's AI Kit; `applying-design-styles`, authored by the maintainer) carry `metadata.vendored: "true"` and a `NOTICE`; edit only their "Project notes" sections. Vendored reference files inside a project skill (e.g. the web interface guidelines in `reviewing-engineering-changes`) carry an upstream header and that skill's `NOTICE`; edit only their "Project notes".
 - Size budgets (tested in `tests/agent-config.test.ts`): this file ≤ 150 lines, SKILL.md ≤ 200 (vendored ≤ 500), references ≤ 150.
 
 ## Design SOP

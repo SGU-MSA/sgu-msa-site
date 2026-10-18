@@ -194,7 +194,7 @@ Start the app (`npm run demo` for sample data) and Storybook
    [developer guide](../../../docs/guides/developer.md#normal-development-and-production-checks));
    `tests/e2e/theme.spec.ts` runs axe on every public page in both themes.
    Add or extend a spec for new interactive UI.
-7. Targeted static checks on touched files: `npx eslint <files>`,
-   `npx prettier --check <files>`.
+7. Targeted static checks on touched files: `npx eslint <files>`, `npx prettier --check <files>`.
+8. Web interface guidelines: [interactions](../reviewing-engineering-changes/references/web-interface-guidelines-interactions.md) and [presentation](../reviewing-engineering-changes/references/web-interface-guidelines-presentation.md); read their Project notes.
 
 Repeat until clean, then hand the screenshots to the user for sign-off.

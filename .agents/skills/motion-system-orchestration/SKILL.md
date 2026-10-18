@@ -11,7 +11,7 @@ Motion explains a change of state, a relationship, or feedback to an action. Dec
 
 - Tokens: `--transition-fast` (160 ms) and `--transition-standard` (260 ms) in `src/styles/tokens.css`; `--motion-reveal` (480 ms entrance) in the same file. Use them; add a token rather than a new literal duration.
 - Reduced motion: `src/app/globals.css` neutralizes animation under `prefers-reduced-motion: reduce`, and design CSS gates entrance motion behind `prefers-reduced-motion: no-preference`. Follow that pattern: decorative motion is opt-in.
-- No animation library is installed. CSS first; adding `motion` is a dependency decision (see the motion skill's CSS-or-Motion guide, then ask).
+- Motion (`motion`, `motion/react`) is installed and wired in `src/shared/layout/MotionRoot.tsx` (`LazyMotion` with `domAnimation`, `MotionConfig reducedMotion="user"`) and used by `BlurFade`, the popover, `SortableList`, `UrgentNoticeRotator` and `TasbihThreadView`. CSS first, Motion when CSS cannot do it (the motion skill's CSS-or-Motion guide); a different animation library is a dependency decision.
 - Tone: a mosque and student community site. Default to calm fades and short slides, no overshoot. The motion personality is a design decision; show options (a short screen recording or live demo) and recommend.
 
 ## Timing and easing
