@@ -466,25 +466,55 @@ test("every vendored skill ships a NOTICE", () => {
   }
 });
 
-test("vendored reference files name a pinned commit and appear in their skill's NOTICE", () => {
+test("vendored reference files carry a header whose commit matches the skill's NOTICE", () => {
   for (const name of skillNames()) {
-    const refs = join(SKILLS_DIR, name, "references");
-    if (!existsSync(refs)) continue;
-    for (const ref of readdirSync(refs).filter((f) => f.endsWith(".md"))) {
-      const text = readFileSync(join(refs, ref), "utf8");
-      if (!text.startsWith("<!-- Vendored:")) continue;
-      const header = text.slice(0, text.indexOf("-->"));
-      assert.match(
-        header,
-        /\bcommit: [0-9a-f]{40}\b/,
-        `${refs}/${ref}: vendored header must name a 40-hex commit`,
-      );
-      const notice = join(SKILLS_DIR, name, "NOTICE");
-      assert.ok(existsSync(notice), `${SKILLS_DIR}/${name} needs a NOTICE`);
+    const dir = join(SKILLS_DIR, name);
+    const skill = join(dir, "SKILL.md");
+    if (!existsSync(skill)) continue;
+    const meta = (frontmatter(skill).metadata ?? {}) as Record<string, unknown>;
+    const listed = String(meta["vendored-references"] ?? "")
+      .split(/\s+/)
+      .filter(Boolean);
+    const refsDir = join(dir, "references");
+    const withHeader = existsSync(refsDir)
+      ? readdirSync(refsDir)
+          .filter((f) => f.endsWith(".md"))
+          .map((f) => `references/${f}`)
+          .filter((f) =>
+            readFileSync(join(dir, f), "utf8").startsWith("<!-- Vendored:"),
+          )
+      : [];
+    // Every listed file must carry the header, and every headed file be listed.
+    for (const f of listed)
       assert.ok(
-        readFileSync(notice, "utf8").includes(ref),
-        `${notice} must mention ${ref}`,
+        withHeader.includes(f),
+        `${dir}/${f} is listed in vendored-references but has no vendored header`,
       );
+    for (const f of withHeader)
+      assert.ok(
+        listed.includes(f),
+        `${dir}/${f} has a vendored header but is not in metadata.vendored-references`,
+      );
+    if (listed.length === 0) continue;
+    const notice = join(dir, "NOTICE");
+    assert.ok(existsSync(notice), `${dir} needs a NOTICE`);
+    const noticeText = readFileSync(notice, "utf8");
+    for (const f of listed) {
+      const text = readFileSync(join(dir, f), "utf8");
+      const header = text.slice(0, text.indexOf("-->"));
+      const sha = /\bcommit: ([0-9a-f]{40})\b/.exec(header)?.[1];
+      assert.ok(sha, `${dir}/${f}: vendored header must name a 40-hex commit`);
+      assert.ok(noticeText.includes(f), `${notice} must mention ${f}`);
+      assert.ok(
+        noticeText.includes(sha),
+        `${dir}/${f}: header commit ${sha} must match the commit in ${notice}`,
+      );
+      if (meta["upstream-commit"] !== undefined)
+        assert.equal(
+          meta["upstream-commit"],
+          sha,
+          `${dir}/${f}: header commit must equal metadata.upstream-commit`,
+        );
     }
   }
 });
