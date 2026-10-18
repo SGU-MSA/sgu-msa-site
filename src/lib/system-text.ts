@@ -96,7 +96,6 @@ const pages = {
   choosePhoto: "Choose a photo",
   replacePhoto: "Replace photo: choose a file",
   describePhoto: "Describe the photo",
-  oldPhoto: "Old photo (shows “Archive photo” and its year)",
   removePhoto: "Remove photo",
   remove: "Remove",
   add: (item: string) => `+ Add ${item.toLowerCase()}`,

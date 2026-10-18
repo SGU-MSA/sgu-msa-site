@@ -50,7 +50,6 @@ export function CommunityPost({
                 image={{
                   src: `/media/${row.image_path}`,
                   alt: row.image_alt,
-                  historical: false,
                 }}
                 sizes="(min-width: 1440px) 1340px, 100vw"
                 className={c.postPhotoFrame}

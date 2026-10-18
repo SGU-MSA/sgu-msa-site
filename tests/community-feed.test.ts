@@ -76,7 +76,6 @@ test("covers: uploaded photo, otherwise none, in the sandbox too", () => {
   assert.deepEqual(live.items[0].cover, {
     src: "/media/55555555-5555-4555-8555-555555555555.webp",
     alt: "The hall",
-    historical: false,
   });
   assert.equal(live.items[1].cover, null);
   const sample = buildFeed(

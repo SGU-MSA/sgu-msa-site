@@ -41,7 +41,6 @@ export function eventEntry(
       ? {
           src: `/media/${record.image_path}`,
           alt: record.image_alt,
-          historical: false,
         }
       : null,
     status: record.status,

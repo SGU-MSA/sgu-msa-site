@@ -23,7 +23,7 @@ export function Photo({
   return (
     <figure className={`${s.frame} ${className}`}>
       <SafeImage
-        image={{ ...photo, historical: false }}
+        image={photo}
         fill
         priority={priority}
         sizes={sizes}
