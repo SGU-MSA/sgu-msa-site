@@ -61,3 +61,7 @@ Not applicable: this changes only the developer pull request process, so board m
 
 - New template in place; script fails on defaults and passes on a filled body; CI runs it in `quality`.
 - Skill and developer guide state the side-by-side rule.
+
+## Amendment (planner, after review of PR #6)
+
+The body check runs in its own workflow `.github/workflows/pr-body.yml` (job `pr-body`; types opened, edited, synchronize, reopened; concurrency per PR), not in `quality`; `validate.yml` is unchanged from `main`. The script fails closed when the template lacks the section and reports empty cells separately.

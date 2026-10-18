@@ -63,3 +63,24 @@ test("bot author is skipped, human with empty body fails", () => {
   assert.match(bot.stdout, /bot/);
   assert.equal(run("User").status, 1);
 });
+
+test("CRLF body passes", () => {
+  assert.deepEqual(checkPrBody(filled.replace(/\n/g, "\r\n"), template), []);
+});
+
+test("null body fails", () => {
+  const problems = checkPrBody(null, template) as string[];
+  assert.match(problems[0], /At a glance/);
+});
+
+test("blank cell fails as empty", () => {
+  const body = filled.replace(/^(\| \*\*Risk\*\*\s*\|).*$/m, "$1  |");
+  const problems = checkPrBody(body, template) as string[];
+  assert.equal(problems.length, 1);
+  assert.match(problems[0], /empty/);
+});
+
+test("template without the section fails closed", () => {
+  const problems = checkPrBody(filled, "## Summary") as string[];
+  assert.match(problems[0], /template/);
+});

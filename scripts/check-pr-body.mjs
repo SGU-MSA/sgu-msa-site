@@ -43,13 +43,20 @@ export function parseGlance(markdown) {
 export function checkPrBody(body, template) {
   const rows = parseGlance(body ?? "");
   if (!rows) return ['The "## At a glance" section is missing.'];
-  const defaults = parseGlance(template) ?? new Map();
+  const defaults = parseGlance(template);
+  if (!defaults) {
+    return [
+      'The pull request template has no "## At a glance" section, so the body cannot be checked.',
+    ];
+  }
   const problems = [];
   for (const name of REQUIRED_ROWS) {
     const key = name.toLowerCase();
     if (!rows.has(key)) {
       problems.push(`"At a glance" row "${name}" is missing.`);
-    } else if (rows.get(key) === "" || rows.get(key) === defaults.get(key)) {
+    } else if (rows.get(key) === "") {
+      problems.push(`"At a glance" row "${name}" is empty; write the answer.`);
+    } else if (rows.get(key) === defaults.get(key)) {
       problems.push(
         `"At a glance" row "${name}" still has the template default; pick the answer that applies.`,
       );

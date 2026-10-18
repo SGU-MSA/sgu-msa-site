@@ -92,12 +92,11 @@ Never choose the look yourself. Present 2-3 directions plus a recommendation.
      and components are in the repo. Before that it would upload the
      discarded themes and pull the artboards back toward them.
    - **Codex, or Claude Design unavailable:** write quick static HTML
-     mockups (one per option, using the real token values) under
-     `.plans/mockups/<feature>/`, open each with
-     `mcp__chrome-devtools__new_page` and capture
-     `mcp__chrome-devtools__take_screenshot` at 390 px and 1440 px. If
-     chrome-devtools is unavailable, use a Playwright screenshot script.
-     Screenshots go in the ignored `artifacts/` folder.
+     mockups using the real token values under `.plans/mockups/<feature>/`,
+     and capture them with `mcp__chrome-devtools__take_screenshot` at 390 px
+     and 1440 px (or a Playwright screenshot script if chrome-devtools is
+     unavailable). Screenshots go in the ignored `artifacts/` folder; show
+     them together, per the rule below.
    - **Always side by side:** put all options on one interactive page (a
      throwaway Storybook comparison story, "Design options/<feature>", with a
      light and a dark panel per option and plain captions; add the real page
