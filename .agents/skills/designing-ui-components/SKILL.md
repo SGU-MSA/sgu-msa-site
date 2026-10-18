@@ -189,5 +189,9 @@ Start the app (`npm run demo` for sample data) and Storybook
    Add or extend a spec for new interactive UI.
 7. Targeted static checks on touched files: `npx eslint <files>`,
    `npx prettier --check <files>`.
+8. Web interface guidelines: check the work against
+   [interactions](../reviewing-engineering-changes/references/web-interface-guidelines-interactions.md)
+   and [presentation](../reviewing-engineering-changes/references/web-interface-guidelines-presentation.md)
+   (read their Project notes).
 
 Repeat until clean, then hand the screenshots to the user for sign-off.

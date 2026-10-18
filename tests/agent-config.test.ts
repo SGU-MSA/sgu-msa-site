@@ -466,6 +466,29 @@ test("every vendored skill ships a NOTICE", () => {
   }
 });
 
+test("vendored reference files name a pinned commit and appear in their skill's NOTICE", () => {
+  for (const name of skillNames()) {
+    const refs = join(SKILLS_DIR, name, "references");
+    if (!existsSync(refs)) continue;
+    for (const ref of readdirSync(refs).filter((f) => f.endsWith(".md"))) {
+      const text = readFileSync(join(refs, ref), "utf8");
+      if (!text.startsWith("<!-- Vendored:")) continue;
+      const header = text.slice(0, text.indexOf("-->"));
+      assert.match(
+        header,
+        /\bcommit: [0-9a-f]{40}\b/,
+        `${refs}/${ref}: vendored header must name a 40-hex commit`,
+      );
+      const notice = join(SKILLS_DIR, name, "NOTICE");
+      assert.ok(existsSync(notice), `${SKILLS_DIR}/${name} needs a NOTICE`);
+      assert.ok(
+        readFileSync(notice, "utf8").includes(ref),
+        `${notice} must mention ${ref}`,
+      );
+    }
+  }
+});
+
 test("agent files contain no personal or machine-specific paths", () => {
   const listed = spawnSync(
     "git",
