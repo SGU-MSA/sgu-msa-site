@@ -2089,3 +2089,66 @@ p.verse-meaning {
   outline: 2px solid var(--focus-ring);
   outline-offset: -4px;
 }
+
+/* OPTION buttons-inkfill (throwaway) — dashboard classes: one shape for every button
+   (12px corners, Apple-style continuous corners where the browser supports
+   them, 48px tall) and one hover/press language per button type. */
+.button-primary,
+.button-secondary {
+  min-height: 48px;
+  border-radius: 12px;
+  transition:
+    transform 150ms ease-out,
+    box-shadow 150ms ease-out,
+    background-size 150ms ease-out,
+    background-color 150ms ease-out,
+    border-color 150ms ease-out;
+}
+@supports (corner-shape: squircle) {
+  .button-primary,
+  .button-secondary {
+    border-radius: 19.2px;
+    corner-shape: squircle;
+  }
+}
+.button-primary {
+  background-image: linear-gradient(
+    color-mix(in oklab, var(--ink) 78%, var(--paper)),
+    color-mix(in oklab, var(--ink) 78%, var(--paper))
+  );
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+}
+.button-secondary {
+  background-image: linear-gradient(
+    color-mix(in oklab, var(--ink) 9%, transparent),
+    color-mix(in oklab, var(--ink) 9%, transparent)
+  );
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+}
+@media (hover: hover) {
+  .button-primary:hover,
+  .button-secondary:hover {
+    background-size: 100% 100%;
+  }
+}
+/* Pressed: works on touch screens too. */
+.button-primary:active,
+.button-secondary:active {
+  transform: scale(0.98);
+  box-shadow: none;
+  background-size: 100% 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .button-primary,
+  .button-secondary {
+    transition: none;
+  }
+  .button-primary:hover,
+  .button-secondary:hover,
+  .button-primary:active,
+  .button-secondary:active {
+    transform: none;
+  }
+}
