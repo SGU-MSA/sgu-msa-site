@@ -30,12 +30,12 @@
 .hero {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
-  align-content: center;
+  /* OPTION home-1: the two columns are centred against each other (the
+     shorter headline column sits beside the taller prayer card) and the next
+     section follows straight after, so no stretched empty area is left. */
+  align-items: center;
   gap: 4rem;
-  padding-block: 3rem;
-  min-height: calc(100vh - var(--site-header-h) - var(--urgent-band-h, 0rem));
-  min-height: calc(100svh - var(--site-header-h) - var(--urgent-band-h, 0rem));
+  padding-block: clamp(3rem, 7vh, 6rem);
 }
 .heroMain {
   flex: 999 1 32rem;
