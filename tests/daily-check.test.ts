@@ -265,12 +265,11 @@ test("the route never reads the secret from the URL and sends at most one email"
   assert.match(route, /headers\.get\("authorization"\)/);
   const run = readFileSync("src/lib/backend/daily-check.ts", "utf8");
   assert.equal(run.match(/mailer\.send\(/g)?.length, 1);
-  // Cron entry: once a day at 05:00 UTC (01:00 Grenada), git block unchanged.
+  // Cron entry: once a day at 05:00 UTC (01:00 Grenada). No deployment block:
+  // pull requests get previews (ADR 0034); crons run on production only.
   const vercel = JSON.parse(readFileSync("vercel.json", "utf8"));
   assert.deepEqual(vercel.crons, [
     { path: "/api/daily-check", schedule: "0 5 * * *" },
   ]);
-  assert.deepEqual(vercel.git, {
-    deploymentEnabled: { "**": false, main: true },
-  });
+  assert.equal(vercel.git, undefined);
 });

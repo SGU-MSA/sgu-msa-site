@@ -109,8 +109,10 @@ export function deploymentProfileFor(c: RuntimeConfig): DeploymentProfile {
   const sample = c.data === "sample";
   return {
     // The sandbox looks exactly like the live site (review fixes PR-1): no
-    // banner or label says it holds sample data; it is only kept out of search.
-    indexable: !sample,
+    // banner or label says it holds sample data. Only the live production site
+    // is indexed; sample data, previews and staging runs stay out of search
+    // (ADR 0034).
+    indexable: c.production && !sample,
     // ADR 0011 and D-5: only the live production site, only when the owner chose "true".
     measurements: c.production && !sample && c.measurements,
     adminPortal: sample ? "sample" : "ready",

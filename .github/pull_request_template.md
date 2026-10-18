@@ -11,7 +11,7 @@
 
 - [ ] `npm run check` passes
 - [ ] `docs/release-checklist.md` **Latest changes** entry added: what changed, how to test, settings, needs-confirmation items
-- [ ] Tested locally (no preview deployments): staging via `.env.local`, or `npm run demo`
+- [ ] Tested: the Vercel preview link on this PR (staging data), or locally with staging via `.env.local` or `npm run demo`
 - [ ] New migrations were applied to **staging** first (never production first)
 - [ ] Architecture diagrams and ADRs updated if a flow or decision changed
 - [ ] Board self-sufficiency: a board member can change this without a developer, or the gap is on the roadmap
