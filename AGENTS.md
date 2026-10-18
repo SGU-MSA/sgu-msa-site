@@ -93,7 +93,7 @@ Codex loads `.codex/config.toml` only after the repo root is trusted; then `code
 ## Docs map
 
 - Board: `handover/SGU-MSA-Website-Handbook.docx`, the only board how-to (the board owns and edits it); `docs/guides/board.md` points to it. Board steps for a new feature go in the PR body under "Handbook notes"; `/admin/help` only points to the handbook and lists the "Show me how" tours ([ADR 0028](docs/adr/0028-board-how-to-in-one-handbook.md)).
-- Testing and release: `docs/release-checklist.md` (every PR updates **Unreleased**).
+- Testing and release: `docs/release-checklist.md` (every PR adds a **Latest changes** entry).
 - Owner (accounts, hosting, Gmail for invite emails, sign-in settings, first admin, backups): `docs/guides/owner-setup.md`. Developers: `docs/guides/developer.md`. Topics: `docs/guides/prayer-times.md`, `docs/guides/photography.md`.
 - Decisions: `docs/adr/` (immutable; supersede, don't edit — ADR 0001). Feature decisions: `docs/contracts/<feature>.md`.
 - Architecture: `docs/architecture.md` (Mermaid) — update it in the same PR that changes a flow. Roadmap: `docs/roadmap.md`. Provider notes: `docs/proposals/`. `docs/archive/` is history, not instructions.
