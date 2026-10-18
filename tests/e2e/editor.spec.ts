@@ -1,3 +1,4 @@
+import { viewportSize } from "../support/viewports";
 import { expectAccessible, fillTime, savedToast, submit } from "./actions";
 import {
   test,
@@ -23,7 +24,7 @@ async function login(page: Page) {
 
 test.beforeEach(async ({ page }) => {
   test.skip(!process.env.E2E_ADMIN_EMAIL, "Local test account required");
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await login(page);
 });
 

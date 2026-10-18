@@ -2063,7 +2063,9 @@ p.verse-meaning {
   position: relative;
   display: block;
 }
-.password-input > input {
+/* Same specificity as the shared form-box rule above and later in the file, so the room
+   for the eye button always wins and a long password never runs under it. */
+.password-input > input:not([type="checkbox"], [type="radio"], [type="file"]) {
   width: 100%;
   padding-inline-end: 3rem;
 }

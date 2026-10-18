@@ -1,9 +1,11 @@
+import { demoSeed } from "../support/demo-seed";
 import { expect, test, type Page } from "@playwright/test";
 
 import {
   layoutPages,
   layoutViewports,
   screenshotViewports,
+  viewportSize,
 } from "../support/viewports";
 
 /**
@@ -43,6 +45,8 @@ type Geometry = {
   nav: { top: number; bottom: number } | null;
   mainTop: number | null;
   chromeBottom: number;
+  /** The urgent band: its height and the height its own CSS promises. */
+  band: { height: number; promised: number } | null;
   hero: {
     contentTop: number;
     contentBottom: number;
@@ -56,9 +60,16 @@ function measure(page: Page): Promise<Geometry> {
     const nav = box(
       document.querySelector('nav[aria-label="Primary navigation"]'),
     );
-    const band = box(
-      document.querySelector('section[aria-label="Urgent notices"]'),
-    );
+    const bandEl = document.querySelector("[data-urgent-band]");
+    const band = box(bandEl);
+    let promised = 0;
+    if (bandEl) {
+      const probe = document.createElement("div");
+      probe.style.height = "var(--urgent-band-h)";
+      document.body.append(probe);
+      promised = probe.getBoundingClientRect().height;
+      probe.remove();
+    }
     const main = box(document.querySelector("main"));
     const hero = document.querySelector("[data-hero]");
     let heroBox: Geometry["hero"] = null;
@@ -80,6 +91,7 @@ function measure(page: Page): Promise<Geometry> {
       nav: nav && { top: nav.top, bottom: nav.bottom },
       mainTop: main?.top ?? null,
       chromeBottom: Math.max(nav?.bottom ?? 0, band?.bottom ?? 0),
+      band: band && { height: band.height, promised },
       hero: heroBox,
     };
   });
@@ -97,7 +109,7 @@ for (const viewport of layoutViewports) {
 
       for (const path of layoutPages) {
         test(`${path} lays out`, async ({ page }) => {
-          await page.clock.setFixedTime(new Date("2026-10-14T12:00:00.000Z"));
+          await page.clock.setFixedTime(new Date(demoSeed));
           await page.goto(path);
           await expect(page.locator("html")).toHaveAttribute(
             "data-theme",
@@ -110,6 +122,12 @@ for (const viewport of layoutViewports) {
           expect(g.scrollWidth, "horizontal overflow").toBeLessThanOrEqual(
             g.innerWidth,
           );
+
+          // The band never grows past the height its CSS promises (the hero relies on it).
+          if (g.band)
+            expect(g.band.height, "urgent band height").toBeLessThanOrEqual(
+              g.band.promised + 1,
+            );
 
           // The menu is in view and the page content starts below it.
           if (path !== "/admin/login") {
@@ -183,3 +201,29 @@ for (const theme of themes) {
     });
   });
 }
+
+// A long password never runs under the eye button: the box keeps room for it.
+test.describe("password box on a phone", () => {
+  test.use({
+    viewport: viewportSize("390x844"),
+    isMobile: true,
+    hasTouch: true,
+  });
+  test("a long password ends before the eye button", async ({ page }) => {
+    await page.goto("/admin");
+    const field = page.getByLabel("Password", { exact: true });
+    await field.fill("x".repeat(120));
+    const button = page.getByRole("button", { name: "Show password" });
+    const [input, eye] = await Promise.all([
+      field.evaluate((el) => {
+        const style = getComputedStyle(el);
+        const box = el.getBoundingClientRect();
+        return {
+          textRight: box.right - parseFloat(style.paddingRight),
+        };
+      }),
+      button.boundingBox(),
+    ]);
+    expect(input.textRight).toBeLessThanOrEqual(eye!.x + 1);
+  });
+});

@@ -56,6 +56,7 @@ None outstanding.
 - D-6 (maintainer, 2026-10-17): the invite template handles a missing name/inviter, and its subject avoids the apostrophe.
 - D-4 (maintainer, 2026-10-17): every visual change must pass CI and regression tests across phone, tablet, laptop, wide-screen and projector sizes.
 - D-7 (maintainer, 2026-10-18): `SignInForm` has no styles of its own; it uses the shared `editor-form`, label, input, `FormMessages` and `button-primary` like `ForgotPasswordForm`. The layout spec asserts the two primary buttons look identical in light and dark.
+- D-8 (planner, 2026-10-18, review of PR #7): the layout gate is its own parallel `layout` CI job (to become a required check after merge), not a step of `browser-smoke`. The menu and urgent band expose their heights as `--site-header-h` and `--urgent-band-h` and the hero subtracts them; the password button keeps one name with `aria-pressed` and the field returns to hidden on submit; browser suites share one demo seed and the viewport list.
 - D-5 (planner): short laptops keep the current headline size; adjusting type for short screens is out of scope.
 
 ## Board Self-Sufficiency Check

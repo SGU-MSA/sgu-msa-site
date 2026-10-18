@@ -28,20 +28,14 @@
    the screen (phones, short laptops) the hero grows and keeps the same
    comfortable gap above and below instead. Pure CSS: no script measures it. */
 .hero {
-  --menu-height: calc(5.25rem + 1px);
-  --band-height: 0rem;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
   align-content: center;
   gap: 4rem;
   padding-block: 3rem;
-  min-height: calc(100vh - var(--menu-height) - var(--band-height));
-  min-height: calc(100svh - var(--menu-height) - var(--band-height));
-}
-/* The urgent band is two fixed lines high (UrgentNoticeRotator.module.css). */
-:global(body:has(section[aria-label="Urgent notices"])) .hero {
-  --band-height: 6.1rem;
+  min-height: calc(100vh - var(--site-header-h) - var(--urgent-band-h, 0rem));
+  min-height: calc(100svh - var(--site-header-h) - var(--urgent-band-h, 0rem));
 }
 .heroMain {
   flex: 999 1 32rem;

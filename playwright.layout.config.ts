@@ -1,4 +1,5 @@
 import { defineConfig } from "@playwright/test";
+import { demoSeed } from "./tests/support/demo-seed";
 import { createPlaywrightConfig } from "./tests/support/playwright-config";
 
 /**
@@ -8,7 +9,6 @@ import { createPlaywrightConfig } from "./tests/support/playwright-config";
  * everywhere. A production build of the sample site, on a loopback port.
  */
 const baseURL = "http://127.0.0.1:3218";
-export const layoutSeed = "2026-10-14T12:00:00.000Z";
 
 export default defineConfig({
   ...createPlaywrightConfig(baseURL),
@@ -37,7 +37,7 @@ export default defineConfig({
     env: {
       SITE_URL: baseURL,
       SITE_DEMO_MODE: "true",
-      SITE_DEMO_DATE: layoutSeed,
+      SITE_DEMO_DATE: demoSeed,
       CRON_SECRET: "off",
     },
   },

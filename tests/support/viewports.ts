@@ -75,3 +75,10 @@ export const layoutPages = [
   "/resources",
   "/admin/login",
 ] as const;
+
+/** One size from the list above, as a Playwright viewport (for specs that need a phone or laptop). */
+export function viewportSize(name: string) {
+  const found = layoutViewports.find((viewport) => viewport.name === name);
+  if (!found) throw new Error(`Unknown layout viewport ${name}`);
+  return { width: found.width, height: found.height };
+}

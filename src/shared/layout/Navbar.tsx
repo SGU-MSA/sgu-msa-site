@@ -94,7 +94,7 @@ export function Navbar({
         aria-label="Primary navigation"
         className={`site-nav sticky top-0 border-b ${scrolled ? "is-scrolled" : ""}`}
       >
-        <Container className="flex h-[5.25rem] items-center justify-between gap-5">
+        <Container className="flex h-[calc(var(--site-header-h)-1px)] items-center justify-between gap-5">
           <Link
             href="/"
             className="brand-mark shrink-0"

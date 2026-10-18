@@ -332,17 +332,31 @@ test("the sign-in password can be shown and hidden by mouse and keyboard", async
   page,
 }) => {
   await page.goto("/admin");
+  await page.getByLabel("Username", { exact: true }).fill("someone");
   const field = page.getByLabel("Password", { exact: true });
   await field.fill("not-a-real-password");
   await expect(field).toHaveAttribute("type", "password");
+  // One name; aria-pressed says whether the password is showing.
   const toggle = page.getByRole("button", { name: "Show password" });
   await expect(toggle).toHaveAttribute("aria-pressed", "false");
   await toggle.click();
   await expect(field).toHaveAttribute("type", "text");
-  const hide = page.getByRole("button", { name: "Hide password" });
-  await expect(hide).toHaveAttribute("aria-pressed", "true");
-  await hide.focus();
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await toggle.focus();
   await page.keyboard.press("Enter");
+  await expect(field).toHaveAttribute("type", "password");
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  // Submitting while it shows puts it back to a password field first.
+  await toggle.click();
+  await expect(field).toHaveAttribute("type", "text");
+  await field.evaluate((el) => {
+    (el as HTMLInputElement).form!.addEventListener(
+      "submit",
+      (event) => event.preventDefault(),
+      { once: true },
+    );
+    (el as HTMLInputElement).form!.requestSubmit();
+  });
   await expect(field).toHaveAttribute("type", "password");
   await expectAccessible(page);
 });

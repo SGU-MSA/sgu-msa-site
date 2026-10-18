@@ -1,9 +1,10 @@
+import { viewportSize } from "../support/viewports";
 import { test, expect } from "@playwright/test";
 
 test("mobile visitor can reach walking directions without registration", async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await page.goto("/");
   await page.getByRole("button", { name: "Open menu" }).click();
   await page

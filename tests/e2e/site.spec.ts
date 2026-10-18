@@ -1,3 +1,4 @@
+import { viewportSize } from "../support/viewports";
 import { savedToast, submit } from "./actions";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -44,7 +45,7 @@ for (const width of [320, 390, 768, 1440]) {
 }
 
 test("mobile navigation contains focus and restores it", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await page.goto("/");
   const open = page.getByRole("button", { name: "Open menu" });
   await open.click();
@@ -80,7 +81,7 @@ test("board login, draft, publish, edit, delete and logout", async ({
   page,
 }) => {
   test.skip(!process.env.E2E_ADMIN_EMAIL, "Local test account required");
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await page.goto("/admin");
   await page
     .getByLabel("Email", { exact: true })
