@@ -1,16 +1,74 @@
 ## At a glance
 
-Replace each answer with the one that applies (delete the other options).
+Tick your answers with `[x]` and fill in the lines that apply.
 
-| Item                   | Answer                                                                                                     |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Type**               | Feature · Fix · Design · Docs/process                                                                      |
-| **Who notices**        | Visitors · Board (dashboard) · Developers only                                                             |
-| **Risk**               | Low · Medium · High: one line why                                                                          |
-| **Database migration** | None · Yes: file.sql, applied to staging ☐ production ☐ before merge                                       |
-| **Hosted settings**    | None · list (Vercel/Supabase), done ☐                                                                      |
-| **Rollback**           | Vercel Instant Rollback is enough · Needs more: explain (e.g. migration is additive, old code still works) |
-| **Preview**            | Vercel posts the link; pages to check: …                                                                   |
+### Type
+
+Pick one.
+
+- [ ] Feature
+- [ ] Fix
+- [ ] Design
+- [ ] Docs or process
+
+### Who notices
+
+Pick one or more.
+
+- [ ] Visitors
+- [ ] Board (dashboard)
+- [ ] Developers only
+
+### Risk
+
+Pick one. Medium or High: say why.
+
+- [ ] Low
+- [ ] Medium
+- [ ] High
+
+Why:
+
+### Database migration
+
+Pick one. Yes: name the file and tick where it is applied.
+
+- [ ] None
+- [ ] Yes
+
+File:
+
+- [ ] Applied to staging
+- [ ] Applied to production (before merge)
+
+### Hosted settings
+
+Pick one. Yes: say what (Vercel or Supabase) and tick when done.
+
+- [ ] None
+- [ ] Yes
+
+What:
+
+- [ ] Done
+
+### Rollback
+
+Pick one. Needs more: say how (for example the migration is additive, so old code still works).
+
+- [ ] Vercel Instant Rollback is enough
+- [ ] Needs more
+
+How:
+
+### Preview
+
+Pick one. Vercel posts the preview link on the PR.
+
+- [ ] No visible change
+- [ ] Check these pages
+
+Pages:
 
 ## What changed and why
 

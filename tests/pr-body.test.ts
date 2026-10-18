@@ -9,40 +9,122 @@ import { checkPrBody } from "../scripts/check-pr-body.mjs";
 
 const template = readFileSync(".github/pull_request_template.md", "utf8");
 
-const filled = template
-  .replace("Feature · Fix · Design · Docs/process", "Docs/process")
-  .replace("Visitors · Board (dashboard) · Developers only", "Developers only")
-  .replace("Low · Medium · High: one line why", "Low: template text only")
-  .replace(/None · Yes: file\.sql[^|]*/, "None ")
-  .replace("None · list (Vercel/Supabase), done ☐", "None")
-  .replace(
-    /Vercel Instant Rollback is enough · Needs more[^|]*/,
-    "Vercel Instant Rollback is enough ",
-  )
-  .replace(
-    "Vercel posts the link; pages to check: …",
-    "Vercel posts the link; pages to check: none",
-  );
+const tick = (body: string, label: string) =>
+  body.replace(`- [ ] ${label}\n`, `- [x] ${label}\n`);
+const fill = (body: string, field: string, text: string) =>
+  body.replace(new RegExp(`^${field}:$`, "m"), `${field}: ${text}`);
 
-test("template defaults fail", () => {
-  const problems = checkPrBody(template, template) as string[];
+// A valid body: the simplest answer in every group.
+let filled = template;
+for (const label of [
+  "Docs or process",
+  "Developers only",
+  "Low",
+  "None", // database migration (first "None")
+  "Vercel Instant Rollback is enough",
+  "No visible change",
+]) {
+  filled = tick(filled, label);
+}
+// "None" appears twice (database, hosted settings); tick the second one too.
+filled = filled.replace("- [ ] None\n", "- [x] None\n");
+
+const check = (body: string | null) => checkPrBody(body, template) as string[];
+
+test("untouched template fails in every group", () => {
+  const problems = check(template);
   assert.equal(problems.length, 7);
 });
 
-test("filled body passes", () => {
-  assert.deepEqual(checkPrBody(filled, template), []);
+test("simplest valid body passes", () => {
+  assert.deepEqual(check(filled), []);
 });
 
-test("missing section fails", () => {
-  const problems = checkPrBody("## Summary\n\nhi", template) as string[];
-  assert.match(problems[0], /At a glance/);
+test("CRLF body passes", () => {
+  assert.deepEqual(check(filled.replace(/\n/g, "\r\n")), []);
 });
 
-test("missing row fails", () => {
-  const body = filled.replace(/^\| \*\*Risk\*\*.*$/m, "");
-  const problems = checkPrBody(body, template) as string[];
+test("missing section and null body fail", () => {
+  assert.match(check("## Summary\n\nhi")[0], /At a glance/);
+  assert.match(check(null)[0], /At a glance/);
+});
+
+test("a missing group is reported", () => {
+  const body = filled.replace(/### Preview[\s\S]*?(?=## What changed)/, "");
+  const problems = check(body);
   assert.equal(problems.length, 1);
-  assert.match(problems[0], /Risk/);
+  assert.match(problems[0], /Preview/);
+});
+
+test("single-choice groups need exactly one box", () => {
+  const two = tick(filled, "Fix");
+  assert.match(check(two).join("\n"), /Type: tick only one/);
+  const none = filled.replace("- [x] Docs or process", "- [ ] Docs or process");
+  assert.match(check(none).join("\n"), /Type: tick one option/);
+});
+
+test("Who notices accepts several but needs at least one", () => {
+  assert.deepEqual(check(tick(filled, "Visitors")), []);
+  const none = filled.replace("- [x] Developers only", "- [ ] Developers only");
+  assert.match(check(none).join("\n"), /Who notices: tick at least one/);
+});
+
+test("Medium or High risk needs Why", () => {
+  const medium = tick(filled, "Medium").replace("- [x] Low", "- [ ] Low");
+  assert.match(check(medium).join("\n"), /"Medium" needs the "Why:"/);
+  assert.deepEqual(check(fill(medium, "Why", "touches sign-in")), []);
+  const high = tick(filled, "High").replace("- [x] Low", "- [ ] Low");
+  assert.match(check(high).join("\n"), /"High" needs the "Why:"/);
+});
+
+test("database migration Yes needs file and both ticks", () => {
+  // "Yes" appears in two groups; switch only the first (database) one.
+  const body = filled.replace("- [x] None\n- [ ] Yes", "- [ ] None\n- [x] Yes");
+  const text = check(body).join("\n");
+  assert.match(text, /needs the "File:"/);
+  assert.match(text, /"Applied to staging" ticked/);
+  assert.match(text, /"Applied to production \(before merge\)" ticked/);
+  const done = tick(
+    tick(fill(body, "File", "x.sql"), "Applied to staging"),
+    "Applied to production (before merge)",
+  );
+  assert.deepEqual(check(done), []);
+});
+
+test("hosted settings Yes needs What and Done", () => {
+  const body = filled.replace(
+    /(### Hosted settings[\s\S]*?)- \[x\] None\n- \[ \] Yes/,
+    "$1- [ ] None\n- [x] Yes",
+  );
+  const text = check(body).join("\n");
+  assert.match(text, /needs the "What:"/);
+  assert.match(text, /"Done" ticked/);
+  const done = tick(fill(body, "What", "Vercel env var"), "Done");
+  assert.deepEqual(check(done), []);
+});
+
+test("rollback Needs more needs How", () => {
+  const body = tick(filled, "Needs more").replace(
+    "- [x] Vercel Instant Rollback is enough",
+    "- [ ] Vercel Instant Rollback is enough",
+  );
+  assert.match(check(body).join("\n"), /needs the "How:"/);
+  assert.deepEqual(check(fill(body, "How", "additive migration")), []);
+});
+
+test("preview Check these pages needs Pages", () => {
+  const body = tick(filled, "Check these pages").replace(
+    "- [x] No visible change",
+    "- [ ] No visible change",
+  );
+  assert.match(check(body).join("\n"), /needs the "Pages:"/);
+  assert.deepEqual(check(fill(body, "Pages", "/events")), []);
+});
+
+test("a broken template fails closed", () => {
+  assert.match((checkPrBody(filled, "## Summary") as string[])[0], /template/);
+  const noRisk = template.replace("- [ ] High\n", "");
+  assert.match((checkPrBody(filled, noRisk) as string[])[0], /High/);
 });
 
 test("bot author is skipped, human with empty body fails", () => {
@@ -62,25 +144,4 @@ test("bot author is skipped, human with empty body fails", () => {
   assert.equal(bot.status, 0);
   assert.match(bot.stdout, /bot/);
   assert.equal(run("User").status, 1);
-});
-
-test("CRLF body passes", () => {
-  assert.deepEqual(checkPrBody(filled.replace(/\n/g, "\r\n"), template), []);
-});
-
-test("null body fails", () => {
-  const problems = checkPrBody(null, template) as string[];
-  assert.match(problems[0], /At a glance/);
-});
-
-test("blank cell fails as empty", () => {
-  const body = filled.replace(/^(\| \*\*Risk\*\*\s*\|).*$/m, "$1  |");
-  const problems = checkPrBody(body, template) as string[];
-  assert.equal(problems.length, 1);
-  assert.match(problems[0], /empty/);
-});
-
-test("template without the section fails closed", () => {
-  const problems = checkPrBody(filled, "## Summary") as string[];
-  assert.match(problems[0], /template/);
 });

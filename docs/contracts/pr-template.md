@@ -65,3 +65,7 @@ Not applicable: this changes only the developer pull request process, so board m
 ## Amendment (planner, after review of PR #6)
 
 The body check runs in its own workflow `.github/workflows/pr-body.yml` (job `pr-body`; types opened, edited, synchronize, reopened; concurrency per PR), not in `quality`; `validate.yml` is unchanged from `main`. The script fails closed when the template lacks the section and reports empty cells separately.
+
+## Amendment 2 (maintainer)
+
+"At a glance" uses tick-box groups under `###` headings instead of a table (GitHub templates have no dropdowns): Type (one), Who notices (one or more), Risk (one; Medium/High need "Why:"), Database migration (one; Yes needs "File:" and both "Applied to" boxes), Hosted settings (one; Yes needs "What:" and "Done"), Rollback (one; "Needs more" needs "How:"), Preview (one; "Check these pages" needs "Pages:"). Free text only where an explanation is needed. The script reads groups, options and field names from the template and fails closed if the template lacks any; the rules for which answers need detail live in the script. This supersedes the table rows in Requested Behavior 1 and the row checks in 2.
