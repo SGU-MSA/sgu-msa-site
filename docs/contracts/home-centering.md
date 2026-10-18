@@ -17,7 +17,7 @@ The homepage first screen looks deliberately centered on every device class; pas
 2. **Password show/hide.** Every password input (sign-in, set-password after invite/reset — both fields) gets a show/hide button at its right edge: eye / eye-off icon from the existing `lucide-react` dependency, `type="button"`, accessible name "Show password"/"Hide password", `aria-pressed`, keyboard operable, visible focus ring, works in light and dark using tokens only. Each field toggles independently. One shared component (`src/shared/ui/PasswordInput.tsx`) owns this; no per-form copies. It is based on a reviewed throwaway prototype (not committed), using the real token names from `src/styles/tokens.css`.
 3. **Invite email.** `supabase/templates/invite.html` copes with a missing name or inviter (an invite sent from the Supabase dashboard): `Assalamu alaikum{{ if .Data.full_name }} {{ .Data.full_name }}{{ end }},` and `{{ if .Data.invited_by }}{{ .Data.invited_by }} added you{{ else }}You have been added{{ end }} to the SGU MSA board dashboard.` The subject has no apostrophe ("You are invited to the SGU MSA website dashboard"); the link is unchanged. Covered by `tests/auth-emails.test.ts`.
 
-   Archive label: deferred (the maintainer is deciding whether to remove the public archive label; its own PR).
+   Archive label: not part of this change (removed separately by PR #4).
 
 4. **Cross-device layout gate.** Add a Playwright layout matrix that runs in CI on every PR:
    - Viewports (CSS px): phones 320×568, 360×800, 390×844, 412×915, 430×932, 844×390 (landscape); tablets 768×1024, 800×1280, 820×1180, 1024×768, 1024×1366; laptops 1280×800, 1366×768, 1440×900, 1536×864; desktop/projector 1920×1080; wide 2560×1440; 4K 3840×2160. Phones/tablets use `isMobile`/`hasTouch`.
@@ -25,7 +25,7 @@ The homepage first screen looks deliberately centered on every device class; pas
    - Pages: every public route linked from the header/footer (/, /about, /calendar, /community, /contact, /donate, /faq, /get-involved, /merch, /prayer, /privacy, /ramadan, /resources) plus /admin/login.
    - Geometric assertions on every page × viewport × theme: no horizontal page overflow (`scrollWidth <= innerWidth`); header visible and not overlapping main content; on `/`, when the hero fits, the hero content block's vertical center is within ±6% of the available first-screen center; when it doesn't fit, the gap from header/band bottom to the eyebrow is 40–56px.
    - Screenshot comparisons (`toHaveScreenshot`, viewport only, not full page, animations disabled, small maxDiffPixelRatio): `/` and `/admin/login` at 390×844, 768×1024, 1366×768, 1920×1080, 2560×1440, 3840×2160 in light and dark (24 images), plus `/resources` and `/prayer` at 390×844 and 1440×900 light. Baselines must be generated inside the official Playwright Docker image matching the installed `@playwright/test` version, and the CI job must run in that same image, so renders match. Provide `npm run test:layout` and `npm run test:layout:update` (the update script runs Docker locally).
-   - CI: run it inside the existing `browser-smoke` job (or as a step container in it) so branch protection's four required checks stay unchanged. Upload diffs on failure (retention 3 days), like the smoke job.
+   - CI: run it as its own parallel `layout` job in `validate.yml` (amended, see D-8), in the Playwright image. Upload diffs on failure (retention 3 days), like the smoke job. The planner adds `layout` to main's required checks after merge.
 
 ## Existing System Evidence
 
@@ -33,7 +33,7 @@ The homepage first screen looks deliberately centered on every device class; pas
 - Password inputs: `src/features/admin/PasswordForms.tsx` (`SetPasswordForm`), `src/features/admin/SignInForm.tsx`.
 - `ArchiveTag`: `src/shared/ui/Meta.tsx`, used by `src/features/resources/ResourceExplorer.tsx:127`; story `src/shared/ui/Meta.stories.tsx`.
 - Playwright: `playwright.config.ts`, `playwright.smoke.config.ts`, `tests/support/playwright-config.ts`, existing specs `tests/e2e/design.spec.ts`, `real-site-look.spec.ts`, `theme.spec.ts`, `rendering.spec.ts` — check these first and extend/reuse their helpers instead of duplicating viewport or theme setup.
-- CI: `.github/workflows/*.yml` job `browser-smoke`.
+- CI: `.github/workflows/*.yml` jobs `browser-smoke` and `layout`.
 - Testing ownership/skill: `.agents/skills/frontend-testing-visual-qa/`.
 
 ## Owner
@@ -52,7 +52,7 @@ None outstanding.
 
 - D-1 (maintainer, 2026-10-17): Option A, with both hero columns centered together, chosen from the localhost:3400 preview.
 - D-2 (maintainer, 2026-10-17): standard eye icon toggle as previewed is approved.
-- D-3: archive label deferred (amended 2026-10-17); `ArchiveTag` is unchanged.
+- D-3: archive label dropped from this change (amended 2026-10-17); PR #4 removed it separately.
 - D-6 (maintainer, 2026-10-17): the invite template handles a missing name/inviter, and its subject avoids the apostrophe.
 - D-4 (maintainer, 2026-10-17): every visual change must pass CI and regression tests across phone, tablet, laptop, wide-screen and projector sizes.
 - D-7 (maintainer, 2026-10-18): `SignInForm` has no styles of its own; it uses the shared `editor-form`, label, input, `FormMessages` and `button-primary` like `ForgotPasswordForm`. The layout spec asserts the two primary buttons look identical in light and dark.
@@ -87,5 +87,5 @@ No new board setting. Hero text stays dashboard-edited.
 - Password toggle works by mouse and keyboard on all three password fields; screen reader name/state correct; axe shows no new violations on /admin/login.
 - The invite email renders cleanly without a name or inviter.
 - No page in the matrix overflows horizontally in either theme.
-- CI's existing four required checks pass, with the layout gate running inside `browser-smoke`.
+- CI's existing four required checks pass, and the layout gate passes in its own parallel `layout` job (the planner adds `layout` to main's required checks after merge).
 - Release checklist Unreleased updated (what changed, how to test, no settings change).
