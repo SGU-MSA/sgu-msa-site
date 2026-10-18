@@ -95,13 +95,16 @@ Never choose the look yourself. Present 2-3 directions plus a recommendation.
      mockups using the real token values under `.plans/mockups/<feature>/`,
      and capture them with `mcp__chrome-devtools__take_screenshot` at 390 px
      and 1440 px (or a Playwright screenshot script if chrome-devtools is
-     unavailable). Screenshots go in the ignored `artifacts/` folder; show
-     them together, per the rule below.
-   - **Always side by side:** put all options on one interactive page (a
-     throwaway Storybook comparison story, "Design options/<feature>", with a
-     light and a dark panel per option and plain captions; add the real page
-     in context if useful). Never show options through query-string
-     switches or one at a time.
+     unavailable). Screenshots go in the ignored `artifacts/` folder.
+   - **Judge options in real context, on real devices.** Build each option
+     in the real component or page at its real size and push it as its own
+     throwaway branch `option/<topic>-<n>`; Vercel gives it a preview link
+     (staging data). Give the maintainer the links grouped by decision and
+     note device limits (for example iPhone Safari lacks `corner-shape`). A
+     side-by-side Storybook comparison ("Design options/<feature>", light and
+     dark) may help quick scanning but is never the only basis. Never use
+     query-string switches or isolated, enlarged mockups. Delete the option
+     branches and any staging test data after the decision.
 3. Ask the user to choose. Record the choice in the feature contract's
    Decisions section (`docs/contracts/<feature>.md`). Only if it affects
    several features or is hard to reverse (site-wide palette, type, motion

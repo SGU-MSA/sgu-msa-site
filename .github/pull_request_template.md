@@ -77,7 +77,7 @@ Pages:
 
 ## What to look at
 
-<!-- Numbered steps on the preview: pages, light/dark, phone/desktop. -->
+<!-- Numbered steps on the preview: pages, light/dark, phone/desktop. UI PRs list the pages to check on phone and on desktop. -->
 
 1.
 

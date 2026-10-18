@@ -296,7 +296,7 @@ Claude Code and Codex share one setup: [AGENTS.md](../../AGENTS.md) is the agent
 
 **Normal workflow** ([ADR 0004](../adr/0004-lightweight-engineering-process.md))
 
-1. Ask the agent to plan. It searches for existing code first and brings product questions to you as 2–3 options with a recommendation; you decide ([ADR 0002](../adr/0002-product-principles.md)). Design options are always shown side by side on one page (a throwaway Storybook comparison story), never one at a time.
+1. Ask the agent to plan. It searches for existing code first and brings product questions to you as 2–3 options with a recommendation; you decide ([ADR 0002](../adr/0002-product-principles.md)). Design options are judged in their real context on real devices: each is built in the real page and pushed as a throwaway `option/<topic>-<n>` branch so Vercel gives it a preview link; a Storybook comparison is only a scanning aid, and the branches are deleted after the decision.
 2. The agent drafts a contract in `.plans/<feature>.md` with your decisions; once you approve it, it moves to `docs/contracts/<feature>.md`.
 3. The agent implements, reviews its diff, and runs `npm run check`.
 4. Test locally: `npm run dev` with the **staging** project's URL and publishable key in your `.env.local`, or `npm run demo` for sample data.

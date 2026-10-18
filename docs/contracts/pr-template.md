@@ -41,7 +41,7 @@ None.
 ## Decisions
 
 - D-1 (maintainer, 2026-10-18): adopt the proposed template and the CI check.
-- D-2 (maintainer, 2026-10-18): design options are always presented side by side on one interactive page.
+- D-2 (maintainer, 2026-10-18, amended): design options are judged in their real context on real devices. Each option is built in the real component or page at its real size and pushed as a throwaway branch `option/<topic>-<n>` so Vercel gives it a preview link (staging data). Links are given to the maintainer grouped by decision, with device limits noted (for example iPhone Safari lacks `corner-shape`). A side-by-side Storybook comparison may help quick scanning but is never the only basis; no query-string switches or isolated, enlarged mockups. Option branches and any staging test data are deleted after the decision. This supersedes the earlier "side by side on one interactive page" wording in Requested Behavior 5.
 
 ## Board Self-Sufficiency Check
 
