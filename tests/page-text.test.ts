@@ -89,6 +89,22 @@ test("the starter text passes the save rules and reads back the same after a sav
   }
 });
 
+test("a stored photo that still has the retired historical flag loads, shows no label and loses the flag on save", () => {
+  const raw = starter("about") as Record<string, Record<string, unknown>>;
+  const image = raw.at_sgu.image as Record<string, unknown>;
+  image.historical = true;
+  image.year = 2020;
+  const { schema } = editorialDocuments.about;
+  const loaded = JSON.parse(JSON.stringify(schema.parse(raw)));
+  assert.equal(loaded.at_sgu.image.src, image.src);
+  assert.ok(!("historical" in loaded.at_sgu.image));
+  const merged = mergePageText("about", raw, asPosted("about", raw));
+  assert.ok(merged.ok);
+  const saved = JSON.stringify(merged.document);
+  assert.ok(!saved.includes("historical"));
+  assert.ok(!saved.includes('"year"'));
+});
+
 test("a refused save names each problem's own box, by its path (review 2)", () => {
   const raw = starter("about") as Record<string, Record<string, unknown>>;
   const posted = asPosted("about", raw);

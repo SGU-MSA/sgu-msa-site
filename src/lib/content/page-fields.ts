@@ -1629,11 +1629,12 @@ function storedValue(
     case "image": {
       if (!isObject(posted) || !clean(posted.src)) return undefined;
       const base = isObject(stored) && stored.src === posted.src ? stored : {};
+      // Older documents may still carry the retired `historical`/`year` keys.
+      const { historical: _historical, year: _year, ...kept } = base;
       return {
-        ...base,
+        ...kept,
         src: clean(posted.src),
         alt: clean(posted.alt) ?? "",
-        historical: posted.historical === true,
       };
     }
     case "list": {

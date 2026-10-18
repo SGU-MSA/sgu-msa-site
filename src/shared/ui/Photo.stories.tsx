@@ -24,7 +24,6 @@ function Photos() {
           image={{
             src: "/images/placeholder/editorial.svg",
             alt: "",
-            historical: false,
           }}
           fill
         />

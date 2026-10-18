@@ -41,7 +41,6 @@ items:
     image:
       src: "/images/resources/jumuah-notice.webp"
       alt: "MSA Jumu’ah prayer notice"
-      historical: true
 
   - id: finding-the-musallah
     title: "Finding the Musallah"
@@ -63,4 +62,3 @@ items:
     image:
       src: "/images/resources/basketball-tournament.webp"
       alt: "MSA basketball tournament announcement"
-      historical: true

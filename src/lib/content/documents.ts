@@ -189,7 +189,6 @@ export const editorialDocuments: {
         logo: {
           src: "/images/brand/msa-logo.webp",
           alt: "SGU MSA logo",
-          historical: false,
         },
       },
       navigation: [{ label: "Home", href: "/" }],
@@ -332,7 +331,6 @@ export const editorialDocuments: {
         image: {
           src: "/images/placeholder/editorial.svg",
           alt: "",
-          historical: false,
         },
         primary_cta: { label: "What’s happening", href: "/calendar" },
         secondary_cta: { label: "Find the Musallah", href: "/prayer" },
@@ -346,7 +344,6 @@ export const editorialDocuments: {
         image: {
           src: "/images/placeholder/editorial.svg",
           alt: "",
-          historical: false,
         },
       },
       contribution: { heading: "Our community, built by students", items: [] },

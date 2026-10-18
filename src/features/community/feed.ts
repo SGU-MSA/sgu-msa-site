@@ -44,7 +44,6 @@ export function feedCover(row: CommunityRecord): ContentImage | null {
   return {
     src: `/media/${row.image_path}`,
     alt: row.image_alt,
-    historical: false,
   };
 }
 
