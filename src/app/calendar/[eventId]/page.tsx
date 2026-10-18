@@ -3,10 +3,14 @@ import { notFound } from "next/navigation";
 
 import { EventDetail } from "@/features/calendar/EventDetail";
 import { managedEvents } from "@/lib/community/managed";
-import { placedReminder } from "@/lib/content";
+import { getSite, placedReminder } from "@/lib/content";
 import { loadEventTicket } from "@/lib/integrations/payments";
 import { localDate } from "@/lib/community/schema";
+import { deploymentProfile } from "@/lib/runtime/providers";
 import { requestNow } from "@/lib/runtime/public-cache";
+import { eventJsonLd } from "@/lib/seo/structured-data";
+import { siteUrl } from "@/lib/site-config";
+import { JsonLd } from "@/shared/ui/JsonLd";
 
 /**
  * One update or event per address: the menu reads the address, which is
@@ -54,12 +58,18 @@ export default async function EventPage({
   if (!event) notFound();
   const now = await requestNow();
   const ticket = await loadEventTicket(event, now);
+  const data = deploymentProfile().indexable
+    ? eventJsonLd(event, await getSite(), siteUrl)
+    : null;
   return (
-    <EventDetail
-      event={event}
-      ticket={ticket}
-      verse={verse}
-      today={localDate(now)}
-    />
+    <>
+      {data && <JsonLd data={data} />}
+      <EventDetail
+        event={event}
+        ticket={ticket}
+        verse={verse}
+        today={localDate(now)}
+      />
+    </>
   );
 }

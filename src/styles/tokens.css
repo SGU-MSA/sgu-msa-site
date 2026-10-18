@@ -8,8 +8,8 @@
  * The root layout's pre-paint script sets data-theme before first paint.
  * Tailwind utilities mirror these through `@theme inline` in globals.css.
  *
- * Values duplicated outside CSS (keep in sync): `themeColor` in
- * src/app/layout.tsx and the favicon colours in src/app/icon.svg.
+ * Values duplicated outside CSS (keep in sync, test-checked): `pageColours` in
+ * src/styles/page-colours.ts and the favicon colours in src/app/icon.svg.
  */
 :root {
   color-scheme: light;

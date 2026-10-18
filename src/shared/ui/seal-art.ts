@@ -7,3 +7,6 @@ export const SEAL_SPRITE =
 
 /** The box of an <svg> showing the symbol: the symbol's own size, from 0 0 (the symbol places its art). */
 export const SEAL_VIEWBOX = "0 0 1170 1170";
+
+/** Hash of the icon inputs (sprite + Green Ink colours); a test fails when the committed icons were not regenerated. */
+export const SEAL_ICONS_HASH = "8e5fc80283";

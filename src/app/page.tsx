@@ -10,6 +10,8 @@ import { getRecords } from "@/lib/community/queries";
 import { donatePageShowsFunds } from "@/lib/integrations/payments";
 import { deploymentProfile } from "@/lib/runtime/providers";
 import { requestNow } from "@/lib/runtime/public-cache";
+import { organizationJsonLd } from "@/lib/seo/structured-data";
+import { JsonLd } from "@/shared/ui/JsonLd";
 import { PaperLayers } from "@/shared/ui/PaperLayers";
 import { TasbihThread, tasbihThreadHost } from "@/shared/ui/TasbihThread";
 
@@ -44,21 +46,7 @@ export default async function HomePage() {
       <PaperLayers />
       <TasbihThread />
       {deploymentProfile().indexable && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: site.brand.name,
-              url: siteUrl,
-              email: site.brand.email,
-              sameAs: site.social
-                .filter((item) => item.url.startsWith("https://"))
-                .map((item) => item.url),
-            }).replace(/</g, "\\u003c"),
-          }}
-        />
+        <JsonLd data={organizationJsonLd(site, siteUrl)} />
       )}
       <HomeBody
         home={home}
