@@ -18,7 +18,6 @@ function BoardSeat({ person }: { person: Member }) {
               src: `/media/${person.photoPath}`,
               // The name is printed right below: screen readers hear it once.
               alt: "",
-              historical: false,
             }}
             fill
             sizes="(max-width: 40rem) 90vw, 15rem"

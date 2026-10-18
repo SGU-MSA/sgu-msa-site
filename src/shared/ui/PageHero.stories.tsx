@@ -23,7 +23,6 @@ export const WithImage: Story = {
     image: {
       src: "/images/prayer/musallah-interior.webp",
       alt: "",
-      historical: false,
     },
   },
 };

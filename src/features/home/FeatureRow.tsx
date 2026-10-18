@@ -47,10 +47,7 @@ export function FeatureRow({ items }: { items: FeatureItem[] }) {
                   />
                 </span>
               </Link>
-              <p className={h.storyKicker}>
-                {item.eyebrow}
-                {item.image.historical ? " · Archive" : ""}
-              </p>
+              <p className={h.storyKicker}>{item.eyebrow}</p>
               <h3 className={h.storyTitle}>
                 <Link href={item.href}>{item.title}</Link>
               </h3>

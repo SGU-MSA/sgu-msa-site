@@ -17,7 +17,7 @@ export function SeasonGallery({ photos }: { photos: readonly ListedPhoto[] }) {
           <figure className={s.figure}>
             <div className={s.frame}>
               <SafeImage
-                image={{ ...photo, historical: false }}
+                image={photo}
                 fill
                 sizes="(min-width: 1024px) 23vw, (min-width: 640px) 45vw, 100vw"
                 className={s.cover}

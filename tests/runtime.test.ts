@@ -411,12 +411,17 @@ test("wiring and deployment profile per mode", () => {
     mailer: "off",
     ledger: "off",
   });
+  // Real data off production (a preview or a computer on staging) is never indexed.
   assert.deepEqual(deploymentProfileFor(live), {
-    indexable: true,
+    indexable: false,
     measurements: false,
     adminPortal: "ready",
     warningEmailsOff: false,
   });
+  assert.equal(
+    deploymentProfileFor(parseRuntimeConfig(production)).indexable,
+    true,
+  );
 
   const demo = parseRuntimeConfig(sample);
   const wiring = planWiring(demo);

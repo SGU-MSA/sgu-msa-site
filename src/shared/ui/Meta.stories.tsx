@@ -1,12 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import { ArchiveTag, PocBadge } from "./Meta";
+import { PocBadge } from "./Meta";
 
 function Labels() {
   return (
     <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
       <PocBadge />
-      <ArchiveTag year={2024} />
     </div>
   );
 }

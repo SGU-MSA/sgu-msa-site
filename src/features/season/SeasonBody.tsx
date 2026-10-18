@@ -71,7 +71,7 @@ export function SeasonBody({ data }: { data: SeasonPageData }) {
           <div className={`${quiet.photo} ${s.coverPhoto}`}>
             <div className={quiet.photoFrame}>
               <SafeImage
-                image={{ ...cover, historical: false }}
+                image={cover}
                 fill
                 priority
                 sizes="(min-width: 960px) 36vw, 100vw"

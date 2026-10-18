@@ -69,7 +69,7 @@ export type PageField =
   | (Base & { kind: "email" })
   /** A Google Forms link (D-25). */
   | (Base & { kind: "google-form" })
-  /** A photo with its description and the "old photo" tick. */
+  /** A photo with its description. */
   | (Base & { kind: "image" })
   | (Base & { kind: "icon" })
   /** A sign-up form key from the forms list. */
@@ -1609,7 +1609,7 @@ const clean = (value: Json) =>
  * The value of one field as it will be stored: typed text cleaned, an empty
  * optional box as null (the block hides), paragraphs and lines without empty
  * entries; photos keep the stored keys the editor does not show (focal point,
- * credit, year). Lists keep each stored item's other keys by id; new items
+ * credit). Lists keep each stored item's other keys by id; new items
  * get an id.
  */
 function storedValue(
@@ -1629,11 +1629,12 @@ function storedValue(
     case "image": {
       if (!isObject(posted) || !clean(posted.src)) return undefined;
       const base = isObject(stored) && stored.src === posted.src ? stored : {};
+      // Older documents may still carry the retired `historical`/`year` keys.
+      const { historical: _historical, year: _year, ...kept } = base;
       return {
-        ...base,
+        ...kept,
         src: clean(posted.src),
         alt: clean(posted.alt) ?? "",
-        historical: posted.historical === true,
       };
     }
     case "list": {
@@ -2147,7 +2148,7 @@ export const chosenPhotoSource =
 
 /**
  * The posted document with a chosen photo at each of `paths`: its typed
- * description and "old photo" tick kept. Null when a path is not a photo box.
+ * description kept. Null when a path is not a photo box.
  */
 export function withChosenPhotos(
   key: PageTextKey,
