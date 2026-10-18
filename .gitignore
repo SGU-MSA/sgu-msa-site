@@ -1,0 +1,61 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# Tests and coverage
+/coverage
+
+# Next.js output
+/.next/
+/out/
+
+# Production output
+/build
+
+# Local system files
+.DS_Store
+Thumbs.db
+*.pem
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Local environment files (commit an explicit example separately)
+.env*
+!.env.example
+
+# Hosting providers
+.vercel
+.netlify
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# The map library, copied from node_modules by next.config.ts (PR7)
+/public/maplibre/
+
+# Content validation output
+/.validate-out/
+/test-results/
+/playwright-report/
+/artifacts/
+
+# Agent tooling (local-only)
+.agents/local/
+.mcp.local.json
+.codex/config.toml
+.codex/chrome-profile/
+.plans/
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Temporary git worktrees for parallel agent sessions
+.claude/worktrees/
+
+# Storybook build output
+/storybook-static/
