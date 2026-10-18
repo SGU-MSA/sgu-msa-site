@@ -1,6 +1,6 @@
 # 0016. Integration branch and Release PR
 
-- Status: Accepted
+- Status: Superseded by [0033](0033-pull-requests-merge-to-main.md)
 - Date: 2026-10-03
 
 ## Context

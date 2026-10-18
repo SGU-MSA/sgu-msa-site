@@ -1,8 +1,14 @@
 # Release checklist
 
-One living record of what changes, how to test it, which settings it needs, and what still needs a human to confirm. Every pull request updates **Unreleased** ([AGENTS.md](../AGENTS.md), [ADR 0016](adr/0016-integration-branch-and-release-pr.md)). When the Release PR (`integration → main`) goes live, the section is renamed with the date and a new empty **Unreleased** starts.
+One living record of what changes, how to test it, which settings it needs, and what still needs a human to confirm. Every pull request adds its entry to the top of **Latest changes**, with its PR link ([AGENTS.md](../AGENTS.md), [ADR 0033](adr/0033-pull-requests-merge-to-main.md)). Merging a pull request into `main` publishes it, so an entry there is live once its PR is merged.
 
-## Unreleased (in `integration`, not live yet)
+## Latest changes
+
+- **Pull requests merge to `main`** ([#3](https://github.com/SGU-MSA/sgu-msa-site/pull/3), [ADR 0033](adr/0033-pull-requests-merge-to-main.md)): the standing `integration` branch and Release PR are retired. Branch from `main`, open the PR against `main`; merging publishes. Several dependent PRs use a temporary `integration/<feature>` branch. Test: open a PR against `main` and confirm the required checks run. No site or board change.
+
+## 2026-10-18: first public release (SGU-MSA/sgu-msa-site#1)
+
+Everything in this section is live. Items under its **Needs your confirmation** headings stay open until answered; answered items move to the matching **Answered** list.
 
 ### What changed
 
