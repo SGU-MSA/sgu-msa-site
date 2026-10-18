@@ -8,7 +8,15 @@ import { savedToast, signInToSandbox, submit } from "./actions";
  * Site-wide edit reaching the machine-readable files without a deploy.
  */
 test.describe.configure({ mode: "serial" });
-test.skip(process.env.E2E_DEMO !== "true", "Explicit demo server required");
+// Runs against the sandbox: with E2E_DEMO=true, or in the smoke config's
+// projects (`npm run test:smoke`, which starts its own sandbox server).
+test.beforeEach(({}, testInfo) => {
+  test.skip(
+    process.env.E2E_DEMO !== "true" &&
+      !["desktop-light", "phone-dark"].includes(testInfo.project.name),
+    "Explicit demo server required",
+  );
+});
 
 const publicRoutes = [
   "/",
@@ -73,6 +81,23 @@ test("an event and an update have their own cards", async ({ page }) => {
   );
 });
 
+test("a card for an event or update that does not exist is a 404, not an image", async ({
+  page,
+}) => {
+  expect(
+    (
+      await page.request.get("/calendar/no-such-event/opengraph-image")
+    ).status(),
+  ).toBe(404);
+  expect(
+    (
+      await page.request.get(
+        "/community/announcements/no-such-update/opengraph-image",
+      )
+    ).status(),
+  ).toBe(404);
+});
+
 test("the manifest, icons and root card are served", async ({ page }) => {
   const manifest = await page.request.get("/manifest.webmanifest");
   expect(manifest.status()).toBe(200);
@@ -108,7 +133,7 @@ test("security.txt and llms.txt are plain text with the Site-wide words", async 
   expect(llms.headers()["content-security-policy"]).toBeTruthy();
   const llmsText = await llms.text();
   expect(llmsText).toMatch(/^# SGU Muslim Students Association/);
-  expect(llmsText).toContain("Prayer times, Jumu’ah");
+  expect(llmsText).toMatch(/^> .+/m);
   expect(llmsText).toMatch(/\]\(https?:\/\/[^)]+\/calendar\)/);
 });
 

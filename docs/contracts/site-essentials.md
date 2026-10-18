@@ -88,6 +88,8 @@ None. The six items were approved by the maintainer on 2026-10-18; the remaining
 - D-7: security.txt is a route handler: Contact `mailto:` the Site-wide email when set, plus always `https://…/contact`; `Expires` = request day 00:00 UTC + 180 days; `Preferred-Languages: en`; `Canonical`. A GitHub private-vulnerability-reporting Contact is not added until the owner enables that feature (release checklist confirmation item).
 - D-8: Search Console uses the "HTML tag" method: `searchConsoleToken: string | null = null` in `src/lib/site-config.ts`; the root metadata emits `verification.google` only when the token is set and the deployment is indexable. Adding the token is a one-line change (rejected: an env var, which needs an owner redeploy and a config.ts rule; a `public/google….html` file, which works the same but cannot be gated to the live site).
 - D-9: `llms.txt` lists the menu (`site.navigation`) and footer links (`site.footer.quick_links`) deduplicated by path, as absolute URLs, served on every deployment (like `robots.txt`; URLs always use `SITE_URL`).
+- D-10 (PR review, 2026-10-18): the card never reaches the internet and draws Latin only (bundled Instrument Serif). Arabic, emoji and other scripts are removed from card text before rendering (leftover separators collapsed: "Jumu’ah الجمعة" becomes "Jumu’ah"); a title left empty falls back to the site-name card. Reason: `next/og` (Satori) neither shapes nor orders Arabic (detached, reversed letters even with Amiri Quran bundled) and would otherwise fetch fonts or emoji from the internet. Proper Arabic on cards would need a shaping library (a new dependency): a separate product decision. Tests render Latin, mixed, Arabic-only, emoji and very long titles with `fetch` blocked.
+- D-11 (PR review): an unknown event or update id gives 404 on its card (not the root card). The PNG is cached per distinct text (`"use cache"`, all `publicCacheTags`, `cacheLife("max")`, ADR 0024): it renders once per edit, while the event or post is still read per visit, because events are not tagged and read request-time data. The event kicker shows only the short name when the category is empty or "MSA".
 
 ## Board Self-Sufficiency Check
 
@@ -128,7 +130,7 @@ Routes (all GET; same security headers as every route):
 | `/.well-known/security.txt` | `src/app/.well-known/security.txt/route.ts` | `text/plain; charset=utf-8`, `Cache-Control: public, max-age=3600` | per request (rolling Expires) |
 | `/llms.txt` | `src/app/llms.txt/route.ts` | `text/plain; charset=utf-8` | prerendered; expires with page text |
 
-Each image route file declares its own literal `export const size = { width: 1200, height: 630 }`, `contentType = "image/png"` and `alt = "The SGU MSA seal beside this page's title"` and calls `ogCard`. Unknown event or post id: render the root card (never a broken image).
+Each image route file declares its own literal `export const size = { width: 1200, height: 630 }`, `contentType = "image/png"` and `alt = "The SGU MSA seal beside this page's title"` and calls `ogCard`. Unknown event or post id: 404 (D-11).
 
 Exports:
 

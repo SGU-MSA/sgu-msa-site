@@ -1,12 +1,14 @@
+import { notFound } from "next/navigation";
+
 import { findCommunityPost } from "@/features/community/load";
 import { getSite } from "@/lib/content";
-import { ogCard } from "@/lib/seo/og-card";
+import { ogCard, siteCard } from "@/lib/seo/og-card";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "The SGU MSA seal beside this page's title";
 
-/** The update's link-preview card: its title and summary; the site's card when it cannot be read. */
+/** The update's link-preview card: its title and summary; not found when it does not exist. */
 export default async function Image({
   params,
 }: {
@@ -15,15 +17,11 @@ export default async function Image({
   const { kind, id } = await params;
   const [site, post] = await Promise.all([
     getSite(),
-    findCommunityPost(kind, id).catch(() => undefined),
+    findCommunityPost(kind, id),
   ]);
-  if (!post)
-    return ogCard({
-      kicker: site.brand.short_name,
-      heading: site.brand.name,
-      subheading: site.meta?.description,
-    });
+  if (!post) notFound();
   return ogCard({
+    fallback: siteCard(site),
     kicker: `${site.brand.short_name} · ${post.kind}`,
     heading: post.row.title,
     subheading: post.row.summary,

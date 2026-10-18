@@ -5,7 +5,7 @@ const baseURL = "http://127.0.0.1:3217";
 
 export default defineConfig({
   ...createPlaywrightConfig(baseURL),
-  testMatch: "admin-smoke.spec.ts",
+  testMatch: ["admin-smoke.spec.ts", "site-essentials.spec.ts"],
   use: {
     ...createPlaywrightConfig(baseURL).use,
     baseURL,

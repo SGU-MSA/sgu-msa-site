@@ -190,18 +190,51 @@ test("the card's text is clamped with an ellipsis and whitespace collapsed", () 
   assert.ok(clamped.endsWith("…"));
 });
 
-test("the card renders as a 1200×630 PNG", async () => {
+test("Arabic, emoji and other scripts are removed before rendering", async () => {
+  const { drawable } = await import("../src/lib/seo/og-card");
+  assert.equal(drawable("Iftar 🌙 night ✨ 日本語"), "Iftar night");
+  assert.equal(drawable("Jumu’ah الجمعة"), "Jumu’ah");
+  assert.equal(drawable("الجمعة"), "");
+  assert.equal(drawable("Jumu’ah — الجمعة — Iftar"), "Jumu’ah — Iftar");
+});
+
+test("cards render as 1200×630 PNGs without touching the network (Latin, Arabic, emoji, very long)", async () => {
   const { ogCard } = await import("../src/lib/seo/og-card");
-  const response = await ogCard({
-    kicker: "SGU MSA · Event",
-    heading: "Cancelled: Iftar",
-    subheading: "Friday 16 October 2026 · Musallah",
-  });
-  assert.equal(response.headers.get("content-type"), "image/png");
-  const png = Buffer.from(await response.arrayBuffer());
-  assert.equal(png.subarray(1, 4).toString(), "PNG");
-  assert.equal(png.readUInt32BE(16), 1200);
-  assert.equal(png.readUInt32BE(20), 630);
+  const realFetch = globalThis.fetch;
+  const attempts: string[] = [];
+  globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init) => {
+    // The renderer loads its own bundled engine from a data: address.
+    if (String(input).startsWith("data:")) return realFetch(input, init);
+    attempts.push(String(input));
+    throw new Error("network is blocked in this test");
+  }) as typeof fetch;
+  try {
+    for (const heading of [
+      "Cancelled: Iftar",
+      "Jumu'ah الجمعة",
+      "الجمعة المباركة",
+      "Iftar night 🌙✨ 👨‍👩‍👧 日本語 😀",
+      "A very long title ".repeat(40),
+    ]) {
+      const response = await ogCard({
+        kicker: "SGU MSA · Event",
+        heading,
+        subheading: `${heading} · Friday 16 October 2026 · Musallah`,
+        fallback: {
+          kicker: "SGU MSA",
+          heading: "SGU Muslim Students Association",
+        },
+      });
+      assert.equal(response.headers.get("content-type"), "image/png");
+      const png = Buffer.from(await response.arrayBuffer());
+      assert.equal(png.subarray(1, 4).toString(), "PNG");
+      assert.equal(png.readUInt32BE(16), 1200);
+      assert.equal(png.readUInt32BE(20), 630);
+    }
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+  assert.deepEqual(attempts, []);
 });
 
 test("page-colours.ts mirrors the tokens", () => {
