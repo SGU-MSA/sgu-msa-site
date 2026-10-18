@@ -89,7 +89,7 @@ test("the starter text passes the save rules and reads back the same after a sav
   }
 });
 
-test("a stored photo that still has the retired historical flag loads, shows no label and loses the flag on save", () => {
+test("a stored photo that still has the retired historical flag loads and loses the flag on save", () => {
   const raw = starter("about") as Record<string, Record<string, unknown>>;
   const image = raw.at_sgu.image as Record<string, unknown>;
   image.historical = true;
