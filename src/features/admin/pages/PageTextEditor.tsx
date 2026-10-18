@@ -122,7 +122,7 @@ function setIn(root: Json, at: readonly Segment[], value: Json): Json {
 /** A new, empty list item: every box of the item empty. */
 function emptyItem(field: Extract<PageField, { kind: "list" }>): Json {
   if (field.item.length === 1 && field.item[0].path === "")
-    return { src: "", alt: "", historical: false };
+    return { src: "", alt: "" };
   let item: Json = {
     // The server gives a new item its own id (PR5b).
     id: `new-${Date.now().toString(36)}-${(nextKey++).toString(36)}`,
@@ -535,7 +535,7 @@ export function PageTextEditor({
         const src = asText(photo?.src);
         const setPhoto = (key: string, next: Json) =>
           put({
-            ...(photo ?? { src: "", alt: "", historical: false }),
+            ...(photo ?? { src: "", alt: "" }),
             [key]: next,
           });
         return (
@@ -563,7 +563,7 @@ export function PageTextEditor({
               pick={{
                 onPick: (stored) => {
                   put({
-                    ...(photo ?? { src: "", alt: "", historical: false }),
+                    ...(photo ?? { src: "", alt: "" }),
                     src: `/media/${stored}`,
                   });
                   return () => put(value);
@@ -586,16 +586,6 @@ export function PageTextEditor({
               name={boxKey}
               controls={[photoBox(owner, pageKey, at.join(".")), `${id}-alt`]}
             />
-            <label className="check-label">
-              <input
-                type="checkbox"
-                checked={photo?.historical === true}
-                onChange={(event) =>
-                  setPhoto("historical", event.currentTarget.checked)
-                }
-              />
-              {pageEditorWords.oldPhoto}
-            </label>
             {src && !field.required && !inPhotoList ? (
               <button
                 type="button"
