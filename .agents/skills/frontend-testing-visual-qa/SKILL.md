@@ -72,6 +72,11 @@ Record the revision, environment, persona, steps, expected/actual outcome and ev
 
 Use `npm run test:smoke` for the small fresh-local browser CI gate and `npm run test:coverage` for native unit coverage. Keep broad browser exploration and the existing detailed suites for changed areas/release QA. Inspect uncovered branches for useful missing assertions; do not import code or add ignores to raise a number. Node 22 coverage measures loaded application modules and omits unimported files; it is not a whole-repo or dead-code report. Use the coverage artifact, call-site searches, lint/types and actual runtime paths before removing suspected unused code. Raise measured floors as meaningful tests improve coverage. Load tests are warranted for an approved concurrency/capacity change, not every PR.
 
+## Layout gate and baselines
+
+- `npm run test:layout` (Docker, official Playwright image) checks every public page on 18 viewports in light and dark and compares screenshot baselines; `npm run test:layout:update` regenerates them. Never generate baselines outside the image. Viewports live in `tests/support/viewports.ts`.
+- Any visual change must keep it green; when an image changes on purpose, view the new image before committing it.
+
 ## Quick visual check
 
 - chrome-devtools MCP: `new_page` to the local URL, `resize_page` to 390 and 1280 wide, `take_screenshot` of each; `take_snapshot` for the accessibility tree; `lighthouse_audit` for accessibility and SEO; `list_console_messages` for runtime errors and hydration warnings.

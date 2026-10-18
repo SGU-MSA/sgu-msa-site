@@ -1,10 +1,11 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useId } from "react";
 import {
   confirmEmailLinkAction,
   requestPasswordResetAction,
   setPasswordAction,
 } from "@/features/admin/access-actions";
+import { PasswordInput } from "@/shared/ui/PasswordInput";
 import type { EmailLink } from "./email-link";
 import { initialEditorState } from "./fields";
 import { FormMessages } from "./FormMessages";
@@ -44,13 +45,16 @@ export function SetPasswordForm({ hint }: { hint: string }) {
     setPasswordAction,
     initialEditorState,
   );
+  // The eye button sits inside each label, so name each field by its text alone.
+  const newLabel = useId();
+  const confirmLabel = useId();
   return (
     <form action={action} className="editor-form">
       <label>
-        New password
-        <input
+        <span id={newLabel}>New password</span>
+        <PasswordInput
           name="password"
-          type="password"
+          aria-labelledby={newLabel}
           autoComplete="new-password"
           required
           minLength={12}
@@ -61,10 +65,10 @@ export function SetPasswordForm({ hint }: { hint: string }) {
         {hint}
       </p>
       <label>
-        Type the new password again
-        <input
+        <span id={confirmLabel}>Type the new password again</span>
+        <PasswordInput
           name="confirm"
-          type="password"
+          aria-labelledby={confirmLabel}
           autoComplete="new-password"
           required
           minLength={12}

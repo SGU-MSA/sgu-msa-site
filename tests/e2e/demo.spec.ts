@@ -1,3 +1,4 @@
+import { viewportSize } from "../support/viewports";
 import { test, expect, devices, type Page } from "@playwright/test";
 import sharp from "sharp";
 import { formatTimeOfDay } from "../../src/lib/time/time-of-day";
@@ -361,7 +362,7 @@ test("sandbox: the preview route is gone and a wrong password is rejected", asyn
   expect(preview?.status()).toBe(404);
   await page.goto("/admin");
   await page.getByLabel("Username").fill("admin");
-  await page.getByLabel("Password").fill("wrong");
+  await page.getByLabel("Password", { exact: true }).fill("wrong");
   await submit(page, "Sign In");
   await expect(
     page.getByRole("alert").filter({ hasText: "Sign-in unsuccessful" }),
@@ -840,7 +841,7 @@ test("sandbox: People: the Executive board takes one of its five roles, one pers
   page,
 }) => {
   test.skip(process.env.E2E_DEMO !== "true", "Explicit demo server required");
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await signInToSandbox(page);
   await page.getByRole("link", { name: /^People/ }).click();
   await expect(page).toHaveURL(/\/admin\/people$/);
@@ -1140,7 +1141,7 @@ test("sandbox: invite, resend, deactivate and reactivate a login; own access is 
   page,
 }) => {
   test.skip(process.env.E2E_DEMO !== "true", "Explicit demo server required");
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await signInToSandbox(page);
 
   // A new entry keeps the test repeatable against one running sandbox. In
@@ -1275,7 +1276,7 @@ test("sandbox: forgot password, set password and an expired email link", async (
   page,
 }) => {
   test.skip(process.env.E2E_DEMO !== "true", "Explicit demo server required");
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await page.goto("/admin");
   await expect(
     page.getByText("Need access? Ask a board member who can manage people."),
@@ -1347,7 +1348,7 @@ test("sandbox: Recent changes shows who changed what; prayer changes are highlig
   page,
 }) => {
   test.skip(process.env.E2E_DEMO !== "true", "Explicit demo server required");
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await signInToSandbox(page);
 
   // Rename an event and put the title back, so the test can run again.
@@ -1416,7 +1417,7 @@ test("sandbox: archive, restore, create from and permanently delete content", as
   page,
 }) => {
   test.skip(process.env.E2E_DEMO !== "true", "Explicit demo server required");
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await signInToSandbox(page);
 
   // A new published event keeps the test repeatable against one sandbox.
@@ -1538,7 +1539,7 @@ test("sandbox: archive and restore a person; an archived login stays off; perman
   page,
 }) => {
   test.skip(process.env.E2E_DEMO !== "true", "Explicit demo server required");
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await signInToSandbox(page);
 
   // A new entry with a photo and a login keeps the test repeatable. Photos
@@ -1717,7 +1718,7 @@ test("sandbox: the Prayer & iqamah screen sets iqamah after the adhan with a liv
     ),
   ).toHaveCount(0);
   await expectAccessible(page);
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await expectAccessible(page);
   // Light and dark on every changed screen (Test Strategy). Reload so the
   // scan never catches the colours mid-transition.
@@ -1840,7 +1841,7 @@ test("sandbox: the notifications bell follows Times end on (daily check WP-6; re
 }) => {
   test.skip(process.env.E2E_DEMO !== "true", "Explicit demo server required");
   test.setTimeout(90_000);
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await signInToSandbox(page);
   const addDays = (date: string, days: number) =>
     new Date(Date.parse(`${date}T12:00:00Z`) + days * 86_400_000)
@@ -1911,7 +1912,7 @@ test("sandbox: restore an earlier prayer schedule from History", async ({
   page,
 }) => {
   test.skip(process.env.E2E_DEMO !== "true", "Explicit demo server required");
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await signInToSandbox(page);
 
   await page.goto("/admin/prayer-times");
@@ -1972,7 +1973,7 @@ test("sandbox: About lists the Executive board in tiers, with photos; View all o
   page,
 }) => {
   test.skip(process.env.E2E_DEMO !== "true", "Explicit demo server required");
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
 
   // Seeds: the Executive board always listed, by role; no photo, still shown;
   // no YAML roster (D-10).
@@ -2274,7 +2275,7 @@ test("sandbox walkthrough: the Help page lists the tours, and every PR3 and PR4 
   test.skip(process.env.E2E_DEMO !== "true", "Explicit demo server required");
   // Eleven pages, each with an axe scan.
   test.setTimeout(120_000);
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await signInToSandbox(page);
 
   // The sandbox's iqamah times end today: the notifications bell reminds

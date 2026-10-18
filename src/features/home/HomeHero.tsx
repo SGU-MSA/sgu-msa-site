@@ -60,7 +60,7 @@ export function HomeHero({
   const gatherings = jumuah.gatherings;
   const change = jumuah.change;
   return (
-    <Container className={`${s.above} ${h.hero}`}>
+    <Container className={`${s.above} ${h.hero}`} data-hero>
       <div className={`${h.heroMain} ${s.enter}`}>
         <p className={s.eyebrow}>{hero.eyebrow}</p>
         <h1 className={s.display}>

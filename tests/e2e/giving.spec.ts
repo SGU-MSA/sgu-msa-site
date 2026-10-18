@@ -1,3 +1,4 @@
+import { viewportSize } from "../support/viewports";
 import { test, expect, type Page } from "@playwright/test";
 import { expectAccessible, signInToSandbox, submit } from "./actions";
 
@@ -88,7 +89,7 @@ test("Donate: slips in order, no heading but the board's, tags, rule lines, fine
   await page.emulateMedia({ colorScheme: "dark" });
   await page.reload();
   await expectAccessible(page);
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await page.reload();
   await expectAccessible(page);
 });

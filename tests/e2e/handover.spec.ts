@@ -1,3 +1,4 @@
+import { viewportSize } from "../support/viewports";
 import { test, expect, type Page } from "@playwright/test";
 import {
   expectAccessible,
@@ -200,7 +201,7 @@ test("New board term in dark mode and on a phone", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/admin/handover");
   await expectAccessible(page);
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize(viewportSize("390x844"));
   await page.reload();
   await expectAccessible(page);
 });
