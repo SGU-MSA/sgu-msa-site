@@ -10,7 +10,7 @@ Item IDs (PR3, PR4, …) are roadmap items, not GitHub pull request numbers.
 
 Developer tooling: shared MCP verification and project-local private connections are tracked in [#122](https://github.com/SGU-MSA/sgu-msa-site-private-history/issues/122); configuration ownership follows [ADR 0030](adr/0030-project-local-mcp-additions.md). This work does not change the application release scope.
 
-Both tracks branch from `integration` and run in parallel ([ADR 0016](adr/0016-integration-branch-and-release-pr.md)).
+Both tracks branch from `main`; pull requests merge to `main` ([ADR 0033](adr/0033-pull-requests-merge-to-main.md)).
 
 ## Track A: backend and dashboard
 
