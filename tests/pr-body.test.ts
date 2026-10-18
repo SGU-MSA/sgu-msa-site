@@ -91,16 +91,35 @@ test("database migration Yes needs file and both ticks", () => {
   assert.deepEqual(check(done), []);
 });
 
-test("hosted settings Yes needs What and Done", () => {
-  const body = filled.replace(
-    /(### Hosted settings[\s\S]*?)- \[x\] None\n- \[ \] Yes/,
-    "$1- [ ] None\n- [x] Yes",
-  );
+const hostedChoice = (choice: string) =>
+  filled
+    .replace(/(### Hosted settings[\s\S]*?)- \[x\] None\n/, `$1- [ ] None\n`)
+    .replace(
+      new RegExp(`(### Hosted settings[\\s\\S]*?)- \\[ \\] ${choice}\\n`),
+      `$1- [x] ${choice}\n`,
+    );
+
+test("hosted settings Before merge needs What and Done", () => {
+  const body = hostedChoice("Before merge");
   const text = check(body).join("\n");
   assert.match(text, /needs the "What:"/);
-  assert.match(text, /"Done" ticked/);
-  const done = tick(fill(body, "What", "Vercel env var"), "Done");
+  assert.match(text, /"Done \(before merge only\)" ticked/);
+  const done = tick(
+    fill(body, "What", "Vercel env var"),
+    "Done (before merge only)",
+  );
   assert.deepEqual(check(done), []);
+});
+
+test("hosted settings After merge needs What but not Done", () => {
+  const body = hostedChoice("After merge");
+  const text = check(body).join("\n");
+  assert.match(text, /needs the "What:"/);
+  assert.doesNotMatch(text, /Done/);
+  assert.deepEqual(
+    check(fill(body, "What", "add pr-body to required checks")),
+    [],
+  );
 });
 
 test("rollback Needs more needs How", () => {

@@ -43,14 +43,15 @@ File:
 
 ### Hosted settings
 
-Pick one. Yes: say what (Vercel or Supabase) and tick when done.
+Pick one. Before or after merge: say what (Vercel or Supabase). Before merge: tick Done once it is set. After merge items go in the release checklist entry.
 
 - [ ] None
-- [ ] Yes
+- [ ] Before merge
+- [ ] After merge
 
 What:
 
-- [ ] Done
+- [ ] Done (before merge only)
 
 ### Rollback
 

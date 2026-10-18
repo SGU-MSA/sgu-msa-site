@@ -45,10 +45,17 @@ const RULES = [
   },
   {
     group: "Hosted settings",
-    choices: ["None", "Yes"],
+    choices: ["None", "Before merge", "After merge"],
     min: 1,
     max: 1,
-    needs: [{ triggers: ["Yes"], fields: ["What"], boxes: ["Done"] }],
+    needs: [
+      {
+        triggers: ["Before merge"],
+        fields: ["What"],
+        boxes: ["Done (before merge only)"],
+      },
+      { triggers: ["After merge"], fields: ["What"], boxes: [] },
+    ],
   },
   {
     group: "Rollback",
