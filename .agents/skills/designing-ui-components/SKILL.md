@@ -83,7 +83,8 @@ Never choose the look yourself. Present 2-3 directions plus a recommendation.
 
 1. Shortlist with the `applying-design-styles` skill, filtered by brand fit
    (a university mosque: calm, welcoming, dignified, readable).
-2. Show pictures, not paragraphs:
+2. Show pictures, not paragraphs. Early exploration only (the decision is
+   made on the in-context previews below):
    - **Claude Code with Claude Design:** run `/design-login` once per
      machine, then `/design <brief>` for 2-3 artboards with real site
      content. Bring the chosen design back through its handoff bundle and
@@ -91,13 +92,19 @@ Never choose the look yourself. Present 2-3 directions plus a recommendation.
    - **Don't run `/design-sync` until a direction is chosen** and its tokens
      and components are in the repo. Before that it would upload the
      discarded themes and pull the artboards back toward them.
-   - **Codex, or Claude Design unavailable:** write quick static HTML
-     mockups (one per option, using the real token values) under
-     `.plans/mockups/<feature>/`, open each with
-     `mcp__chrome-devtools__new_page` and capture
-     `mcp__chrome-devtools__take_screenshot` at 390 px and 1440 px. If
-     chrome-devtools is unavailable, use a Playwright screenshot script.
-     Screenshots go in the ignored `artifacts/` folder.
+   - **Codex, or Claude Design unavailable:** quick static HTML mockups with
+     the real token values under `.plans/mockups/<feature>/`, captured with
+     `mcp__chrome-devtools__take_screenshot` at 390 px and 1440 px (or a
+     Playwright screenshot script), saved in the ignored `artifacts/` folder.
+   - **Judge options in real context, on real devices.** Build each option
+     in the real component or page at its real size and push it as its own
+     throwaway branch `option/<topic>-<n>`; Vercel gives it a preview link
+     (staging data). Give the maintainer the links grouped by decision and
+     note device limits (for example iPhone Safari lacks `corner-shape`). A
+     side-by-side Storybook comparison ("Design options/<feature>", light and
+     dark) may help quick scanning but is never the only basis. Never use
+     query-string switches or isolated, enlarged mockups. Delete the option
+     branches and any staging test data after the decision.
 3. Ask the user to choose. Record the choice in the feature contract's
    Decisions section (`docs/contracts/<feature>.md`). Only if it affects
    several features or is hard to reverse (site-wide palette, type, motion
@@ -187,7 +194,7 @@ Start the app (`npm run demo` for sample data) and Storybook
    [developer guide](../../../docs/guides/developer.md#normal-development-and-production-checks));
    `tests/e2e/theme.spec.ts` runs axe on every public page in both themes.
    Add or extend a spec for new interactive UI.
-7. Targeted static checks on touched files: `npx eslint <files>`,
-   `npx prettier --check <files>`.
+7. Targeted static checks on touched files: `npx eslint <files>`, `npx prettier --check <files>`.
+8. Web interface guidelines: [interactions](../reviewing-engineering-changes/references/web-interface-guidelines-interactions.md) and [presentation](../reviewing-engineering-changes/references/web-interface-guidelines-presentation.md); read their Project notes.
 
 Repeat until clean, then hand the screenshots to the user for sign-off.
