@@ -1,0 +1,36 @@
+{
+  "skill": "reviewing-engineering-changes",
+  "evals": [
+    {
+      "name": "review-against-contract",
+      "skills": ["reviewing-engineering-changes"],
+      "query": "Review the funds branch against docs/contracts/go2pay-funds.md before I merge it.",
+      "expected_behavior": [
+        "Runs node scripts/validate-plan.mjs on the contract and checks status is approved with no unanswered decisions.",
+        "Checks each Must-not line and flags files outside the work packages.",
+        "Verifies RLS on the new table, currentAdmin() in each new server action, and no secrets or personal paths.",
+        "Checks the board can edit funds in /admin with a help entry.",
+        "Reports findings grouped by severity in the documented format, and states whether npm run check passed."
+      ]
+    },
+    {
+      "name": "duplicate-admin-check",
+      "skills": ["reviewing-engineering-changes"],
+      "query": "An agent added an isBoardMember(email) check in a client component to hide the newsletter delete button. Review it.",
+      "expected_behavior": [
+        "Flags a second definition of admin that bypasses public.admins / is_admin() as a high or blocker finding.",
+        "Notes that deleteRecordAction already calls currentAdmin() and RLS admin_manage is the authority.",
+        "Recommends removing the duplicate rather than extending it."
+      ]
+    },
+    {
+      "name": "should-not-trigger-ci-gate-design",
+      "skills": [],
+      "query": "Set up a Lighthouse performance budget that fails CI when LCP regresses.",
+      "expected_behavior": [
+        "Does not load reviewing-engineering-changes.",
+        "Treats it as quality-gate or performance tooling work."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,306 @@
+/*
+ * Get Involved, option B "Chooser" (PR8 D-4; ADR 0018 Quiet Paper).
+ * Tokens only. Page shell, eyebrow, display type and the layered photo come
+ * from src/shared/ui/page.module.css.
+ */
+
+/* Hero ------------------------------------------------------------------- */
+.hero {
+  padding-top: clamp(4rem, 9vw, 7rem);
+}
+.display {
+  font-size: clamp(3.25rem, 8vw, 6.5rem);
+  line-height: 0.95;
+}
+.heroRow {
+  display: grid;
+  gap: 2rem;
+  align-items: end;
+}
+@media (min-width: 60rem) {
+  .heroRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4rem;
+  }
+}
+.heroSub {
+  margin: 0.6rem 0 0;
+  max-width: 24ch;
+  color: var(--muted);
+  font: italic 400 clamp(1.6rem, 3vw, 2.4rem) / 1.12 var(--font-display);
+}
+.intro {
+  margin: 2rem 0 0;
+  max-width: 60ch;
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+.main {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  padding-bottom: var(--section-y);
+}
+.empty {
+  margin: 0;
+  padding: 3.5rem 0;
+  border-block: 1px solid var(--rule);
+  color: var(--muted);
+  font: italic 400 clamp(1.5rem, 3vw, 2rem) / 1.2 var(--font-display);
+  text-align: center;
+}
+
+/* The list and the open sheet share one grid ----------------------------- */
+.chooser {
+  display: grid;
+  align-items: start;
+  border-top: 1px solid var(--ink);
+}
+.slot {
+  display: contents;
+}
+/* Side by side only where :has() can pick the sheet without JavaScript;
+   otherwise each sheet stays under its own row (the phone layout). */
+@supports selector(:has(*)) {
+  @media (min-width: 52rem) {
+    .chooser {
+      grid-template-columns: minmax(17rem, 0.42fr) minmax(0, 1fr);
+      grid-template-rows: repeat(var(--rows), auto) 1fr;
+      column-gap: clamp(2rem, 4vw, 4rem);
+    }
+    .row {
+      grid-column: 1;
+    }
+    .panel {
+      grid-column: 2;
+      grid-row: 1 / -1;
+      padding-top: 1.5rem;
+    }
+  }
+}
+
+/* Which sheet is open. With JavaScript: the `hidden` attribute. Without it:
+   the linked sheet (:target), or the first one when none is linked. The
+   :has() rules stay apart, so a browser without :has() keeps the others
+   (and, with no JavaScript, simply shows every sheet). */
+.panel[hidden] {
+  display: none;
+}
+.chooser[data-mode="static"]:has(.panel:target) .panel:not(:target),
+.chooser[data-mode="static"]:not(:has(.panel:target))
+  .slot:not(:first-child)
+  .panel {
+  display: none;
+}
+
+/* Rows ------------------------------------------------------------------ */
+.row {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 1rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+}
+.row:hover .rowTitle {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+.rowNumber {
+  color: var(--muted);
+  font: 400 1.25rem / 1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+.rowText {
+  min-width: 0;
+}
+.rowTitle {
+  position: relative;
+  display: inline-block;
+  font: 400 1.35rem / 1.2 var(--font-display);
+}
+.rowSummary {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+/* The ink ring marks the open row (decoration; aria-expanded carries it). */
+.rowTitle > svg.rowRing {
+  display: none;
+  inset: -0.7rem auto auto -1.15rem;
+  width: calc(100% + 2.6rem);
+  max-width: none;
+  height: calc(100% + 1.4rem);
+}
+.row[aria-expanded="true"] .rowTitle > svg.rowRing {
+  display: block;
+}
+.row[aria-expanded="true"] .rowTitle {
+  padding-inline: 0.15rem;
+}
+.chooser[data-mode="static"] .slot:has(.panel:target) .rowTitle > svg.rowRing,
+.chooser[data-mode="static"]:not(:has(.panel:target))
+  .slot:first-child
+  .rowTitle
+  > svg.rowRing {
+  display: block;
+}
+.chooser[data-mode="static"] .slot:has(.panel:target) .rowTitle,
+.chooser[data-mode="static"]:not(:has(.panel:target))
+  .slot:first-child
+  .rowTitle {
+  padding-inline: 0.15rem;
+}
+
+/* The open pathway, on a lifted paper sheet ------------------------------ */
+.panel {
+  scroll-margin-top: 7rem;
+  padding: 0.75rem 0 1.5rem;
+  /* drop-shadow, not box-shadow: the sheet's torn edge is a clip-path. */
+  filter: drop-shadow(0 18px 28px var(--shadow));
+}
+.sheet {
+  position: relative;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: var(--paper-light);
+  color: var(--ink);
+  clip-path: polygon(
+    0 1%,
+    9% 0,
+    27% 0.8%,
+    49% 0.1%,
+    71% 0.9%,
+    100% 0,
+    99.6% 99%,
+    80% 100%,
+    58% 99.2%,
+    33% 100%,
+    12% 99.3%,
+    0.4% 100%
+  );
+}
+@media (forced-colors: active) {
+  .sheet {
+    clip-path: none;
+    border: 1px solid CanvasText;
+  }
+}
+.sheetHead {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.sheetNumber {
+  color: var(--muted);
+  font: 400 clamp(2.5rem, 4vw, 3.5rem) / 0.9 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--muted);
+}
+.title {
+  margin: 0;
+  font: 400 clamp(1.9rem, 3vw, 2.5rem) / 1.04 var(--font-display);
+  letter-spacing: var(--tracking-display);
+  overflow-wrap: anywhere;
+}
+.summary {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font: italic 400 clamp(1.2rem, 1.8vw, 1.4rem) / 1.3 var(--font-display);
+}
+.photo {
+  max-width: 30rem;
+  margin: 1.5rem 0 0;
+}
+.body {
+  margin: 1.1rem 0 0;
+  max-width: 60ch;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.cta {
+  margin-top: 1.75rem;
+}
+
+/* Steps ------------------------------------------------------------------ */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  margin: 1.75rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  list-style: none;
+}
+.step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.9rem 1rem 0 0;
+}
+.stepNumber {
+  color: var(--muted);
+  font: 400 1.5rem / 1 var(--font-display);
+}
+.stepLabel {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+.stepDetail {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Fields and note -------------------------------------------------------- */
+.fields {
+  margin-top: 1.5rem;
+}
+.fieldList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}
+.fieldList li:not(:last-child)::after {
+  content: "·";
+  margin-inline: 0.6rem;
+  color: var(--muted);
+}
+.note {
+  margin: 1.4rem 0 0;
+  max-width: 58ch;
+  padding-left: 1rem;
+  border-left: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}

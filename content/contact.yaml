@@ -1,0 +1,23 @@
+# Starter text for the Contact page (PR5b). The live site reads this page's
+# text from the dashboard (Pages → Contact). The email address and social
+# links come from Pages → Site-wide (site.yaml here).
+
+# The sections below the page top, in the order visitors see them; `shown: false`
+# hides one and keeps its text (Pages, review 3 B; src/lib/content/page-layouts.ts).
+sections:
+  - { id: card, shown: true }
+  - { id: visit, shown: true }
+
+eyebrow: "Contact & visit"
+title: "You’re welcome here"
+description: "Connect with the MSA, ask a question, or plan your first visit."
+
+card:
+  heading: "Get in touch"
+  email_intro: "For community questions and current access information:"
+  no_email: "Contact details will be published here."
+
+visit:
+  heading: "Find the Musallah"
+  body: "Follow the written directions on the Prayer & Musallah page. Exact map, parking, and accessibility details are awaiting confirmation."
+  link_label: "View directions"

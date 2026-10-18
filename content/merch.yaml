@@ -1,0 +1,12 @@
+# ==========================================================================
+# The Merch page's opening (starter text; the board edits it in Pages →
+# Merch). The collections, items, photos and sizes are dashboard data
+# (Merch screen, PR5c): nothing about them lives here.
+# ==========================================================================
+
+hero:
+  eyebrow: "Three collections"
+  title: "Merch"
+  description: "An archive of what the MSA has made, and what students are wearing now."
+
+garment_note: "All MSA shirts are long-sleeve."

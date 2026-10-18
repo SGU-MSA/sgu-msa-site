@@ -1,0 +1,9 @@
+# Starter text for the Donate letter's opening (PR5b). The live site reads
+# this page's text from the dashboard (Pages → Donate); this file is the
+# sandbox's text and the source of the one-time seed (scripts/page-text-seed.mjs).
+# The giving lines below the opening belong to the payments screens (PR6).
+
+eyebrow: "Giving at SGU MSA"
+title: "Support"
+emphasis: "our community"
+lede: "Thank you for wanting to support Muslim student life at SGU."

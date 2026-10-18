@@ -1,0 +1,56 @@
+# Arabic reminders (ADR 0018): the dhikr of the hour and the tasbih thread, a
+# fixed list kept by developers. Read through the editorial source as
+# loadReminders() and validated by remindersSchema (src/lib/content/schemas.ts);
+# an invalid file fails `npm run validate:content` and the build. Qur'an verses
+# are not here: they come from the fixed verse library in the database, and
+# the board picks one per place (Pages → Qur'an verses; ADR 0026).
+#
+# Generated, never retyped: adhkar come from Hisn al-Muslim. Every string needs
+# the board's review before launch.
+# Tasbih: the leading conjunction (وَ) is dropped so each phrase stands alone
+# on the beads.
+#
+# Respect rules: scripture and dhikr are always set level, never behind other
+# text, never faint wallpaper, never beside delete controls.
+
+dhikr:
+  - id: 'dhikr-morning'
+    slot: 'morning'
+    arabic: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ'
+    meaning: 'We have reached the morning and at this very time unto Allah belongs all sovereignty.'
+    reference: 'Morning remembrance'
+    source: 'Hisn al-Muslim no. 77 (hisnmuslim.com)'
+  - id: 'dhikr-evening'
+    slot: 'evening'
+    arabic: 'أمسينا وأمسى الملك للَّه'
+    meaning: 'We have reached the evening and at this very time unto Allah belongs all sovereignty.'
+    reference: 'Evening remembrance'
+    source: 'Hisn al-Muslim no. 77, evening wording (hisnmuslim.com)'
+  - id: 'dhikr-after-prayer'
+    slot: 'after-prayer'
+    arabic: 'سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَاللَّهُ أَكْبَرُ'
+    meaning: 'How perfect Allah is, all praise is for Allah, and Allah is the greatest.'
+    reference: 'After the prayer (33 times each)'
+    source: 'Hisn al-Muslim no. 69 (hisnmuslim.com)'
+  - id: 'dhikr-friday'
+    slot: 'friday'
+    arabic: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ، وَعَلَى آلِ مُحَمَّدٍ'
+    meaning: 'O Allah, send prayers upon Muhammad and the family of Muhammad.'
+    reference: 'Prayers upon the Prophet ﷺ, especially on Friday'
+    source: 'Hisn al-Muslim no. 53 (hisnmuslim.com)'
+  - id: 'dhikr-night'
+    slot: 'night'
+    arabic: 'أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ'
+    meaning: 'I seek Allah''s forgiveness and I turn to Him in repentance.'
+    reference: 'Seeking forgiveness'
+    source: 'Hisn al-Muslim no. 96 (hisnmuslim.com)'
+tasbih:
+  phrases:
+    - 'سُبْحَانَ اللَّهِ'
+    - 'الْحَمْدُ لِلَّهِ'
+    - 'اللَّهُ أَكْبَرُ'
+  meanings:
+    - 'How perfect Allah is'
+    - 'All praise is for Allah'
+    - 'Allah is the greatest'
+  source: 'Hisn al-Muslim no. 69 (hisnmuslim.com)'

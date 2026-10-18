@@ -1,0 +1,59 @@
+# ==========================================================================
+# Starter text for the sign-up forms list (PR5b D-7, D-25). The live site
+# reads it from the dashboard (Pages → Sign-up forms). No React component
+# contains a form URL; links are Google Forms links only.
+#
+# `open: false` hides the entry's button, and so does an open entry with no
+# link (review fixes P3: no "coming soon" lines). The starter links are one
+# shared example form, so every entry starts closed until the board pastes
+# its real form.
+# ==========================================================================
+
+forms:
+  musallah_helper:
+    label: "Become a Musallah Helper"
+    url: "https://forms.gle/9ZuhdAz6PXKReYW58"
+    open: false
+    description: "Help keep the Musallah welcoming, organized, and ready for the community."
+
+  student_khutbah:
+    label: "Give a Student Khutbah"
+    url: "https://forms.gle/9ZuhdAz6PXKReYW58"
+    open: false
+    description: "Submit your interest and a proposed topic."
+
+  host_halaqa:
+    label: "Host a Halaqa"
+    url: "https://forms.gle/9ZuhdAz6PXKReYW58"
+    open: false
+    description: "Propose a gathering and tell us what support you need."
+
+  volunteer:
+    label: "Volunteer"
+    url: "https://forms.gle/9ZuhdAz6PXKReYW58"
+    open: false
+
+  mentor:
+    label: "Become a Mentor"
+    url: "https://forms.gle/9ZuhdAz6PXKReYW58"
+    open: false
+
+  incoming_student:
+    label: "Connect With an MSA Student"
+    url: "https://forms.gle/9ZuhdAz6PXKReYW58"
+    open: false
+
+  submit_idea:
+    label: "Submit an Idea"
+    url: "https://forms.gle/9ZuhdAz6PXKReYW58"
+    open: false
+
+  ramadan_volunteer:
+    label: "Volunteer During Ramadan"
+    url: "https://forms.gle/9ZuhdAz6PXKReYW58"
+    open: false
+
+  ramadan_donor:
+    label: "Support Ramadan"
+    url: "https://forms.gle/9ZuhdAz6PXKReYW58"
+    open: false

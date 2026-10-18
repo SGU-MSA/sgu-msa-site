@@ -1,0 +1,12 @@
+Applying design styles skill: notice
+
+SKILL.md in this folder was authored by the project maintainer as a claude.ai
+skill and copied into this repository at the maintainer's request. It is
+distributed under this repository's LICENSE (The Unlicense, public domain
+dedication); see LICENSE at the repository root.
+
+Changes made for this project:
+- Normalized the frontmatter (unquoted name, a "Not for ..." pointer to
+  designing-ui-components in the description, license and metadata fields).
+- Added the "Project notes" section at the end. Everything above it is the
+  original text.

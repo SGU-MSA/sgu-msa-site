@@ -1,0 +1,208 @@
+/*
+ * Quiet Paper page patterns shared by every public page (ADR 0018; approved
+ * D1 prototypes): the page shell, type, links, sections, the ink band, the
+ * layered photo and the entrance. Tokens only. Page-only rules stay in each
+ * feature's own module.
+ * Every selector is wrapped in :where() (zero specificity), so a page's own
+ * module always overrides a shared rule, whatever order the stylesheets load in.
+ */
+
+/* Page ---------------------------------------------------------------- */
+:where(.page) {
+  position: relative;
+  overflow: clip;
+}
+:where(.above) {
+  position: relative;
+  z-index: var(--z-raised);
+}
+/* Room for the tasbih thread beside the text on phones. A band may sit in a
+   page section (`PageSection`, display: contents; review 3 B). */
+@media (max-width: 44rem) {
+  :where(.page .above),
+  :where(.page > .band > *),
+  :where(.page > [data-page-section] > .band > *),
+  :where(.page > .ink > *),
+  :where(.page > [data-page-section] > .ink > *) {
+    padding-left: 1.85rem;
+  }
+}
+
+/* Type ---------------------------------------------------------------- */
+:where(.eyebrow) {
+  margin: 0 0 1.25rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+:where(.display) {
+  margin: 0;
+  color: var(--ink);
+  font: 400 clamp(3.25rem, 9vw, 8rem) / 0.92 var(--font-display);
+  letter-spacing: var(--tracking-display);
+  overflow-wrap: break-word;
+}
+:where(.h2) {
+  margin: 0;
+  color: var(--ink);
+  font: 400 clamp(2.25rem, 4.5vw, 3.5rem) / 1 var(--font-display);
+  letter-spacing: -0.01em;
+}
+.h2Small {
+  composes: h2;
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+}
+:where(.display em),
+:where(.h2 em) {
+  color: var(--muted);
+}
+:where(.lede) {
+  margin: 2rem 0 0;
+  max-width: 36ch;
+  color: var(--ink);
+  font-size: 1.1875rem;
+  line-height: 1.6;
+}
+:where(.small) {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* Links --------------------------------------------------------------- */
+:where(.actions) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  margin-top: 2rem;
+}
+:where(.underline) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+:where(.underline > span) {
+  border-bottom: 1.5px solid var(--ink);
+  padding-bottom: 2px;
+}
+.underlineSoft {
+  composes: underline;
+}
+:where(.underlineSoft > span) {
+  border-bottom-color: var(--rule);
+}
+:where(.underline:hover > span) {
+  border-bottom-color: var(--ring);
+}
+
+/* Sections ------------------------------------------------------------ */
+:where(.split) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem 4.5rem;
+  padding-block: clamp(4rem, 8vw, 7.5rem);
+}
+:where(.splitSide) {
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+:where(.splitMain) {
+  flex: 999 1 32rem;
+  min-width: 0;
+}
+:where(.rule) {
+  border-top: 1px solid var(--rule);
+}
+:where(.band) {
+  position: relative;
+  z-index: var(--z-base);
+  border-block: 1px solid var(--rule);
+  background: var(--band);
+  padding-block: clamp(4rem, 7vw, 6rem);
+}
+:where(.list) {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  list-style: none;
+}
+
+/* Inverted ink surfaces (Donate band, Jumu'ah card). The inner element
+   re-points the ink tokens so shared pieces inside (margin notes, the "?")
+   read on ink. */
+:where(.ink) {
+  --on-surface: var(--paper);
+  --surface: var(--ink);
+  background: var(--surface);
+}
+:where(.ink > *) {
+  --ink: var(--on-surface);
+  --paper: var(--surface);
+  --muted: var(--on-ink-muted);
+  --rule: var(--on-ink-rule);
+  /* The focus outline is ink-coloured by default and would vanish on the band. */
+  --focus-ring: var(--on-surface);
+  color: var(--ink);
+}
+
+/* Layered photo: two paper sheets behind the picture --------------------- */
+:where(.photo) {
+  position: relative;
+  flex: 1 1 26rem;
+  min-width: 0;
+  padding: 1.75rem;
+}
+:where(.photo)::before,
+:where(.photo)::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+:where(.photo)::before {
+  inset: 0 2.5rem 2.5rem 0;
+  background: var(--paper-deep);
+  transform: rotate(-2deg);
+}
+:where(.photo)::after {
+  inset: 2.5rem 0 0 2.5rem;
+  background: var(--paper-light);
+  box-shadow: 0 20px 40px var(--shadow);
+  transform: rotate(1.4deg);
+}
+:where(.photoFrame) {
+  position: relative;
+  z-index: var(--z-raised);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--paper-deep);
+}
+:where(.photoFrame img) {
+  filter: var(--photo-filter);
+}
+@media (forced-colors: active) {
+  :where(.photo)::before,
+  :where(.photo)::after {
+    display: none;
+  }
+}
+
+/* A quiet entrance; none with reduced motion (and none without CSS animation).
+ * Movement only, no fade: text is at full contrast from the first frame (WCAG; axe scans can land mid-entrance). */
+@media (prefers-reduced-motion: no-preference) {
+  :where(.enter) {
+    animation: quiet-enter 600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  :where(.enterLate) {
+    animation: quiet-enter 600ms 250ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+@keyframes quiet-enter {
+  from {
+    transform: translateY(-6px);
+  }
+}

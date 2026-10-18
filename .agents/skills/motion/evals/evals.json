@@ -1,0 +1,51 @@
+{
+  "skill": "motion",
+  "evals": [
+    {
+      "name": "exit-animation-in-react",
+      "skills": [
+        "motion"
+      ],
+      "query": "The mobile nav panel disappears instantly when closed. Make it slide out smoothly.",
+      "expected_behavior": [
+        "Reads references/css-or-motion.md and notes that exit animations need Motion AnimatePresence because React removes the element at once.",
+        "Checks package.json, sees motion is not installed, and asks before adding it (or offers a CSS-only alternative such as keeping the element mounted).",
+        "Uses motion/react in a 'use client' leaf only, never framer-motion.",
+        "Uses token durations and honors reduced motion."
+      ]
+    },
+    {
+      "name": "css-spring-generation",
+      "skills": [
+        "motion"
+      ],
+      "query": "Give me a gentle CSS spring for the event card hover lift.",
+      "expected_behavior": [
+        "Calls mcp__motion__generate-css-easing with kind spring, a short duration and a low bounce.",
+        "Uses the returned duration and linear() easing in a transition on transform only.",
+        "If the motion MCP server is unavailable, says so and uses a cubic-bezier from references/css-spring.md instead of inventing linear() values."
+      ]
+    },
+    {
+      "name": "gated-motion-plus-example",
+      "skills": [
+        "motion"
+      ],
+      "query": "Add a Motion ticker of sponsor logos to the homepage.",
+      "expected_behavior": [
+        "Recognizes Ticker as a paid motion-plus component and does not import or install motion-plus.",
+        "Links the public demo if search returns a gated item and does not reconstruct its source.",
+        "Offers a free CSS or motion-based alternative and leaves the choice to the user."
+      ]
+    },
+    {
+      "name": "should-not-trigger-motion-language",
+      "skills": [],
+      "query": "What should our standard durations and easing be across the site, and should anything bounce?",
+      "expected_behavior": [
+        "Does not load motion; this is the project's motion language (motion-system-orchestration).",
+        "Presents options with a recommendation instead of deciding."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+# ==========================================================================
+# External systems.
+#
+# Read today: `payments.receipt_note` (PR6: the receipt note the board copies
+# into each Go2Pay product from the fund and ticket editors). This
+# file holds wording only. It never holds a credential:
+# no OAuth client secret, no service-account key, no API token. Those belong
+# in environment variables, read server-side. See .env.example.
+# ==========================================================================
+
+payments:
+  receipt_note: "Thank you for supporting the SGU MSA. JazakAllahu khayran. Questions: so-msa@sgu.edu. This is not a tax receipt."

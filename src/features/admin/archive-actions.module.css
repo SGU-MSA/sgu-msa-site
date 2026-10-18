@@ -1,0 +1,44 @@
+/* The shared archive actions (review fixes P1, item 6). */
+/* View and Restore side by side; their forms take no extra space. */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+.actions > form {
+  margin-block: 0;
+}
+/* An archived list row: name on the left, View and Restore on the right
+   (under the name on a phone), and Delete permanently across the row.
+   `.row` doubles the class so it outranks `.admin-list li`. */
+.row.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+.name {
+  min-width: 0;
+}
+.name > p {
+  margin-block-start: 0.25rem;
+}
+.purge {
+  grid-column: 1 / -1;
+}
+.purge > form {
+  margin-block: 1rem 0;
+}
+.purge button {
+  justify-self: start;
+}
+/* Restore under what an archived item held, on its own page. */
+.entryActions {
+  margin-block-start: 1.5rem;
+}
+@media (max-width: 34rem) {
+  .row.row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,36 @@
+# ==========================================================================
+# Questions students actually ask. Used on the homepage and /faq.
+# ==========================================================================
+
+# The sections below the page top, in the order visitors see them; `shown: false`
+# hides one and keeps its text (Pages, review 3 B; src/lib/content/page-layouts.ts).
+sections:
+  - { id: questions, shown: true }
+
+eyebrow: "You asked, we answered"
+heading: "Common Questions"
+
+hero:
+  eyebrow: "You asked, we answered"
+  title: "Common Questions"
+  description: "Practical answers about prayer, the Musallah, and getting involved."
+
+items:
+  - id: musallah-location
+    question: "Where is the Musallah located?"
+    answer: "The Musallah is a short walk from the Charter Hall bus stop. The Prayer & Musallah page has step-by-step written directions."
+  - id: jumuah-times
+    question: "What are the Jumu’ah times?"
+    answer: "Jumu’ah is held weekly at the SGU Musallah. The current khutbah and iqamah times are on the Prayer & Musallah page, and are updated there whenever they change."
+  - id: separate-areas
+    question: "Are brothers’ and sisters’ areas separate?"
+    answer: "Arrangements for the prayer areas are being confirmed with the university, and will be published on the Prayer & Musallah page as soon as they are settled."
+  - id: student-khutbah
+    question: "Can I give a khutbah as a student?"
+    answer: "Yes. Submit your interest and a proposed topic through the Get Involved page. MSA leadership will follow up regarding preparation, review, and scheduling."
+  - id: get-involved
+    question: "How can I get involved in MSA?"
+    answer: "Get Involved lists every pathway — Musallah helper, khutbah, halaqa, volunteering, mentoring, Ramadan support, and submitting your own idea. Each one links to its form."
+  - id: who-to-talk-to
+    question: "Who can I talk to if I need help?"
+    answer: "The Support page lists MSA representatives you can reach out to. MSA representatives offer peer support and are not professional counselors; the page also points to professional university services."

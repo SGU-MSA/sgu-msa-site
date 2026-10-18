@@ -1,0 +1,5 @@
+name = "implementer"
+description = "Implements an approved, precise engineering contract."
+model = "gpt-6-luna"
+model_reasoning_effort = "high"
+developer_instructions = "Read and follow the shared role instructions in .agents/roles/implementer.md."

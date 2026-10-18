@@ -1,0 +1,295 @@
+/*
+ * Merch, option A "Now Wearing" (PR8 D-7; ADR 0018 Quiet Paper). Tokens only.
+ * Page shell, eyebrow, display type, the archive heading and the layered
+ * photo come from src/shared/ui/page.module.css. Arabic is level.
+ */
+
+.main {
+  padding-bottom: clamp(4rem, 8vw, 7rem);
+}
+
+/* Hero ------------------------------------------------------------------- */
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem 4rem;
+  align-items: flex-end;
+  padding-block: clamp(4rem, 9vw, 7rem) clamp(2rem, 4vw, 3rem);
+}
+.heroText {
+  flex: 999 1 30rem;
+  min-width: 0;
+}
+.display {
+  font-size: clamp(3.25rem, 8vw, 6.5rem);
+  line-height: 0.95;
+}
+.heroSub {
+  margin: 0.6rem 0 0;
+  max-width: 26ch;
+  color: var(--muted);
+  font: italic 400 clamp(1.6rem, 3.4vw, 2.6rem) / 1.12 var(--font-display);
+}
+.heroImage {
+  position: relative;
+  flex: 1 1 18rem;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--paper-deep);
+}
+.heroImage img {
+  filter: var(--photo-filter);
+}
+.garmentNote {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.shirt {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  color: var(--ring);
+}
+.empty {
+  margin: 0;
+  padding: 2rem 0;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font: italic 400 1.35rem / 1.3 var(--font-display);
+}
+
+/* Type ------------------------------------------------------------------- */
+.kicker {
+  margin: 0 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.featureName {
+  margin: 0;
+  color: var(--ink);
+  font: 400 clamp(3.5rem, 7vw, 5.75rem) / 0.95 var(--font-display);
+  letter-spacing: var(--tracking-display);
+  overflow-wrap: break-word;
+}
+.h3 {
+  margin: 0;
+  color: var(--ink);
+  font: 400 clamp(1.75rem, 2.6vw, 2.25rem) / 1.05 var(--font-display);
+}
+/* The Arabic name, level. Its column is a size container, so a one-line name
+   shrinks with the column (8.8em fits) instead of running off a phone. */
+.arabic {
+  margin: 0.6rem 0 0;
+  color: var(--ink);
+  font-family: var(--font-arabic);
+  line-height: 1.6;
+}
+.arabicSm {
+  font-size: min(1.5rem, 11cqi);
+}
+.arabicLg {
+  font-size: min(clamp(2.6rem, 5vw, 3.75rem), 11cqi);
+}
+.quote {
+  margin: 1.25rem 0 0;
+  max-width: 34ch;
+  color: var(--muted);
+  font: italic 400 clamp(1.35rem, 2.2vw, 1.75rem) / 1.3 var(--font-display);
+}
+.quoteSmall {
+  margin: 1rem 0 0;
+  max-width: 44ch;
+  color: var(--muted);
+  font: italic 400 1.2rem / 1.35 var(--font-display);
+}
+.body,
+.bodySmall {
+  margin: 1.25rem 0 0;
+  max-width: 58ch;
+  color: var(--muted);
+  line-height: var(--leading-body);
+}
+.bodySmall {
+  font-size: 0.9375rem;
+}
+
+/* Details as a leader list ------------------------------------------------ */
+.details {
+  margin: 1.5rem 0 0;
+  max-width: 26rem;
+  font-size: 0.875rem;
+}
+.details > div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.35rem 0;
+}
+.details dt {
+  color: var(--muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.details dd {
+  margin: 0;
+  text-align: end;
+}
+.leader {
+  flex: 1 1 1.5rem;
+  min-width: 1.5rem;
+  border-bottom: 1px dotted var(--muted);
+  transform: translateY(-0.25rem);
+}
+
+/* Sizes: "See price and buy ↗", one button per size (PR5c, P-72 B) ------- */
+.sizes {
+  margin-top: 1.5rem;
+}
+.sizesLabel {
+  margin: 0 0 0.6rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.sizeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.size {
+  min-width: 4.5rem;
+  padding-inline: 1rem;
+}
+
+/* Photo frames ------------------------------------------------------------ */
+.frame {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: var(--paper-deep);
+}
+.frame img {
+  filter: var(--photo-filter);
+}
+.thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.75rem;
+}
+.thumb {
+  aspect-ratio: 1;
+}
+/* At thumbnail size a placeholder keeps only its camera and label. */
+.thumb :global(.photo-brief),
+.thumb :global(.photo-note),
+.mini :global(.photo-label) {
+  display: none;
+}
+.thumb :global(.photo-placeholder) {
+  padding: 0.5rem;
+}
+
+/* The current collection --------------------------------------------------- */
+.feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 2.5rem clamp(2.5rem, 6vw, 5.5rem);
+  align-items: center;
+  padding-block: clamp(2rem, 5vw, 4rem);
+  border-top: 1px solid var(--rule);
+  scroll-margin-top: 6rem;
+}
+.featureMedia {
+  min-width: 0;
+}
+/* Above the layered photo's front sheet. */
+.featureLead {
+  z-index: var(--z-raised);
+  aspect-ratio: 4 / 5;
+}
+.featureText {
+  min-width: 0;
+  container-type: inline-size;
+}
+.items {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 3rem clamp(2.5rem, 5vw, 4.5rem);
+  margin: 0;
+  padding: 2rem 0 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+.item {
+  min-width: 0;
+}
+.itemPhotos {
+  margin-top: 1.5rem;
+}
+.otherItem + .otherItem {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+.otherName {
+  margin: 1.25rem 0 0;
+  color: var(--ink);
+  font: 400 1.35rem / 1.2 var(--font-display);
+}
+
+/* Every other collection --------------------------------------------------- */
+.more {
+  margin-top: clamp(2rem, 5vw, 4rem);
+  padding-top: clamp(3rem, 7vw, 5.5rem);
+  border-top: 1px solid var(--rule);
+}
+.pages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 3.5rem clamp(2.5rem, 5vw, 4.5rem);
+  margin-top: 2.5rem;
+}
+.page {
+  min-width: 0;
+  container-type: inline-size;
+  scroll-margin-top: 6rem;
+}
+.pageLead {
+  aspect-ratio: 3 / 2;
+  margin-bottom: 0.75rem;
+}
+.mini {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.page > .kicker {
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 56rem) {
+  .feature {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* On phones the name leads; the photo follows. */
+  .featureText {
+    order: -1;
+  }
+}
+@media (max-width: 30rem) {
+  .featureMedia > div {
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,306 @@
+/*
+ * Donate as a letter (PR8 D-2, option C "Letter"; ADR 0018). Tokens only,
+ * light and dark through the theme's custom properties. The sheet is the
+ * only thing behind the letter; the seal, text and the margin note verse are
+ * set level above it.
+ */
+
+.page {
+  position: relative;
+  padding-block: clamp(2.5rem, 6vw, 4.5rem) var(--section-y);
+}
+
+.letter {
+  position: relative;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.25rem, 5vw, 4rem);
+  text-align: center;
+}
+.letter > :not(.sheet) {
+  position: relative;
+  z-index: var(--z-raised);
+}
+
+/* The letter's deckled paper sheet: decoration only, behind the letter. */
+.sheet {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-base);
+  background: var(--paper-light);
+  box-shadow: 0 30px 60px var(--shadow);
+  transform: rotate(-0.6deg);
+  clip-path: polygon(
+    0 1%,
+    8% 0,
+    22% 0.8%,
+    38% 0.2%,
+    55% 0.9%,
+    72% 0.1%,
+    88% 0.8%,
+    100% 0.3%,
+    99.4% 99%,
+    86% 99.8%,
+    68% 99.1%,
+    50% 99.9%,
+    32% 99.2%,
+    14% 99.8%,
+    0.6% 99.2%
+  );
+  pointer-events: none;
+}
+
+.seal {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.75rem;
+}
+
+.eyebrow {
+  margin: 0 0 1.25rem;
+  color: var(--muted);
+  font: 500 0.8125rem/1.4 var(--font-body);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.display {
+  margin: 0;
+  color: var(--ink);
+  font: 400 clamp(3rem, 7vw, 5.25rem) / 0.95 var(--font-display);
+  letter-spacing: var(--tracking-display);
+}
+/* The italic, muted second line of the Quiet Paper headings. */
+.display em {
+  display: block;
+  color: var(--muted);
+}
+
+.lede {
+  margin: 1.75rem auto 0;
+  max-width: 34ch;
+  color: var(--ink);
+  font-size: 1.1875rem;
+  line-height: 1.6;
+}
+
+/* A rubric rule between the thanks and the giving state. */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  max-width: 22rem;
+  margin: clamp(2.5rem, 5vw, 3.5rem) auto;
+}
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--rule);
+}
+.divider svg {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  fill: var(--ring);
+}
+
+.h2 {
+  margin: 0;
+  color: var(--ink);
+  font: 400 clamp(2rem, 3.5vw, 2.75rem) / 1.05 var(--font-display);
+}
+
+.action {
+  margin-top: 2rem;
+}
+
+/* The Go2Pay notice near the top (review fixes P4): givers know they leave
+   the site for Go2Pay and what the fees are, before they choose. */
+.notice {
+  max-width: 46ch;
+  margin: 0 auto 2rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rule);
+  border-inline-start: 3px solid var(--ring);
+  background: var(--paper-light);
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* The verse closes the letter like a signature; room for the verse on one line. */
+.letter .note {
+  justify-content: center;
+  max-width: 36rem;
+  margin-inline: auto;
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+/* PR6: room for two slips side by side while funds are open. */
+.letter.wide {
+  max-width: 62rem;
+}
+
+/* "The fund you choose is your intention." (D-62) */
+.intent {
+  max-width: 44ch;
+  margin: 1rem auto 0;
+  color: var(--ink);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/*
+ * The paper slips (PR6 D-49, D-77; `donate-slips.png`): a deckled slip of
+ * paper with a deeper sheet peeking under it; no heading unless the board
+ * typed one.
+ */
+.groups {
+  margin-top: 2rem;
+}
+/* Each group, its heading included, sits on the slips' left edge (D-80). */
+.groups > div {
+  max-width: 50rem;
+  margin-inline: auto;
+  text-align: left;
+}
+.group {
+  margin: 2.6rem 0 1.1rem;
+  color: var(--ink);
+  font: 400 clamp(1.8rem, 3vw, 2.1rem) / 1.1 var(--font-display);
+}
+/*
+ * Slips fill the columns from the left (D-80): auto-fill keeps a lone slip,
+ * or the last one of an odd row, one column wide on the left, never centred.
+ */
+.slips {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
+  gap: 1.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.groups > div + div .slips {
+  margin-top: 1.4rem;
+}
+/* A group with a heading ends with a thin line across the slips (D-79). */
+.headed:not(:last-child) {
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--rule);
+}
+.headed:not(:last-child) + div .slips {
+  margin-top: 2rem;
+}
+.slip {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1.4rem 1.4rem 1.3rem;
+}
+.slip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--paper);
+  clip-path: polygon(
+    0 1.2%,
+    10% 0,
+    30% 0.9%,
+    52% 0.1%,
+    74% 1%,
+    100% 0.2%,
+    99.5% 99%,
+    80% 99.8%,
+    55% 99.1%,
+    30% 99.9%,
+    0.5% 99.3%
+  );
+}
+.slip::after {
+  content: "";
+  position: absolute;
+  right: -0.4rem;
+  bottom: -0.5rem;
+  left: 0.4rem;
+  z-index: -1;
+  height: 0.6rem;
+  background: var(--paper-deep);
+  clip-path: polygon(0 0, 100% 0, 99% 100%, 40% 70%, 0 100%);
+}
+.slip > * {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
+/* The category tag is text, never colour alone; zakat tags use a double border. */
+.tag {
+  align-self: flex-start;
+  border: 1px solid var(--ink);
+  padding: 0.12rem 0.5rem;
+  color: var(--ink);
+  font: 600 0.68rem/1.3 var(--font-body);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.tagRestricted {
+  border-width: 3px;
+  border-style: double;
+}
+.slipTitle {
+  color: var(--ink);
+  font: 400 1.75rem/1.05 var(--font-display);
+}
+.rule {
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.about {
+  color: var(--muted);
+}
+.soon {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.clock {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+.give {
+  margin-top: auto;
+  padding-top: 0.6rem;
+}
+
+/* The fine print: Go2Pay's line (D-31) and the fee line (D-76). */
+.fine {
+  max-width: 52ch;
+  margin: 2.4rem auto 0;
+  border-top: 1px solid var(--rule);
+  padding-top: 1.2rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.fine p {
+  margin: 0;
+}
+.fine p + p {
+  margin-top: 0.4rem;
+}
+
+@media (forced-colors: active) {
+  .sheet {
+    display: none;
+  }
+  .slip {
+    border: 1px solid CanvasText;
+  }
+}

@@ -1,0 +1,102 @@
+/* The board's dragged lists (review fixes PR-2; review 2): handle and content. */
+.sortable {
+  margin-block: 1rem;
+  container-type: inline-size;
+}
+
+.list {
+  display: grid;
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list[data-look="cards"] {
+  gap: 1rem;
+}
+
+.item {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "handle content";
+  align-items: start;
+  gap: 0.75rem;
+  /* Covers the items it passes while dragged. */
+  background: var(--paper);
+}
+
+.list[data-look="rows"] > .item {
+  border-block-end: 1px solid var(--rule);
+  padding-block: 1rem;
+}
+
+.list[data-look="cards"] > .item {
+  border: 1px solid var(--rule);
+  background: var(--paper-light);
+  padding: clamp(0.75rem, 2.5vw, 1.5rem);
+}
+
+/* Lifted while dragged. */
+.item[data-dragging] {
+  box-shadow: 0 0.5rem 1.5rem var(--shadow);
+}
+
+.handle {
+  grid-area: handle;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-small);
+  color: var(--muted);
+  background: transparent;
+  cursor: grab;
+  /* A finger on the handle drags instead of scrolling the page. */
+  touch-action: none;
+  user-select: none;
+}
+
+.handle:hover,
+.handle:focus-visible {
+  color: var(--ink);
+  background: var(--paper-deep);
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.content {
+  grid-area: content;
+  min-inline-size: 0;
+}
+
+/* A one-item list has nothing to reorder: the handle is hidden but keeps its
+   room, so its row lines up with the lists around it. Only its own handle:
+   a list inside its item (a page section's FAQ questions) keeps its own. */
+.list[data-single] > .item > .handle {
+  visibility: hidden;
+}
+
+/* Narrow boxed items (a phone, a list inside a page's form): the handle sits
+   on a top row so the item's boxes keep the full width. */
+@container (max-width: 34rem) {
+  .list[data-look="cards"] > .item {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "handle"
+      "content";
+  }
+  /* A lone boxed item needs no empty top row. */
+  .list[data-look="cards"][data-single] > .item {
+    grid-template-areas: "content";
+  }
+  .list[data-look="cards"][data-single] > .item > .handle {
+    display: none;
+  }
+}

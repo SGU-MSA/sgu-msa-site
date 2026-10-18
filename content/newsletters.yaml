@@ -1,0 +1,10 @@
+# ==========================================================================
+# Newsletter archive.
+#
+# This is an ARCHIVE, not a "latest issue" feed. Entries are labelled by the
+# period they cover so nothing implies freshness it does not have. The issues
+# themselves are managed in the board dashboard (/admin → Newsletters).
+# ==========================================================================
+
+heading: "Newsletter Archive"
+note: "Past editions of the MSA newsletter."

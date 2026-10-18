@@ -1,0 +1,76 @@
+# ==========================================================================
+# Finding the Musallah: the written directions and what
+# is known about the space. Nothing here is hardcoded in a component.
+#
+# An entry with `status: details_pending` is not shown to visitors (no
+# "to be confirmed" lines), rather than inventing an operational fact.
+# ==========================================================================
+
+route:
+  heading: "Find the Musallah"
+  subheading: "Follow the written directions below from the Charter Hall bus stop."
+  directions_heading: "Written directions"
+
+  directions:
+    - "Start at the bus stop by Charter Hall."
+    - "Stand with the campus exit behind you, then turn right."
+    - "Continue straight past St. John."
+    - "Take the first right after St. John."
+    - "Continue down the path."
+    - "You will pass a gazebo on your right and a seating area on your left."
+    - "Continue straight toward the building ahead."
+    - "Walk up the stairs to the entrance — this is the Musallah."
+
+  landmark_note: "Your destination is the SGU Musallah."
+
+facilities:
+  heading: "Musallah information"
+  note: "Details are published here as they are confirmed with the university."
+  items:
+    - id: wudu
+      label: "Wudu"
+      icon: droplets
+      status: details_pending
+      detail: null
+    - id: brothers
+      label: "Brothers’ Prayer Area"
+      icon: users
+      status: details_pending
+      detail: null
+    - id: sisters
+      label: "Sisters’ Prayer Area"
+      icon: users
+      status: details_pending
+      detail: null
+    - id: jumuah
+      label: "Jumu’ah"
+      icon: mic
+      status: confirmed
+      detail: "Held weekly at the Musallah. Times are listed above."
+    - id: access
+      label: "Open to Students"
+      icon: graduation
+      status: details_pending
+      detail: null
+    - id: etiquette
+      label: "Musallah Etiquette"
+      icon: sparkles
+      status: details_pending
+      detail: null
+
+helper_cta:
+  eyebrow: "Musallah Helpers"
+  heading: "Help care for the space."
+  body: "Students help keep the Musallah welcoming, organized, and ready for the community."
+  form: "musallah_helper"
+
+gallery:
+  - src: "/images/prayer/route-path.webp"
+    alt: "The open path along the route, a few minutes from the Charter Hall bus stop"
+    historical: false
+  - src: "/images/prayer/route-st-john.webp"
+    alt: "St. John’s Hall — the landmark you pass before the first right"
+    historical: false
+  - src: "/images/prayer/musallah-interior.webp"
+    alt: "Inside the SGU Musallah, prayer rugs laid across the hall"
+    historical: false

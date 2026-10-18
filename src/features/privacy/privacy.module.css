@@ -1,0 +1,148 @@
+/*
+ * /privacy, "Ledger" (PR8 D-7; ADR 0018): the title with an italic second
+ * line and three promises beside it, the notice as ruled rows, and
+ * Questions in a band with one ink ring. No verse. Tokens only.
+ */
+
+.page {
+  position: relative;
+  overflow-x: clip;
+}
+
+/* Hero: title left, the promises right (below on a phone) -------------- */
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem 4.5rem;
+  align-items: flex-end;
+  padding-block: clamp(3rem, 7vw, 5.5rem) clamp(3rem, 6vw, 4.5rem);
+}
+.heroMain {
+  flex: 999 1 26rem;
+  min-width: 0;
+}
+.hero .title {
+  font-size: clamp(3.25rem, 8vw, 6.5rem);
+  line-height: 0.95;
+}
+.standfirst {
+  margin: 0.6rem 0 0;
+  max-width: 22ch;
+  color: var(--muted);
+  font: italic 400 clamp(1.6rem, 3.4vw, 2.6rem) / 1.12 var(--font-display);
+}
+.promises {
+  flex: 1 1 22rem;
+  min-width: 0;
+  max-width: 30rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.promises li {
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 1rem 0;
+  border-top: 1.5px solid var(--ink);
+  color: var(--ink);
+  font: 400 1.35rem / 1.25 var(--font-display);
+}
+.promises li + li {
+  border-top: 1px solid var(--rule);
+}
+.tick {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--ring);
+  transform: translateY(0.15em);
+}
+
+/* The notice: title left, text right (stacked on a phone) -------------- */
+.ledger {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  list-style: none;
+}
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 0.75rem;
+  padding-block: clamp(2rem, 4vw, 3rem);
+  border-bottom: 1px solid var(--rule);
+  scroll-margin-top: 6rem;
+}
+@media (min-width: 52rem) {
+  .row {
+    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+    column-gap: clamp(2rem, 6vw, 6rem);
+  }
+  .row .body {
+    padding-top: 0.35rem;
+  }
+}
+.rowTitle {
+  margin: 0;
+  color: var(--ink);
+  font: italic 400 clamp(1.6rem, 2.6vw, 2.1rem) / 1.1 var(--font-display);
+}
+.body {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 1.0625rem;
+  line-height: var(--leading-body);
+}
+
+/* Questions: a centred band with the one ink ring ---------------------- */
+.questions {
+  margin-top: clamp(4rem, 8vw, 6rem);
+  text-align: center;
+  scroll-margin-top: 6rem;
+}
+.h2 {
+  margin: 0;
+  color: var(--ink);
+  font: 400 clamp(1.75rem, 2.8vw, 2.25rem) / 1.08 var(--font-display);
+  letter-spacing: var(--tracking-display);
+}
+.questions .body {
+  margin: 1rem auto 0;
+}
+.ringed {
+  position: relative;
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.85rem 1.9rem 0.95rem;
+}
+.ringed > svg {
+  inset: -0.2rem -0.35rem;
+  width: calc(100% + 0.7rem);
+  height: calc(100% + 0.4rem);
+}
+.ringLink {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--ink);
+  font: 400 clamp(1.6rem, 3vw, 2rem) / 1.1 var(--font-display);
+  text-decoration: none;
+}
+.ringLink:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+.ringLink:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 0.35rem;
+}
+.note {
+  margin: 1.25rem auto 0;
+  max-width: 56ch;
+  color: var(--muted);
+  font: italic 400 1.15rem / 1.4 var(--font-display);
+}

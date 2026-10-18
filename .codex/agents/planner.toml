@@ -1,0 +1,5 @@
+name = "planner"
+description = "Plans engineering work and resolves scope before implementation."
+model = "gpt-6.1-sol"
+model_reasoning_effort = "high"
+developer_instructions = "Read and follow the shared role instructions in .agents/roles/planner.md."

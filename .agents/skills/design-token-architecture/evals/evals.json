@@ -1,0 +1,38 @@
+{
+  "skill": "design-token-architecture",
+  "evals": [
+    {
+      "name": "hardcoded-hex-cleanup",
+      "skills": [
+        "design-token-architecture"
+      ],
+      "query": "The donate banner uses #26635d and 18px padding directly. Clean it up.",
+      "expected_behavior": [
+        "Replaces the literal values with existing semantic tokens from src/styles/tokens.css (not the --msa-* brand primitives).",
+        "Uses existing spacing tokens or proposes one; does not invent a parallel naming scheme.",
+        "Runs the quick grep checks from the skill on the changed files."
+      ]
+    },
+    {
+      "name": "board-editable-accent",
+      "skills": [
+        "design-token-architecture",
+        "planning-engineering-changes"
+      ],
+      "query": "The board wants to change the accent color for Ramadan without calling a developer.",
+      "expected_behavior": [
+        "Explains the accent is a single-sourced token that a validated admin setting could override on the html element.",
+        "Treats exposing it in the dashboard as a product decision and routes the change through planning-engineering-changes.",
+        "Requires contrast re-verification for every design (color-systems-contrast-intelligence)."
+      ]
+    },
+    {
+      "name": "should-not-trigger-contrast-check",
+      "skills": [],
+      "query": "Does the grey caption text on the prayer page pass WCAG contrast?",
+      "expected_behavior": [
+        "Does not load design-token-architecture; color-systems-contrast-intelligence owns contrast checks."
+      ]
+    }
+  ]
+}

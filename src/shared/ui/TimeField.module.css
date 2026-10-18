@@ -1,0 +1,47 @@
+/* The 12-hour time box (review fixes P1): Hour : Minutes AM/PM on one line,
+   as tall as the other boxes, wrapping only in a very narrow column. */
+.time {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 100%;
+}
+
+/* Wins over the editor's full-width boxes: each drop-down fits its text. */
+.time .part {
+  width: auto;
+  min-width: 4.25rem;
+  min-height: 48px;
+  height: 48px;
+  padding-block: 0;
+  padding-inline: 0.6rem 0.35rem;
+  border: 1px solid var(--muted);
+  border-radius: var(--radius-small);
+  background: var(--paper-light);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.time .part:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.time .part[aria-invalid="true"] {
+  border-color: var(--status-danger);
+  outline: 1px solid var(--status-danger);
+  outline-offset: 0;
+}
+
+.time .part[aria-invalid="true"]:focus-visible {
+  outline-width: 2px;
+  outline-offset: 2px;
+}
+
+.colon {
+  font-weight: 600;
+  color: var(--muted);
+}

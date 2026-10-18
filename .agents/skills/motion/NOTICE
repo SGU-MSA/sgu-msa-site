@@ -1,0 +1,51 @@
+Motion skill: third-party notice
+
+This folder contains material adapted from the Motion AI Kit
+  https://github.com/motiondivision/ai-kit
+  path: plugins/motion/skills/motion
+  upstream commit: d1c5c26f424adfd47c112d894e9d424b57338c7e (2026-09-25)
+
+The Motion AI Kit plugin is published by Motion (https://motion.dev) under the
+MIT License, as declared in its plugin manifest
+(plugins/motion/.cursor-plugin/plugin.json: "license": "MIT") and on
+https://motion.dev/docs/ai-kit-install. The upstream repository does not ship a
+LICENSE file, so the standard MIT License text is reproduced below with the
+author named in that manifest.
+
+Modifications made for this project:
+- Kept only content usable without a paid Motion+ subscription. Removed the
+  MotionScore performance audit (performance-audit/), the Motion+ visual
+  transition editor (transition-preview/, except the named-easing table, now in
+  references/css-spring.md), source search, saved transitions and Motion+ tier
+  details; rewrote the search guidance as references/docs-search.md.
+- Removed the Vue guidance (best-practices/vue.md); this project does not use Vue.
+- Flattened best-practices/, codex/ and css-spring/ into references/ so every
+  reference is one level from SKILL.md (motion.md is now vanilla-js.md,
+  best-practices/index.md is now best-practices.md) and updated links.
+- Rewrote the SKILL.md frontmatter and added "MCP tools", "Free tier only" and
+  "Project notes" sections; added "Contents" lists to react.md and base-ui.md;
+  fixed one typo ("forEach of map").
+- Added local files: agents/openai.yaml (Codex dependency) and evals/evals.json.
+
+-------------------------------------------------------------------------------
+MIT License
+
+Copyright (c) Motion
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

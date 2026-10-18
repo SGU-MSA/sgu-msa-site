@@ -1,0 +1,118 @@
+/* The urgent band (PR5a D-18, D-30; .plans/mockups/urgent-rotation variant D):
+   the ink surface of page.module.css `.ink`, under the menu on every page.
+   Its height never changes between notices, so the page below never jumps. */
+.band {
+  --on-surface: var(--paper);
+  --surface: var(--ink);
+  position: relative;
+  z-index: var(--z-raised);
+  background: var(--surface);
+}
+.inner {
+  --ink: var(--on-surface);
+  --paper: var(--surface);
+  --muted: var(--on-ink-muted);
+  --rule: var(--on-ink-rule);
+  /* The focus outline is ink-coloured by default and would vanish on the band. */
+  --focus-ring: var(--on-surface);
+  color: var(--ink);
+  padding-block: 0.45rem 0.7rem;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.4rem;
+  min-height: 2rem;
+}
+.label {
+  margin-inline-end: auto;
+  padding: 0.25rem 0.45rem;
+  border: 1px solid currentColor;
+  font: 700 0.6875rem/1 var(--font-body);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.arrow,
+.dot {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.arrow {
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+}
+.arrow:hover {
+  border-color: currentColor;
+}
+.chevron {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+.dots {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.dot::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+.dot[aria-current="true"]::before {
+  background: currentColor;
+}
+.arrow:focus-visible,
+.dot:focus-visible,
+.details:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Two lines, fixed (an urgent title is at most 80 characters, D-16). */
+.viewport {
+  position: relative;
+  height: calc(2 * 1.45em);
+  margin-top: 0.25rem;
+  overflow: hidden;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  touch-action: pan-y;
+}
+.slide {
+  position: absolute;
+  inset: 0;
+}
+.text {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+.text b {
+  font-weight: 600;
+}
+.details {
+  color: inherit;
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+@media (forced-colors: active) {
+  .dot[aria-current="true"]::before {
+    background: CanvasText;
+  }
+}

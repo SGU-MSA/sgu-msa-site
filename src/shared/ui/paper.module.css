@@ -1,0 +1,97 @@
+/*
+ * Quiet Paper surfaces (ADR 0018): the seal, the ink ring and the paper sheets. Tokens only.
+ * Every selector is wrapped in :where() (zero specificity), so a page's own
+ * module always overrides a shared rule, whatever order the stylesheets load in.
+ */
+
+:where(.seal) {
+  display: inline-block;
+  flex: none;
+}
+:where(.seal svg) {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The hand-drawn ink ring around the next prayer; its parent is positioned. */
+:where(.ring) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* The ink ring drawn just outside one action (InkRingAround). */
+:where(.ringAround) {
+  position: relative;
+  display: inline-block;
+}
+:where(.ringAround > a) {
+  position: relative;
+  z-index: var(--z-raised);
+}
+:where(.ringAroundBox) {
+  position: absolute;
+  inset: -0.9rem -1.4rem -0.8rem -1.2rem;
+  pointer-events: none;
+}
+
+/* Paper sheets layered behind a section; the parent is positioned and clips. */
+:where(.sheet),
+:where(.sheetBack) {
+  position: absolute;
+  z-index: var(--z-base);
+  pointer-events: none;
+}
+:where(.sheet) {
+  left: -4%;
+  top: 6rem;
+  width: 74%;
+  height: 54rem;
+  background: var(--paper-light);
+  transform: rotate(-1.4deg);
+  clip-path: polygon(
+    0 2%,
+    6% 0,
+    18% 1.5%,
+    33% 0.4%,
+    51% 1.8%,
+    68% 0.2%,
+    84% 1.6%,
+    100% 0.6%,
+    99% 97%,
+    88% 99%,
+    70% 97.6%,
+    52% 99.4%,
+    34% 98%,
+    16% 99.6%,
+    1% 98%
+  );
+  box-shadow: 0 30px 60px var(--shadow);
+}
+:where(.sheetBack) {
+  right: -6%;
+  top: 22rem;
+  width: 48%;
+  height: 39rem;
+  background: var(--paper-deep);
+  transform: rotate(2.2deg);
+}
+@media (max-width: 44rem) {
+  :where(.sheet) {
+    width: 110%;
+    height: 40rem;
+  }
+  :where(.sheetBack) {
+    display: none;
+  }
+}
+@media (forced-colors: active) {
+  :where(.sheet),
+  :where(.sheetBack) {
+    display: none;
+  }
+}
