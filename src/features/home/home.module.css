@@ -21,25 +21,27 @@
 }
 
 /* Hero ---------------------------------------------------------------- */
-/* Headline and prayer block start level at the top, so the tall prayer
-   block no longer pushes the headline down on wide screens (review 3 A-1). */
+/* The hero fills the first screen below the sticky menu (and the urgent band
+   when one is shown) and its content sits in the middle of it. The headline
+   and the prayer block start level at the top (review 3 A-1) and are centred
+   together as one block (home-centering D-1). When the content is taller than
+   the screen (phones, short laptops) the hero grows and keeps the same
+   comfortable gap above and below instead. Pure CSS: no script measures it. */
 .hero {
+  --menu-height: calc(5.25rem + 1px);
+  --band-height: 0rem;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
+  align-content: center;
   gap: 4rem;
-  padding-block: clamp(3rem, 5vw, 4rem) clamp(4rem, 9vw, 7.5rem);
+  padding-block: 3rem;
+  min-height: calc(100vh - var(--menu-height) - var(--band-height));
+  min-height: calc(100svh - var(--menu-height) - var(--band-height));
 }
-/* Desktop and laptop: the headline sits roughly centred in the first screen
-   below the header and urgent band (about 22rem together with half the
-   headline block), between 5rem and 10rem. Phones, tablets and screens
-   shorter than 49rem keep the compact top so the links stay in view
-   (review 3 follow-up). */
-@media (min-width: 64rem) and (min-height: 49rem) {
-  .hero {
-    padding-top: clamp(5rem, 50vh - 22rem, 10rem);
-    padding-top: clamp(5rem, 50svh - 22rem, 10rem);
-  }
+/* The urgent band is two fixed lines high (UrgentNoticeRotator.module.css). */
+:global(body:has(section[aria-label="Urgent notices"])) .hero {
+  --band-height: 6.1rem;
 }
 .heroMain {
   flex: 999 1 32rem;
