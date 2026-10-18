@@ -238,6 +238,8 @@ flowchart LR
   me --> times["calendarTimes + calendarDetails (one reading)"]
   times --> ics["eventToIcs: STATUS, SEQUENCE; served at /calendar/id/ics"]
   times --> links["calendarLinks: Google Calendar, Outlook"]
+  times --> feed["eventsToIcs + feedEvents: /calendar.ics, subscribable (CDN 5 min; 503 if events unavailable)"]
+  feed --> sub["AddToCalendar kind=feed: calendarFeedLinks (webcal, Google cid, Outlook addfromweb)"]
   ics --> add["AddToCalendar: CalendarTarget by device (Apple: file, Android: Google, others: menu; no JavaScript: file)"]
   links --> add
   editor["ContentEditor in EditorPreview (eye button)"] -->|"typed values, recordFromTyped"| preview["Full-screen Preview (inert, PreviewFrame: its own page at Desktop, Tablet or Phone width): the same public components"]

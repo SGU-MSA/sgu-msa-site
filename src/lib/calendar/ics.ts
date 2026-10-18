@@ -147,28 +147,41 @@ export function calendarDetails(event: SiteEvent) {
   };
 }
 
+/** An iCalendar UTC date-time without milliseconds. */
+const stampOf = (instant: Date) =>
+  `${instant.toISOString().slice(0, 19).replace(/[-:]/g, "")}Z`;
+
+/** What a feed adds to its calendar and events. */
+export type IcsCalendar = {
+  name: string;
+  description?: string | null;
+  /** The feed's own https address. */
+  url: string;
+  /** An event's page address, for each event's URL line. */
+  eventUrl: (id: string) => string;
+};
+
 /**
- * Campus wall-clock times are converted to UTC instants (Grenada UTC−04:00).
- * One event keeps one UID; its status and SEQUENCE say what changed (D-20).
+ * The one VEVENT builder, for the per-event file and the feed. Campus
+ * wall-clock times are converted to UTC instants (Grenada UTC−04:00). One
+ * event keeps one UID; its status, SEQUENCE and LAST-MODIFIED say what
+ * changed (D-20).
  */
-export function eventToIcs(event: SiteEvent, stamp = new Date()): string {
-  const dtstamp = `${stamp.toISOString().slice(0, 19).replace(/[-:]/g, "")}Z`;
+function eventLines(event: SiteEvent, stamp: Date, url?: string): string[] {
   const details = calendarDetails(event);
   const when = calendarTimes(event);
+  const modified = Date.parse(event.updated_at ?? "");
 
   const lines = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    `PRODID:${PRODID}`,
-    "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
     "BEGIN:VEVENT",
     `UID:${event.id}@sgu-msa`,
-    `DTSTAMP:${dtstamp}`,
+    `DTSTAMP:${stampOf(stamp)}`,
     `SEQUENCE:${sequenceOf(event.updated_at)}`,
     `STATUS:${statusOf(event)}`,
     `SUMMARY:${escapeText(details.title)}`,
   ];
+  if (!Number.isNaN(modified))
+    lines.push(`LAST-MODIFIED:${stampOf(new Date(modified))}`);
 
   if (when.allDay) {
     lines.push(`DTSTART;VALUE=DATE:${toDateValue(when.first)}`);
@@ -181,6 +194,7 @@ export function eventToIcs(event: SiteEvent, stamp = new Date()): string {
   if (details.location) lines.push(`LOCATION:${escapeText(details.location)}`);
   if (details.description)
     lines.push(`DESCRIPTION:${escapeText(details.description)}`);
+  if (url) lines.push(`URL:${url}`);
 
   lines.push(
     `CATEGORIES:${escapeText(
@@ -190,9 +204,72 @@ export function eventToIcs(event: SiteEvent, stamp = new Date()): string {
         .toUpperCase(),
     )}`,
   );
-  lines.push("END:VEVENT", "END:VCALENDAR");
+  lines.push("END:VEVENT");
+  return lines;
+}
 
-  return lines.map(fold).join("\r\n");
+const envelope = (extra: string[], body: string[]) =>
+  [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    `PRODID:${PRODID}`,
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    ...extra,
+    ...body,
+    "END:VCALENDAR",
+  ]
+    .map(fold)
+    .join("\r\n");
+
+export function eventToIcs(event: SiteEvent, stamp = new Date()): string {
+  return envelope([], eventLines(event, stamp));
+}
+
+/**
+ * Which events the feed carries (Q1 A, Q2 C; D-8, D-9): every public event
+ * the Events page shows, past ones included (the board removes old ones by
+ * archiving), by date then start time. `today` is part of the contract so
+ * a later rule can use it.
+ */
+export function feedEvents(events: SiteEvent[], today: string): SiteEvent[] {
+  void today;
+  return [...events].sort(
+    (a, b) =>
+      a.date.localeCompare(b.date) ||
+      (a.start_time ?? "").localeCompare(b.start_time ?? "") ||
+      a.id.localeCompare(b.id),
+  );
+}
+
+/** The subscribable calendar (D-2 to D-5): one VCALENDAR, one VEVENT each. */
+export function eventsToIcs(
+  events: SiteEvent[],
+  calendar: IcsCalendar,
+  stamp = new Date(),
+): string {
+  const description = calendar.description?.trim();
+  const head = [
+    `NAME:${escapeText(calendar.name)}`,
+    `X-WR-CALNAME:${escapeText(calendar.name)}`,
+    ...(description
+      ? [
+          `DESCRIPTION:${escapeText(description)}`,
+          `X-WR-CALDESC:${escapeText(description)}`,
+        ]
+      : []),
+    "X-WR-TIMEZONE:America/Grenada",
+    "REFRESH-INTERVAL;VALUE=DURATION:PT1H",
+    "X-PUBLISHED-TTL:PT1H",
+    `SOURCE;VALUE=URI:${calendar.url}`,
+    `URL:${calendar.url}`,
+  ];
+  return envelope(
+    head,
+    events.flatMap((event) =>
+      eventLines(event, stamp, calendar.eventUrl(event.id)),
+    ),
+  );
 }
 
 export function icsFileName(event: SiteEvent): string {

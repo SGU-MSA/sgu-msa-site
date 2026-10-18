@@ -2,7 +2,7 @@
 
 import { CalendarPlus } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 import {
   calendarTarget,
@@ -21,6 +21,11 @@ type AddToCalendarProps = {
    * action; "outline" sits beside a filled ticket button (PR6 D-82).
    */
   variant?: "underline" | "ink" | "outline";
+  /**
+   * "event" adds one event; "feed" subscribes to every public event (the
+   * links are `calendarFeedLinks`): the same menu and device choice, other words.
+   */
+  kind?: "event" | "feed";
 };
 
 /** The menu's choices on a computer that is not a Mac (review 2, 2026-10-05). */
@@ -28,6 +33,13 @@ export const calendarChoices = [
   ["google", "Google Calendar"],
   ["outlook", "Outlook"],
   ["file", "Apple or other (file)"],
+] as const satisfies readonly (readonly [keyof CalendarLinks, string])[];
+
+/** The same choices when subscribing to the feed. */
+const feedChoices = [
+  ["file", "Apple Calendar or other (subscribe)"],
+  ["google", "Google Calendar"],
+  ["outlook", "Outlook"],
 ] as const satisfies readonly (readonly [keyof CalendarLinks, string])[];
 
 /** Nothing to subscribe to: the device does not change on a page. */
@@ -48,7 +60,10 @@ export function AddToCalendar({
   links,
   title,
   variant = "underline",
+  kind = "event",
 }: AddToCalendarProps) {
+  const feed = kind === "feed";
+  const [copied, setCopied] = useState(false);
   const target = useSyncExternalStore(noChanges, onThisDevice, onServer);
   const className =
     variant === "ink"
@@ -63,8 +78,8 @@ export function AddToCalendar({
         className={c.addIcon}
         strokeWidth={1.35}
       />
-      Add to Calendar
-      <span className="sr-only">{` — ${title}`}</span>
+      {feed ? "Subscribe to calendar" : "Add to Calendar"}
+      {feed ? null : <span className="sr-only">{` — ${title}`}</span>}
     </>
   );
 
@@ -80,7 +95,7 @@ export function AddToCalendar({
             align="start"
             sideOffset={6}
           >
-            {calendarChoices.map(([key, name]) => (
+            {(feed ? feedChoices : calendarChoices).map(([key, name]) => (
               <DropdownMenu.Item key={key} asChild className={c.addMenuItem}>
                 <a
                   href={links[key]}
@@ -92,6 +107,24 @@ export function AddToCalendar({
                 </a>
               </DropdownMenu.Item>
             ))}
+            {feed ? (
+              <DropdownMenu.Item
+                className={c.addMenuItem}
+                onSelect={(event) => {
+                  event.preventDefault();
+                  const address = links.file.replace(/^webcal:/, "https:");
+                  void navigator.clipboard
+                    ?.writeText(address)
+                    .then(() => setCopied(true))
+                    .catch(() => {});
+                }}
+              >
+                Copy link
+              </DropdownMenu.Item>
+            ) : null}
+            <span className="sr-only" role="status" aria-live="polite">
+              {copied ? "Link copied" : ""}
+            </span>
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
