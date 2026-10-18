@@ -70,6 +70,8 @@ A repository can be public while the historical repository and its tracker stay 
 
 The Vercel Hobby project `sgu-msa-site` publishes the public repository's `main` branch. Pull requests and other branches do not publish production; merging a pull request into `main` does ([ADR 0010](../adr/0010-production-deploys-from-main-only.md), [ADR 0033](../adr/0033-pull-requests-merge-to-main.md)).
 
+Every pull request also gets a preview link on staging ([ADR 0034](../adr/0034-pull-request-previews-on-staging.md)); production keys never go in Preview.
+
 1. **Developers test on their own computers**, against Supabase staging or sample data, before asking for review.
 2. **Pull requests target `main`** in `SGU-MSA/sgu-msa-site`. After checks and independent review, the maintainer merges them, which publishes the live site.
 3. Once, and after any repository change, open Vercel → project `sgu-msa-site` → **Settings → Git**. Verify the connected repository is exactly `SGU-MSA/sgu-msa-site` and the production branch is `main`. If either is wrong, stop and have a Vercel project owner correct it; do not connect the private-history repository.

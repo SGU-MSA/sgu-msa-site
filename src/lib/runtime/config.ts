@@ -10,7 +10,7 @@ import { z } from "../validation/zod";
  * `src/proxy.ts` and tests import it.
  */
 export type RuntimeConfig = Readonly<{
-  /** VERCEL_ENV === "production" (ADR 0010: Production is the only deployment). */
+  /** VERCEL_ENV === "production" (ADR 0010: only Production publishes; pull requests get previews, ADR 0034). */
   production: boolean;
   /** SITE_DEMO_MODE: "true" | "false"; "true" is rejected in production (D-3). */
   data: "live" | "sample";
@@ -204,7 +204,7 @@ const envSchema = z
       else if (secret === "off") {
         if (production)
           problem(
-            `SUPABASE_SECRET_KEY must be the secret key (sb_secret_…) on the live site: "off" is only for a developer's computer. ${WHERE}`,
+            `SUPABASE_SECRET_KEY must be the secret key (sb_secret_…) on the live site: "off" is only for a developer's computer or a preview. ${WHERE}`,
           );
       } else if (/^sb_secret_\S+$/.test(secret)) {
         invites = "on";
@@ -264,7 +264,7 @@ const envSchema = z
     else if (cron === "off") {
       if (production)
         problem(
-          `CRON_SECRET must be a random secret on the live site: "off" is only for a developer's computer. ${WHERE}`,
+          `CRON_SECRET must be a random secret on the live site: "off" is only for a developer's computer or a preview. ${WHERE}`,
         );
     } else if (/^[A-Za-z0-9_-]{32,}$/.test(cron)) {
       dailyCheck = "on";

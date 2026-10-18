@@ -45,7 +45,7 @@ Board members can open a preview link from a PR without any account. No dashboar
 
 ## Implementation Constraints
 
-- Allowed files: `vercel.json`, `src/lib/runtime/wiring.ts`, `tests/runtime.test.ts`, the docs listed above, `docs/adr/0034-…`, `docs/adr/README.md`, this contract copied to `docs/contracts/pr-previews.md`.
+- Allowed files: `src/lib/runtime/config.ts` (comments and messages only), `tests/daily-check.test.ts` (edited because it asserted the removed `vercel.json` block), `vercel.json`, `src/lib/runtime/wiring.ts`, `tests/runtime.test.ts`, the docs listed above, `docs/adr/0034-…`, `docs/adr/README.md`, this contract copied to `docs/contracts/pr-previews.md`.
 - Do not change `config.ts` rules, production behaviour, or any other runtime flag. Do not add dependencies. Do not touch files owned by the other open branches (`feat/home-centering-password-toggle`, `chore/remove-archive-label`).
 - Branch `chore/pr-previews` from `origin/main`.
 
