@@ -1,0 +1,54 @@
+{
+  "mcpServers": {
+    "next-devtools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
+    },
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "-c",
+        "exec node \"$(git rev-parse --show-toplevel)/scripts/agents/browser-mcp.mjs\" \"$@\"",
+        "browser-mcp"
+      ]
+    },
+    "shadcn": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "shadcn@latest", "mcp"]
+    },
+    "magicui": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@magicuidesign/mcp@latest"]
+    },
+    "motion": {
+      "type": "http",
+      "url": "https://mcp.motion.dev"
+    },
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=qglftmxfjvxmrzppkxks&features=docs,database,development"
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com"
+    },
+    "maestro": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "-c",
+        "exec bash \"$(git rev-parse --show-toplevel)/scripts/agents/maestro-mcp.sh\" \"$@\"",
+        "maestro-mcp"
+      ]
+    }
+  }
+}

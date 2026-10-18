@@ -1,0 +1,31 @@
+# ==========================================================================
+# Prayer page copy. The congregation times, their validity line and notice
+# come from the board dashboard (/admin → Prayer & iqamah), not from this file.
+# ==========================================================================
+
+# The sections below the page top, in the order visitors see them; `shown: false`
+# hides one and keeps its text (Pages, review 3 B; src/lib/content/page-layouts.ts).
+sections:
+  - { id: times, shown: true }
+  - { id: jumuah, shown: true }
+  - { id: directions, shown: true }
+  - { id: gallery, shown: true }
+  - { id: facilities, shown: true }
+  - { id: helpers, shown: true }
+
+hero:
+  eyebrow: "Worship at SGU"
+  title: "Prayer & Musallah"
+  description: "Daily iqamah times, Jumu’ah information, and everything you need to find the Musallah."
+  image:
+    src: "/images/prayer/hero-musallah.webp"
+    alt: "Inside the SGU Musallah, prayer rugs laid across the hall"
+    focal_point: "50% 45%"
+
+heading: "Daily Iqamah Times"
+
+# The lines under the iqamah times: when the board's own notice is empty,
+# while no schedule is published, and while the schedule cannot be read.
+schedule_note: "Congregation times set by the MSA; separate from calculated prayer start times."
+no_schedule_note: "A current congregation schedule has not yet been published."
+unavailable_note: "The schedule is temporarily unavailable. Please check with the MSA before travelling."

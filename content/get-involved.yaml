@@ -1,0 +1,97 @@
+# ==========================================================================
+# Editorial pathways into the MSA. Each pathway names a form key from
+# forms.yaml — no URL appears here or in any component.
+# ==========================================================================
+
+# The sections below the page top, in the order visitors see them; `shown: false`
+# hides one and keeps its text (Pages, review 3 B; src/lib/content/page-layouts.ts).
+sections:
+  - { id: pathways, shown: true }
+
+hero:
+  eyebrow: "Contribute"
+  title: "Get Involved"
+  description: "Every part of the MSA is run by students. These are the ways in."
+
+intro: "You do not need a title or a track record to contribute. Pick the pathway that fits the time you have, and MSA leadership will take it from there."
+
+pathways:
+  - id: musallah-helper
+    number: "01"
+    title: "Become a Musallah Helper"
+    summary: "Keep the space ready for the community."
+    body: "Musallah helpers look after the day-to-day of the prayer space — tidying, restocking, setting up before Jumu’ah, and flagging anything that needs attention. It is the most direct way to serve people you will never meet."
+    icon: help
+    form: musallah_helper
+
+  - id: student-khutbah
+    number: "02"
+    title: "Give a Student Khutbah"
+    summary: "Share a khutbah with the Jumu’ah congregation."
+    body: "Students deliver khutbahs at SGU. Submit your interest and proposed topic. MSA leadership will follow up regarding preparation, review, and scheduling."
+    icon: mic
+    form: student_khutbah
+    note: "Submitting the form is an expression of interest. It is not an approval or a confirmed date."
+    steps:
+      - { id: apply,   label: "Apply",   detail: "Send your interest and a proposed topic." }
+      - { id: prepare, label: "Prepare", detail: "Work on the khutbah with support from the board." }
+      - { id: review,  label: "Review",  detail: "MSA leadership reviews content and readiness." }
+      - { id: deliver, label: "Deliver", detail: "A date is scheduled once review is complete." }
+
+  - id: host-halaqa
+    number: "03"
+    title: "Host a Halaqa"
+    summary: "Convene a gathering around something worth discussing."
+    body: "Halaqas at SGU have covered everything from tafsir to keeping faith through a clinical rotation. Tell us what you want to run and what help you need to run it."
+    icon: halaqa
+    form: host_halaqa
+    fields:
+      - "Topic"
+      - "Proposed facilitator"
+      - "Audience"
+      - "Preferred timing"
+      - "Assistance needed"
+
+  - id: volunteer
+    number: "04"
+    title: "Volunteer"
+    summary: "Turn up for the events that need hands."
+    body: "Setup, registration, food, cleanup, photography — most MSA events need more people than the board has. Volunteering is the lowest-commitment way to be part of them."
+    icon: volunteer
+    form: volunteer
+    image:
+      src: "/images/community/gathering-dusk.webp"
+      alt: "MSA students gathered on the lawn at dusk above the campus"
+      historical: true
+
+  - id: mentor
+    number: "05"
+    title: "Mentor an Incoming Student"
+    summary: "Be the person you needed in your first term."
+    body: "Incoming students land on an island, in a new programme, often far from family. A mentor who has already done the first term makes a measurable difference."
+    icon: mentor
+    form: mentor
+
+  - id: support-ramadan
+    number: "06"
+    title: "Support Ramadan"
+    summary: "Help the month run for everyone on campus."
+    body: "Ramadan needs both hands and funding — iftars, Musallah setup, nightly programmes, and the supplies behind them."
+    icon: moon
+    form: ramadan_volunteer
+
+  - id: submit-idea
+    number: "07"
+    title: "Submit an Idea"
+    summary: "Propose something that does not exist yet."
+    body: "If there is a gap you keep noticing, describe it. Several of the MSA’s recurring programmes started as one student’s suggestion."
+    icon: idea
+    form: submit_idea
+
+  - id: incoming-student
+    number: "08"
+    title: "Connect With an MSA Student"
+    summary: "New to SGU and want to speak to someone first?"
+    body: "If you are arriving soon and would rather talk to a student than read a page, we will connect you with someone in your programme."
+    icon: message
+    form: incoming_student

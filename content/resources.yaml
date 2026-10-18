@@ -1,0 +1,66 @@
+# ==========================================================================
+# The publication library. Add an entry here and it appears on /resources.
+# Visitors see only entries with a `resource_url` and without `archived: true`
+# (review fixes PR-1); the rest stay in the dashboard (Pages → Resources).
+# A resource's `category` is the slug of one of the board's resource
+# categories (Dashboard → Lists).
+# ==========================================================================
+
+# The sections below the page top, in the order visitors see them; `shown: false`
+# hides one and keeps its text (Pages, review 3 B; src/lib/content/page-layouts.ts).
+sections:
+  - { id: library, shown: true }
+  - { id: archive, shown: true }
+
+hero:
+  eyebrow: "Publication library"
+  title: "Resources"
+  description: "Newsletters, guides, and reference material published by the MSA."
+
+search_placeholder: "Search resources…"
+empty_message: "No resources match this search."
+
+items:
+  - id: newsletter-april-2026
+    title: "MSA Newsletter — April 2026"
+    category: newsletter
+    description: "Edition 7 of the MSA newsletter. Updates, reminders, and stories from the term."
+    updated_label: "Archive · April 2026"
+    archived: true
+    resource_url: "/documents/msa-newsletter-april-2026.pdf"
+    image:
+      src: "/images/placeholder/editorial.svg"
+      alt: "MSA newsletter cover"
+
+  - id: jumuah-guide
+    title: "Jumu’ah at SGU"
+    category: guide
+    description: "Where Jumu’ah is held, what time to arrive, and what to expect if it is your first time."
+    updated_label: null
+    resource_url: "/prayer#jumuah"
+    image:
+      src: "/images/resources/jumuah-notice.webp"
+      alt: "MSA Jumu’ah prayer notice"
+      historical: true
+
+  - id: finding-the-musallah
+    title: "Finding the Musallah"
+    category: incoming-students
+    description: "A walking route from the Charter Hall bus stop, with step-by-step written directions."
+    updated_label: null
+    resource_url: "/prayer#find-the-musallah"
+    image:
+      src: "/images/prayer/musallah-route-poster.webp"
+      alt: "The walking route toward the SGU Musallah"
+
+  - id: community-events-archive
+    title: "MSA Community Events"
+    category: infographic
+    description: "A look at the socials, tournaments, and fundraisers the MSA has run at SGU."
+    updated_label: "Archive"
+    archived: true
+    resource_url: "/calendar"
+    image:
+      src: "/images/resources/basketball-tournament.webp"
+      alt: "MSA basketball tournament announcement"
+      historical: true

@@ -1,0 +1,37 @@
+{
+  "skill": "frontend-testing-visual-qa",
+  "evals": [
+    {
+      "name": "prove-board-edit-reaches-site",
+      "skills": [
+        "frontend-testing-visual-qa"
+      ],
+      "query": "Add tests for the new event speaker field.",
+      "expected_behavior": [
+        "Adds a unit test for the schema change in tests/*.test.ts with explicit Date values.",
+        "Adds an e2e or backend test proving an admin edit appears on the public event page without a rebuild.",
+        "Queries by role and label and does not add a new test framework."
+      ]
+    },
+    {
+      "name": "visual-check-after-restyle",
+      "skills": [
+        "frontend-testing-visual-qa"
+      ],
+      "query": "I restyled the FAQ accordion. Check it looks right and is accessible.",
+      "expected_behavior": [
+        "Uses chrome-devtools resize_page and take_screenshot at phone and desktop widths, or Playwright screenshots as fallback.",
+        "Runs axe or lighthouse_audit for accessibility and reports console errors.",
+        "Checks light and dark (tests/e2e/theme.spec.ts against npm run demo, and the component's Storybook story in both themes)."
+      ]
+    },
+    {
+      "name": "should-not-trigger-contract-review",
+      "skills": [],
+      "query": "Review this branch against docs/contracts/event-speakers.md before merge.",
+      "expected_behavior": [
+        "Does not load frontend-testing-visual-qa as the primary skill; reviewing-engineering-changes owns contract reviews."
+      ]
+    }
+  ]
+}

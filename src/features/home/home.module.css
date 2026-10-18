@@ -1,0 +1,420 @@
+/* Home (approved D1 Quiet Paper layout). Tokens only. */
+
+/* The community feed keeps its own surface, painted above the paper sheets. */
+.layer {
+  position: relative;
+  z-index: var(--z-base);
+}
+
+/* A small hairline label, for the event categories in the week list. */
+.tag {
+  display: inline-block;
+  margin-inline-start: 0.5rem;
+  padding: 0 0.4rem;
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  font: 600 0.6875rem/1.6 var(--font-body);
+  font-style: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+/* Hero ---------------------------------------------------------------- */
+/* Headline and prayer block start level at the top, so the tall prayer
+   block no longer pushes the headline down on wide screens (review 3 A-1). */
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 4rem;
+  padding-block: clamp(3rem, 5vw, 4rem) clamp(4rem, 9vw, 7.5rem);
+}
+/* Desktop and laptop: the headline sits roughly centred in the first screen
+   below the header and urgent band (about 22rem together with half the
+   headline block), between 5rem and 10rem. Phones, tablets and screens
+   shorter than 49rem keep the compact top so the links stay in view
+   (review 3 follow-up). */
+@media (min-width: 64rem) and (min-height: 49rem) {
+  .hero {
+    padding-top: clamp(5rem, 50vh - 22rem, 10rem);
+    padding-top: clamp(5rem, 50svh - 22rem, 10rem);
+  }
+}
+.heroMain {
+  flex: 999 1 32rem;
+  min-width: 0;
+}
+.heroAside {
+  flex: 1 1 20rem;
+  min-width: 0;
+  max-width: 26rem;
+}
+
+/* The next prayer, ringed in ink */
+.next {
+  position: relative;
+  display: inline-block;
+  padding: 1.25rem 1.5rem 1rem;
+}
+.next .ring {
+  inset: 2.3rem -0.5rem -0.2rem -0.25rem;
+  width: calc(100% + 0.75rem);
+  height: calc(100% - 2.1rem);
+}
+.nextLabel {
+  position: relative;
+  margin: 0 0 0.6rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.nextTime {
+  position: relative;
+  margin: 0;
+  color: var(--ink);
+  font: 400 clamp(3.25rem, 6vw, 5.25rem) / 1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+/* Today's prayers: one table with a fixed width for each time column, so
+   the names and both times run straight down (review fixes PR-1). */
+.times {
+  width: 100%;
+  margin: 2rem 0 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-variant-numeric: tabular-nums;
+}
+.times th,
+.times td {
+  padding: 0.7rem 0;
+  font-weight: 400;
+  text-align: start;
+  white-space: nowrap;
+}
+.times th:not(:first-child),
+.times td {
+  width: 6.25rem;
+  text-align: end;
+}
+.times thead th {
+  padding-top: 0;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.times tbody tr {
+  border-top: 1px solid var(--rule);
+  color: var(--ink);
+}
+.times tbody tr:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+.times .iqamah {
+  color: var(--muted);
+}
+.times .now th,
+.times .now td {
+  color: var(--ink);
+  font-weight: 600;
+}
+.strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.method {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.prayerLink {
+  margin: 0.75rem 0 0;
+}
+
+/* Featured notice ------------------------------------------------------- */
+.notice {
+  position: relative;
+  z-index: var(--z-base);
+  border-block: 1px solid var(--rule);
+  background: var(--paper-light);
+}
+.noticeLink {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+  min-height: 2.75rem;
+  padding-block: 0.9rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.noticeLabel {
+  color: var(--ring);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.noticeTitle {
+  font: 400 1.375rem/1.3 var(--font-display);
+}
+.noticeSummary {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.noticeLink:hover .noticeTitle {
+  text-decoration: underline;
+  text-decoration-color: var(--ring);
+  text-underline-offset: 0.2em;
+}
+
+/* Verse band: a quiet divider under the welcome (review fixes P3: it was
+   much too large; smaller type and less space around it). */
+.verse {
+  position: relative;
+  z-index: var(--z-base);
+  padding: clamp(1.5rem, 3vw, 2.25rem) 1.25rem;
+  border-block: 1px solid var(--rule);
+  background: var(--band);
+  text-align: center;
+  container-type: inline-size;
+}
+.verseArabic {
+  /* One line, from 2.25rem down to 1.25rem with the band (ArabicLine). */
+  --arabic-max: clamp(1.5rem, 3vw, 2.25rem);
+  --arabic-min: 1.25rem;
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-arabic);
+  font-weight: 400;
+  line-height: 1.7;
+}
+.verseTip {
+  /* Clear of the Arabic's lowest marks (the kasra) at every width. */
+  margin-top: 0.6rem;
+}
+
+/* Upcoming events --------------------------------------------------------- */
+.event {
+  border-bottom: 1px solid var(--rule);
+}
+.eventLink {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: baseline;
+  padding: 1.5rem 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+.eventDay {
+  font: 400 2.75rem/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+.eventDay small {
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+.eventTitle {
+  display: block;
+  font: italic 400 1.75rem/1.2 var(--font-display);
+}
+.eventLink:hover .eventTitle {
+  text-decoration: underline;
+  text-decoration-color: var(--ring);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+.eventMeta {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+/* A cancelled or postponed event's line (PR5a D-20), under the meta. */
+.eventStatus {
+  display: block;
+  width: fit-content;
+}
+.empty {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--rule);
+  color: var(--muted);
+}
+
+/* Community (contribution) ---------------------------------------------- */
+.involve {
+  align-items: center;
+  padding-top: 0;
+}
+.involveSide {
+  flex: 1 1 26rem;
+  min-width: 0;
+}
+.involveList {
+  margin-top: 2rem;
+}
+.involveItem {
+  border-bottom: 1px solid var(--rule);
+}
+.involveItem a {
+  display: block;
+  padding: 0.9rem 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+.involveItem strong {
+  font-weight: 600;
+}
+.involveItem a:hover strong {
+  text-decoration: underline;
+  text-decoration-color: var(--ring);
+  text-underline-offset: 0.2em;
+}
+.involveItem span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+/* Life in our community (features) and Common questions: the same space
+   above and below each, so the bottom of Home is even (review fixes P3). */
+.storiesSection {
+  padding-block: clamp(3rem, 6vw, 5rem);
+}
+.storyCta {
+  margin: 0.5rem 0 0;
+}
+.stories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 3rem 2.5rem;
+  margin-top: 3rem;
+}
+.story {
+  min-width: 0;
+}
+.storyPhoto {
+  position: relative;
+  display: block;
+  padding: 0 0.9rem 0.9rem 0;
+}
+.storyPhoto::before {
+  content: "";
+  position: absolute;
+  inset: 0.9rem 0 0 0.9rem;
+  background: var(--paper-deep);
+  transform: rotate(1deg);
+}
+.storyFrame {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--paper-deep);
+}
+.storyFrame img {
+  filter: var(--photo-filter);
+}
+.storyKicker {
+  margin: 1.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.storyTitle {
+  margin: 0.5rem 0 0;
+  font: italic 400 1.75rem/1.2 var(--font-display);
+}
+.storyTitle a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.storyTitle a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--ring);
+  text-underline-offset: 0.18em;
+}
+.storyText {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+@media (forced-colors: active) {
+  .storyPhoto::before {
+    display: none;
+  }
+}
+
+/* Common questions -------------------------------------------------------- */
+.faqHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+.faqColumns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 0 3rem;
+  margin-top: 2.5rem;
+}
+.faqColumn {
+  border-top: 1px solid var(--rule);
+}
+
+/* Donate band (inverted ink) -------------------------------------------- */
+.give {
+  position: relative;
+  z-index: var(--z-base);
+  padding-block: clamp(3rem, 6vw, 5rem);
+}
+.giveInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem 3rem;
+}
+.giveCopy {
+  flex: 1 1 30rem;
+  min-width: 0;
+}
+.giveText {
+  margin: 1.25rem 0 0;
+  max-width: 46ch;
+  color: var(--muted);
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  padding: 0 2.1rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+  text-decoration: none;
+}
+.button:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+@media (max-width: 44rem) {
+  .eventLink {
+    grid-template-columns: 4rem minmax(0, 1fr);
+    gap: 1rem;
+  }
+  .eventDay {
+    font-size: 2rem;
+  }
+  .eventTitle {
+    font-size: 1.375rem;
+  }
+}

@@ -1,0 +1,154 @@
+/*
+ * Contact as a calling card (PR8 D-10, option A "Calling card"; ADR 0018).
+ * Tokens only; light and dark come from the theme's custom properties. The
+ * page's one ink ring circles the email. No verse on this page.
+ */
+
+/* The welcome and the card ------------------------------------------- */
+.top {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 5rem);
+  padding-block: clamp(3rem, 8vw, 6.5rem) clamp(3rem, 6vw, 5rem);
+}
+@media (min-width: 60rem) {
+  .top {
+    grid-template-columns: 1.1fr 1fr;
+    align-items: end;
+  }
+}
+.top .title {
+  font-size: clamp(3.1rem, 7.5vw, 6.25rem);
+  line-height: 0.95;
+}
+.sub {
+  margin: 0.75rem 0 0;
+  max-width: 22ch;
+  color: var(--muted);
+  font: italic 400 clamp(1.6rem, 3.2vw, 2.6rem) / 1.12 var(--font-display);
+}
+
+.card {
+  position: relative;
+  min-width: 0;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  background: var(--paper-light);
+  box-shadow: 0 24px 50px var(--shadow);
+}
+@media (forced-colors: active) {
+  .card {
+    border: 1px solid CanvasText;
+  }
+}
+
+/* The card on its own, when the board moved it below the Musallah note
+   (review 3 B). */
+.alone {
+  padding-block: clamp(3rem, 6vw, 5rem);
+}
+.alone .card {
+  max-width: 40rem;
+}
+
+.body {
+  margin: 1rem 0 0;
+  max-width: 44ch;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.pending {
+  margin: 1.25rem 0 0;
+  color: var(--muted);
+  font: italic 400 1.35rem / 1.35 var(--font-display);
+}
+
+/* The email, in the page's one ink ring. */
+.ringed {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  margin: 1.25rem 0 0 -1rem;
+  padding: 1.1rem 1.75rem 1.2rem;
+}
+.ringBox {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.email {
+  position: relative;
+  z-index: var(--z-raised);
+  color: var(--ink);
+  font: 400 clamp(1.5rem, 3.2vw, 2.4rem) / 1.1 var(--font-display);
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+.email:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+/* Social links: hairline rows, mark + label + arrow. */
+.social {
+  margin: 1.75rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  list-style: none;
+}
+.social li {
+  border-bottom: 1px solid var(--rule);
+}
+.social a {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 3.25rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.social a:hover .label {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.icon {
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--muted);
+}
+.label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.arrow {
+  margin-left: auto;
+  color: var(--muted);
+}
+
+/* The visit: the Musallah note beside the "Find us on campus" box ------ */
+.visit {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4.5rem);
+  padding-block: clamp(3.5rem, 7vw, 6rem) clamp(4rem, 8vw, 7rem);
+}
+.map {
+  min-width: 0;
+}
+@media (min-width: 60rem) {
+  .visit {
+    grid-template-columns: 22rem 1fr;
+    align-items: start;
+  }
+  /* The box keeps its own spacing on phones; beside the note it starts level. */
+  .map > :first-child {
+    margin-top: 0;
+  }
+}
+
+/* Phones: the ring stays inside the card. */
+@media (max-width: 40rem) {
+  .ringed {
+    margin-left: -0.5rem;
+    padding: 0.9rem 1.2rem 1rem;
+  }
+}

@@ -1,0 +1,277 @@
+/*
+ * The shared photo viewer (ImageViewer) and its thumbnail grid
+ * (ImageViewerGallery): the Filmstrip look (the user's pick, option C), on the
+ * page's paper in light (Green Ink) and dark (Dusk). One photo drops the
+ * strip, arrows and counter (`.single`). Tokens only; phone first; 44px
+ * targets.
+ * Every selector is wrapped in :where() (zero specificity), so a page's own
+ * module always overrides a shared rule, whatever order the stylesheets load in.
+ */
+
+/* Gallery: the thumbnails that open the viewer --------------------------- */
+:where(.gallery) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(9rem, 40%), 1fr));
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+:where(.thumb) {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 0;
+  padding: 0;
+  background: var(--paper-deep);
+  cursor: zoom-in;
+}
+:where(.thumb img) {
+  object-fit: cover;
+  filter: var(--photo-filter);
+}
+@media (prefers-reduced-motion: no-preference) {
+  :where(.thumb img) {
+    transition: transform var(--transition-standard);
+  }
+  :where(.thumb:hover img) {
+    transform: scale(1.04);
+  }
+}
+
+/* Dialog shell: the page's paper, edge to edge --------------------------- */
+:where(.overlay),
+:where(.content) {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-dialog);
+}
+:where(.overlay) {
+  background: var(--paper);
+}
+:where(.content) {
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  color: var(--ink);
+}
+@media (prefers-reduced-motion: no-preference) {
+  :where(.overlay[data-state="open"]),
+  :where(.content[data-state="open"]) {
+    animation: viewer-in 200ms ease both;
+  }
+  :where(.overlay[data-state="closed"]),
+  :where(.content[data-state="closed"]) {
+    animation: viewer-out 160ms ease both;
+  }
+}
+@keyframes viewer-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes viewer-out {
+  to {
+    opacity: 0;
+  }
+}
+:where(.content button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+:where(.content button[aria-disabled="true"]) {
+  cursor: default;
+  opacity: 0.35;
+}
+
+/* Title and Close -------------------------------------------------------- */
+:where(.bar) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  border-bottom: 1px solid var(--rule);
+  padding: var(--space-xs) var(--content-gutter);
+}
+:where(.single .bar) {
+  justify-content: flex-end;
+  border-bottom: 0;
+}
+:where(.title) {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font: italic 400 1.5rem / 1.2 var(--font-display);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+:where(.textButton) {
+  padding-inline: var(--space-xs);
+  font-weight: 600;
+  text-decoration: underline 1.5px var(--rule);
+  text-underline-offset: 0.35em;
+  white-space: nowrap;
+}
+:where(.textButton:not([aria-disabled="true"]):hover) {
+  text-decoration-color: var(--ring);
+}
+:where(.close) {
+  flex: none;
+  margin-inline-start: auto;
+}
+
+/* The swipe track: one slide per photo, snapped -------------------------- */
+:where(.track) {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+:where(.track)::-webkit-scrollbar {
+  display: none;
+}
+/* The whole width is the track, so its focus ring sits inside the edges. */
+:where(.track:focus-visible) {
+  outline-offset: -4px;
+}
+:where(.single .track) {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+/* Each slide is a size container: the photo fits it, never past its own size. */
+:where(.slide) {
+  display: grid;
+  flex: 0 0 100%;
+  min-width: 0;
+  place-items: center;
+  container-type: size;
+  padding: var(--space-md) var(--content-gutter);
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+:where(.photo) {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100cqw;
+  max-height: 100cqh;
+  box-shadow: 0 14px 30px var(--shadow);
+  user-select: none;
+}
+:where(.placeholder) {
+  display: block;
+  width: min(100cqw, 40rem);
+  max-height: 100cqh;
+  aspect-ratio: var(--ratio, 4 / 3);
+  background: var(--paper-deep);
+}
+
+/* Caption, counter, Previous / Next -------------------------------------- */
+:where(.meta) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-lg);
+  width: min(100%, 60rem);
+  margin-inline: auto;
+  padding: 0 var(--content-gutter);
+}
+:where(.single .meta) {
+  justify-content: center;
+  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
+  text-align: center;
+}
+:where(.caption) {
+  flex: 1 1 18rem;
+  max-width: 65ch;
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--type-body);
+  line-height: 1.45;
+}
+:where(.counter) {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--type-small);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+:where(.controls) {
+  display: flex;
+  gap: var(--space-xs);
+  margin-inline-start: auto;
+}
+
+/* The filmstrip: the ink ring marks the photo you are on ----------------- */
+:where(.strip) {
+  display: flex;
+  gap: var(--space-lg);
+  margin-top: var(--space-sm);
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-top: 1px solid var(--rule);
+  padding: 1.25rem var(--content-gutter)
+    calc(1.25rem + env(safe-area-inset-bottom));
+  background: var(--band);
+  scroll-padding-inline: var(--content-gutter);
+  scrollbar-width: thin;
+}
+:where(.stripThumb) {
+  position: relative;
+  flex: none;
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: var(--radius-small);
+  background: var(--paper-deep);
+}
+:where(.stripThumb img) {
+  border-radius: inherit;
+  object-fit: cover;
+  opacity: 0.72;
+  filter: var(--photo-filter);
+}
+:where(.stripThumb:hover img),
+:where(.stripThumb[aria-current="true"] img) {
+  opacity: 1;
+}
+/*
+ * InkRing stretches its ellipse over 93% × 80% of its box. Insets of 24% each
+ * side and 36% above and below (of the square thumbnail) make that ellipse a
+ * near-circle about 1.38 × the thumbnail's half-width: just clear of the
+ * rounded corners and close to each edge, at any thumbnail size.
+ */
+:where(.stripRing) {
+  position: absolute;
+  inset: -36% -24%;
+  pointer-events: none;
+}
+@media (forced-colors: active) {
+  :where(.stripThumb[aria-current="true"]) {
+    outline: 3px solid CanvasText;
+    outline-offset: 3px;
+  }
+}
+@media (min-width: 44rem) {
+  :where(.stripThumb) {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+  :where(.strip) {
+    justify-content: safe center;
+  }
+}

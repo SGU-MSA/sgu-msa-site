@@ -1,0 +1,171 @@
+/*
+ * Quiet Paper design tokens (ADR 0018). The only home of colour, type,
+ * space, radius, motion and z-index values.
+ *
+ * Light is Green Ink (whiter paper, deep green ink) on :root, the board's
+ * pick (PR8 D-5; Paper was removed). Dusk, the dark theme, overrides it on
+ * [data-theme="dark"].
+ * The root layout's pre-paint script sets data-theme before first paint.
+ * Tailwind utilities mirror these through `@theme inline` in globals.css.
+ *
+ * Values duplicated outside CSS (keep in sync): `themeColor` in
+ * src/app/layout.tsx and the favicon colours in src/app/icon.svg.
+ */
+:root {
+  color-scheme: light;
+
+  /* ==========================================================
+     Colour: Green Ink (light, the default)
+     ========================================================== */
+  --paper: #f6f3ec;
+  --paper-light: #fbf9f4;
+  --paper-deep: #ebe7dc;
+  --band: #efebe1;
+  --ink: #1f3d33;
+  --muted: #4b5e55;
+  --rule: #d3d9cf;
+  --ring: #1f3d33;
+  --thread: #7f8f7a;
+  --on-ink-muted: #cad6cc;
+  --on-ink-rule: #3a5a4e;
+  --shadow: rgb(60 50 30 / 10%);
+  --photo-filter: saturate(0.85);
+  --seal-ink: var(--ink);
+  --seal-mint: #cad6cc;
+  --seal-cream: var(--paper);
+  /* Focus outline; the ink band (page.module.css .ink) re-points it. */
+  --focus-ring: var(--ring);
+  /* Text selection, resolved once on <html> so it reads the same inside
+     the ink bands, which re-point --paper. */
+  --selection: var(--ring);
+  /* The musallah map (PR7 P-4, Quiet Paper): hex only, MapLibre reads
+     them with getComputedStyle (src/lib/maps/style.ts mapTokens). Labels
+     keep at least 4.5:1 on --paper. */
+  --map-water: #dbe4df;
+  --map-park: #e4eadc;
+  --map-building: #e8e3d7;
+  --map-road: #fffdf8;
+  --map-casing: #d3d9cf;
+  --map-label: #4b5e55;
+  --on-selection: var(--paper);
+
+  /* Status and event-category colours (text on every light paper, WCAG AA:
+     5.1:1 or more on --paper-deep, the darkest) */
+  --status-danger: #9c2727;
+  --status-success: #246039;
+  --category-msa: #26635d;
+  --category-academic: #315c80;
+  --category-informational: #426455;
+  --category-faith: #765285;
+  --category-social: #904c2e;
+
+  /* Scrims over photographs: always dark, whatever the theme */
+  --overlay-strong: rgb(0 0 0 / 74%);
+
+  /* ==========================================================
+     Legacy names still read by the board dashboard's sign-in form
+     (src/features/admin/SignInForm.tsx) until the dashboard restyle
+     after PR3–PR7. Do not use them in new code.
+     ========================================================== */
+  --msa-gold: var(--ring);
+  --msa-gold-light: var(--ink);
+  --text-primary: var(--ink);
+  --text-secondary: var(--muted);
+  --border-subtle: var(--rule);
+  --design-on-accent: var(--paper);
+
+  /* ==========================================================
+     Typography
+     ========================================================== */
+  --font-display: var(--font-face-display), Georgia, serif;
+  --font-body: var(--font-face-body), system-ui, sans-serif;
+  --font-arabic: var(--font-face-arabic), "Amiri", serif;
+  --font-lux: var(--font-face-lux), Georgia, serif;
+  --tracking-display: -0.02em;
+  --tracking-label: 0.12em;
+  --leading-display: 0.98;
+  --leading-body: 1.65;
+
+  /* Type scale — one ladder for every route */
+  --type-display: clamp(4rem, 8.5vw, 7.7rem);
+  --type-h1: clamp(2.9rem, 5.4vw, 4.5rem);
+  --type-h2: clamp(2.1rem, 3.4vw, 3rem);
+  --type-h3: clamp(1.4rem, 2vw, 1.75rem);
+  --type-body: 1rem;
+  --type-small: 0.8125rem;
+  --type-label: 0.68rem;
+  --type-arabic: clamp(1.35rem, 2.2vw, 1.75rem);
+  --type-arabic-large: clamp(2rem, 3.6vw, 2.9rem);
+
+  /* Shape */
+  --radius-small: 0.75rem;
+  --radius-medium: 1.5rem;
+
+  /* Spacing */
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  /* Section rhythm — keeps every route on the same vertical grid */
+  --section-y: clamp(3.5rem, 7vw, 6rem);
+  --section-y-tight: clamp(2.5rem, 4.5vw, 3.75rem);
+
+  /* Layout */
+  --content-width: 90rem;
+  --content-gutter: clamp(1rem, 4vw, 4rem);
+
+  /* Motion */
+  --transition-fast: 160ms ease;
+  --transition-standard: 260ms ease;
+  --motion-reveal: 480ms cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Stacking order */
+  --z-base: 0;
+  --z-raised: 1;
+  --z-sticky: 50;
+  --z-popover: 70;
+  --z-dialog: 80;
+  --z-skip-link: 100;
+}
+
+/* Dusk: the dark theme. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #24221e;
+  --paper-light: #2c2a25;
+  --paper-deep: #1c1a17;
+  --band: #2a2823;
+  --ink: #ece5d6;
+  --muted: #b3ab9a;
+  --rule: #3d3a33;
+  --ring: #c9a96a;
+  --thread: #8e7f62;
+  --map-water: #1d2523;
+  --map-park: #262a22;
+  --map-building: #2e2c27;
+  --map-road: #3d3a33;
+  --map-casing: #2a2823;
+  --map-label: #b3ab9a;
+  --on-ink-muted: #5a5346;
+  --on-ink-rule: #cdc5b5;
+  --shadow: rgb(0 0 0 / 35%);
+  --photo-filter: saturate(0.8) brightness(0.9);
+  --seal-mint: #4a463e;
+  --status-danger: #e5a3a3;
+  --status-success: #9cc9a4;
+  --category-msa: #7fb8ae;
+  --category-academic: #8fb3d6;
+  --category-informational: #9dbfab;
+  --category-faith: #c3a3d0;
+  --category-social: #d99a7a;
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --rule: var(--muted);
+  }
+}

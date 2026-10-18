@@ -1,0 +1,21 @@
+# Which Qur'an verse shows in each place on the site (PR5b D-24; Review 3 E),
+# by its reference in the fixed verse library (every whole verse short enough
+# for one line; Pages → Qur'an verses on the live site). The verses
+# themselves are never typed. null = no verse in that place. These starter
+# picks wait for the board's approval (release checklist).
+
+places:
+  home: "1:5"
+  home_events: "99:7"
+  home_community: "51:55"
+  home_giving: "92:5"
+  prayer: "23:2"
+  events: "99:7"
+  get_involved: "55:60"
+  donate: "92:18"
+  resources: "96:1"
+  community: "51:55"
+  about: "23:1"
+  ramadan: "97:3"
+  support: "94:5"
+  footer: "96:5"

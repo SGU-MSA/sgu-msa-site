@@ -1,0 +1,12 @@
+node_modules
+.next
+.validate-out
+package-lock.json
+source-assets
+public
+docs/qa/screenshots
+supabase/.temp
+supabase/.branches
+test-results
+playwright-report
+storybook-static

@@ -1,0 +1,36 @@
+{
+  "skill": "core-web-vitals-optimization",
+  "evals": [
+    {
+      "name": "slow-hero-lcp",
+      "skills": [
+        "core-web-vitals-optimization"
+      ],
+      "query": "The homepage hero photo takes ages to appear on my phone.",
+      "expected_behavior": [
+        "Measures a production build with throttling via chrome-devtools performance tools, or DevTools as fallback.",
+        "Identifies the hero image as the LCP element and uses loading eager or fetchPriority high, not the deprecated priority prop.",
+        "Ensures the image goes through next/image with accurate sizes."
+      ]
+    },
+    {
+      "name": "announcement-bar-shift",
+      "skills": [
+        "core-web-vitals-optimization"
+      ],
+      "query": "The page jumps down when the announcement bar shows up.",
+      "expected_behavior": [
+        "Treats it as CLS and reserves space or renders the bar on the server.",
+        "Verifies with a trace before and after."
+      ]
+    },
+    {
+      "name": "should-not-trigger-scroll-jank",
+      "skills": [],
+      "query": "Scrolling the events page stutters on my phone after it has loaded.",
+      "expected_behavior": [
+        "Does not load core-web-vitals-optimization as the primary skill; rendering-animation-performance owns runtime jank."
+      ]
+    }
+  ]
+}

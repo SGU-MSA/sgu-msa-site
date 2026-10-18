@@ -1,0 +1,85 @@
+/* PinMap (PR7): the map box, the small dot and its tag, and MapLibre's
+   controls in the paper colours. Colours only from tokens.css. */
+.map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 12rem;
+  background: var(--paper-deep);
+}
+
+/* The dot: 12 px, solid ink with a 2 px paper edge (no ink ring). */
+.pin {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.pin[role="application"] {
+  cursor: grab;
+}
+.pin[role="application"]:active {
+  cursor: grabbing;
+}
+.pin:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 4px;
+}
+.dot {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow:
+    0 0 0 2px var(--paper),
+    0 1px 4px var(--shadow);
+}
+/* The small "SGU Musallah" tag beside the dot. */
+.tag {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 0.5rem);
+  transform: translateY(-50%);
+  padding: 0.2rem 0.35rem;
+  background: color-mix(in srgb, var(--paper-light) 90%, transparent);
+  color: var(--ink);
+  font: 600 0.75rem/1 var(--font-body);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* MapLibre's zoom buttons and ⓘ credit, square and on paper. */
+.map :global(.maplibregl-ctrl-group) {
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  background: var(--paper-light);
+  box-shadow: none;
+}
+.map :global(.maplibregl-ctrl-group button + button) {
+  border-top-color: var(--rule);
+}
+.map :global(.maplibregl-ctrl-attrib) {
+  background: color-mix(in srgb, var(--paper-light) 90%, transparent);
+  color: var(--muted);
+  font: 400 0.75rem/1.4 var(--font-body);
+}
+.map :global(.maplibregl-ctrl-attrib a) {
+  color: var(--muted);
+}
+.map :global(.maplibregl-ctrl-attrib.maplibregl-compact) {
+  background: var(--paper-light);
+}
+/* The ⓘ button keeps MapLibre's 24 px circle (the site's 44 px summary
+   rule would repeat its icon). */
+.map :global(.maplibregl-ctrl-attrib-button) {
+  min-height: 0;
+  background-repeat: no-repeat;
+}
+:global([data-theme="dark"]) .map :global(.maplibregl-ctrl-icon),
+:global([data-theme="dark"]) .map :global(.maplibregl-ctrl-attrib-button) {
+  filter: invert(1);
+}
+.map :global(.maplibregl-canvas:focus-visible) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}

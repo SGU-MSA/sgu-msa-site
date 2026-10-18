@@ -1,0 +1,79 @@
+# ==========================================================================
+# Student support.
+#
+# This service is PROPOSED. It has not been approved as an SGU service.
+#
+#   enabled: true            → the route renders
+#   prototype_notice: true   → a label makes the governance status explicit
+#
+# No contact detail is invented. Entries with `status: details_pending`
+# are not shown (review fixes P3: no "to be confirmed" lines).
+# ==========================================================================
+
+# Off (2026-10-03): SGU has not approved this service. Set to true to bring the page back.
+# The sections below the page top, in the order visitors see them; `shown: false`
+# hides one and keeps its text (Pages, review 3 B; src/lib/content/page-layouts.ts).
+sections:
+  - { id: privacy, shown: true }
+  - { id: contacts, shown: true }
+  - { id: professional, shown: true }
+
+enabled: false
+prototype_notice: true
+prototype_label: "Proposed Student Support Service"
+
+# Shown beneath the page header while prototype_notice is true. This is the
+# sentence most likely to be reworded by the board or by SGU during review, so
+# it lives here rather than in code. Set to null to remove the band entirely.
+governance_notice: "This service is proposed by the MSA and has not been established as a St. George’s University service. It is shown here to describe what the MSA would offer if approved."
+
+hero:
+  eyebrow: "Peer support"
+  title: "Need someone to talk to?"
+  description: "MSA can offer a familiar peer connection and help students find the right next step."
+
+privacy:
+  heading: "Discreet & Respectful"
+  body: "Conversations with MSA representatives are handled with discretion and respect. MSA representatives provide peer support and are not professional counselors. Safety concerns or applicable university obligations may require appropriate escalation."
+
+contacts:
+  heading: "Who you can reach"
+  note: "Contact details are published here once the board confirms them."
+  items:
+    - id: brothers-vp
+      role: "Brothers’ VP"
+      description: "First point of contact for brothers on campus."
+      status: details_pending
+    - id: sisters-vp
+      role: "Sisters’ VP"
+      description: "First point of contact for sisters on campus."
+      status: details_pending
+    - id: general-msa
+      role: "General MSA"
+      description: "For anything that does not fit elsewhere, or if you would rather not choose."
+      status: confirmed
+      email: "so-msa@sgu.edu"
+    - id: faculty-advisor
+      role: "Faculty Advisor"
+      description: "A faculty member connected to the MSA."
+      status: details_pending
+
+professional:
+  heading: "Professional SGU Support"
+  body: "MSA peer support is not a substitute for professional care. St. George’s University provides services staffed by trained professionals."
+  items:
+    - id: psychological-services
+      name: "SGU Psychological Services"
+      description: null
+      status: details_pending
+      url: null
+    - id: dean-of-students
+      name: "Dean of Students"
+      description: null
+      status: details_pending
+      url: null
+    - id: emergency
+      name: "Campus emergency contact"
+      description: null
+      status: details_pending
+      url: null

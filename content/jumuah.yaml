@@ -1,0 +1,8 @@
+# ==========================================================================
+# Jumu'ah heading and note. Read by both the homepage summary and the /prayer
+# page; the khutbah and iqamah times come from the board dashboard
+# (/admin → Prayer & iqamah).
+# ==========================================================================
+
+heading: "Jumu’ah"
+note: "Please arrive a few minutes before the khutbah begins."

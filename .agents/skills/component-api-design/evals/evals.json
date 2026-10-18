@@ -1,0 +1,37 @@
+{
+  "skill": "component-api-design",
+  "evals": [
+    {
+      "name": "reuse-before-create",
+      "skills": [
+        "component-api-design"
+      ],
+      "query": "Create a new PrimaryLinkButton component for the donate page.",
+      "expected_behavior": [
+        "Searches src/shared/ui and finds ButtonLink before creating anything.",
+        "Adds a variant to the existing component if needed instead of a near-duplicate.",
+        "Keeps it a Server Component and spreads native attributes onto the root."
+      ]
+    },
+    {
+      "name": "variant-naming-consistency",
+      "skills": [
+        "component-api-design"
+      ],
+      "query": "Add a color prop to the category badge so it can be green or maroon.",
+      "expected_behavior": [
+        "Uses the shared variant vocabulary (variant) with a string union, not a free-form color string.",
+        "Maps variants to semantic tokens, not hex values.",
+        "Pairs category color with its label (color-systems-contrast-intelligence)."
+      ]
+    },
+    {
+      "name": "should-not-trigger-registry-pick",
+      "skills": [],
+      "query": "Find a nice animated testimonial carousel from Magic UI for the community page.",
+      "expected_behavior": [
+        "Does not load component-api-design as the primary skill; designing-ui-components owns registry discovery and visual options."
+      ]
+    }
+  ]
+}

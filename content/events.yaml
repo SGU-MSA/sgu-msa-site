@@ -1,0 +1,18 @@
+# ==========================================================================
+# Calendar page copy. The events themselves are managed in the board
+# dashboard (/admin → Events); this file holds only the page heading, the
+# empty-state text. The category and term filters come from the board's
+# Lists (Dashboard → Lists).
+# ==========================================================================
+
+# The sections below the page top, in the order visitors see them; `shown: false`
+# hides one and keeps its text (Pages, review 3 B; src/lib/content/page-layouts.ts).
+sections:
+  - { id: events, shown: true }
+
+hero:
+  eyebrow: "What’s happening"
+  title: "Calendar"
+  description: "MSA programming alongside the SGU dates students ask about most."
+
+empty_message: "No public events currently listed."

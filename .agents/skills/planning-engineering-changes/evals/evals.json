@@ -1,0 +1,74 @@
+{
+  "skill": "planning-engineering-changes",
+  "evals": [
+    {
+      "name": "existing-feature-board-editable-field",
+      "skills": ["planning-engineering-changes"],
+      "query": "Plan adding an optional speaker name to events so board members can fill it in.",
+      "expected_behavior": [
+        "Reads docs/adr/README.md before proposing anything.",
+        "Cites recordSchema in src/lib/community/schema.ts, public.events in supabase/migrations, saveRecordAction and ContentEditor as existing evidence.",
+        "Extends the existing owner (schema, migration, editor, action) instead of creating a new table, client or action.",
+        "Lists product choices (where the speaker appears, label wording) under Product Decisions Required and asks the user instead of choosing.",
+        "Fills in the Board Self-Sufficiency Check naming the /admin editor.",
+        "Uses lightweight mode or justifies the full contract, and runs node scripts/validate-plan.mjs on the saved plan."
+      ]
+    },
+    {
+      "name": "parallel-epics-share-image-upload",
+      "skills": ["planning-engineering-changes"],
+      "query": "Three agents will build a merch catalog, a Ramadan photo gallery and board member profiles in parallel. Each needs board-uploaded images. Write the work packages.",
+      "expected_behavior": [
+        "Identifies normalizeUpload in src/lib/backend/storage.ts plus contentEditor().upload and the private community bucket as the single upload owner.",
+        "Flags the semantic conflict of three independent uploaders even without file overlap.",
+        "Assigns any change to the shared upload path or storage policy to one work package with an explicit merge order.",
+        "Declares effects (consumes/extends/creates/depends_on) per work package and names an integration owner.",
+        "Includes the PLAN MISMATCH escalation format for workers."
+      ]
+    },
+    {
+      "name": "avoid-premature-abstraction",
+      "skills": ["planning-engineering-changes"],
+      "query": "CalendarFilters and ResourceFilters both pluralize their result count. Should we add a shared pluralize helper in src/lib/utils.ts?",
+      "expected_behavior": [
+        "Applies the abstraction decision test and concludes the label stays local.",
+        "Rejects a utils dumping-ground module.",
+        "Notes that localization, if ever needed, is a separate decision for an i18n owner.",
+        "Does not produce a full contract; lightweight mode or no contract is enough."
+      ]
+    },
+    {
+      "name": "ambiguous-shared-visibility-rule",
+      "skills": ["planning-engineering-changes"],
+      "query": "Events with no end time disappear from the homepage as soon as they start, but the calendar and admin list behave a bit differently. Make them consistent.",
+      "expected_behavior": [
+        "Finds isUpcoming in src/lib/community/schema.ts and its consumers (src/app/page.tsx, CalendarExplorer, the admin list page).",
+        "Plans one change in the owner, not per-screen conditions.",
+        "Distinguishes the RLS public_read authority from the isVisible mirror and keeps them in sync if visibility changes.",
+        "Asks the user how long an event without an end time stays upcoming, with 2-3 options and a recommendation."
+      ]
+    },
+    {
+      "name": "board-editable-go2pay-fund",
+      "skills": ["planning-engineering-changes"],
+      "query": "Add a Zakat donate button next to the iftar one.",
+      "expected_behavior": [
+        "Reframes the task as board-managed Go2Pay payment destinations rather than a second env var or YAML entry.",
+        "Cites donationDestination and the PaymentsProvider port in src/lib/integrations/payments/ and DONATION_URL as current evidence.",
+        "Mentions no payment channel other than Go2Pay.",
+        "Follows ADR 0006: a Supabase table with RLS, a server action using currentAdmin that creates the Go2Pay product server-side, a dashboard card and help entry.",
+        "Lists product decisions (which funds, wording, order, retired-fund behavior) for the user, with a mockup where visual.",
+        "Covers failure modes such as Supabase unavailable and, if webhooks are involved, idempotent handling re-verified via GET /orders/{id}."
+      ]
+    },
+    {
+      "name": "should-not-trigger-standalone-utility",
+      "skills": [],
+      "query": "Write a TypeScript function that formats a number of minutes as '1 h 05 min'.",
+      "expected_behavior": [
+        "Does not load planning-engineering-changes.",
+        "Writes the function directly without an implementation contract."
+      ]
+    }
+  ]
+}

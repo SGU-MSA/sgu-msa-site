@@ -1,0 +1,71 @@
+# ==========================================================================
+# Site-wide settings. Nothing here requires touching code.
+# ==========================================================================
+
+brand:
+  name: "SGU Muslim Students Association"
+  short_name: "SGU MSA"
+  university: "St. George’s University Muslim Students Association"
+  tagline: "Faith. Knowledge. Community."
+  email: "so-msa@sgu.edu"
+  logo:
+    src: "/images/brand/msa-logo.webp"
+    alt: "SGU Muslim Students Association crest"
+
+meta:
+  description: "Prayer times, Jumu’ah, the Musallah, events, and community for Muslim students at St. George’s University."
+  keywords: ["SGU MSA", "Muslim Students Association", "St. George's University", "Musallah", "Grenada"]
+
+# Global navigation. Identical on every route — no page-specific variations.
+navigation:
+  - id: home
+    label: "Home"
+    href: "/"
+  - id: calendar
+    label: "Events"
+    href: "/calendar"
+  - id: prayer
+    label: "Prayer & Musallah"
+    href: "/prayer"
+  - id: resources
+    label: "Resources"
+    href: "/resources"
+  - id: get-involved
+    label: "Get Involved"
+    href: "/get-involved"
+  - id: community
+    label: "Community"
+    href: "/community"
+  - id: about
+    label: "About"
+    href: "/about"
+
+header_cta:
+  label: "Donate"
+  href: "/donate"
+
+footer:
+  quick_links:
+    - { label: "Calendar", href: "/calendar" }
+    - { label: "Get Involved", href: "/get-involved" }
+    - { label: "Prayer & Musallah", href: "/prayer" }
+    - { label: "Donate", href: "/donate" }
+    - { label: "Contact & Visit", href: "/contact" }
+    - { label: "Privacy", href: "/privacy" }
+    - { label: "Ramadan", href: "/ramadan" }
+    - { label: "Merch", href: "/merch" }
+    - { label: "Resources", href: "/resources" }
+    - { label: "Community", href: "/community" }
+    - { label: "FAQ", href: "/faq" }
+    - { label: "About", href: "/about" }
+  # The copyright line ("© <this year> <brand name>. All rights reserved.")
+  # follows the year by itself (PR5b); there is no year to update.
+  # Discreet board entry point. Not part of the primary navigation.
+  admin_link:
+    label: "Board / Admin Sign In"
+    href: "/admin"
+
+social:
+  - { id: instagram, label: "MSA on Instagram", url: "https://www.instagram.com/sgumsa", kind: instagram }
+  - { id: facebook, label: "MSA on Facebook", url: "https://www.facebook.com/sgumsa", kind: facebook }
+  - { id: email, label: "Email the MSA", url: "mailto:so-msa@sgu.edu", kind: email }

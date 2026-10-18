@@ -1,0 +1,72 @@
+name: Validate pull request
+on:
+  pull_request:
+    branches: [main, integration]
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Same gate as local development: lint, typecheck, coverage-gated unit tests, format check.
+      - run: npm run check
+      - name: Upload unit coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-coverage-report
+          path: |
+            coverage/lcov.info
+            coverage/scope.txt
+          if-no-files-found: ignore
+          retention-days: 3
+      - run: npm run validate:content
+  storybook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Every shared primitive's stories must build, in light and dark (design-foundation D-2).
+      - run: npm run build-storybook
+  browser-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # This command owns a fresh loopback-only sample server and browser contexts.
+      - run: npm run test:smoke
+      - name: Upload browser failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-browser-smoke-failures
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 3
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Throwaway Postgres in Docker (compose.test.yaml): migrations, access guard and race test,
+      # add-only activity log, archive, storage and RLS (PR3 contract, D-18). Never a hosted project.
+      - run: npm run test:db

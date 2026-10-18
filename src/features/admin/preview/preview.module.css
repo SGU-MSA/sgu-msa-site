@@ -1,0 +1,117 @@
+/* The editors' full-page Preview (review fixes P1, item 8). */
+.open {
+  gap: 0.5rem;
+}
+/* Over the whole screen: the bar on top, the page under it. */
+.dialog {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--paper);
+  color: var(--ink);
+}
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+.dialog::backdrop {
+  background: rgb(0 0 0 / 40%);
+}
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.75rem var(--content-gutter, 1rem);
+  border-block-end: 1px solid var(--rule);
+  background: var(--paper-light);
+}
+.title {
+  flex: 1 1 auto;
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.widths {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.width,
+.close {
+  gap: 0.4rem;
+}
+/* The width shown is marked by more than colour. */
+.width[aria-pressed="true"] {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.35em;
+}
+.controls {
+  padding: 0.5rem var(--content-gutter, 1rem);
+}
+.controls > * {
+  margin-block: 0;
+}
+/* The page, centred, at the chosen width (shrunk to fit). */
+.stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  background: var(--rule);
+}
+.frame {
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px var(--rule),
+    0 8px 30px var(--shadow);
+}
+.frame iframe {
+  display: block;
+  border: 0;
+  background: var(--paper);
+}
+/* Focused to scroll with the keys: the ring sits inside the frame's edge
+   (`data-focused`, set by `PreviewFrame`). */
+.frame iframe[data-focused] {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: -3px;
+}
+/* On a phone: the title and Close on one line, the three widths under
+   them, every button a little smaller. */
+@media (max-width: 34rem) {
+  .bar {
+    gap: 0.5rem;
+    padding-block: 0.5rem;
+  }
+  .close {
+    order: 1;
+  }
+  .widths {
+    order: 2;
+    flex-basis: 100%;
+  }
+  .width,
+  .close {
+    min-height: 44px;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.9375rem;
+  }
+}
+/* A content item's preview (`contentPreview`): the public page's top and
+   bottom space around its parts. */
+.page {
+  display: grid;
+  gap: 1.5rem;
+  padding-block: clamp(1.5rem, 4vw, 3rem);
+}

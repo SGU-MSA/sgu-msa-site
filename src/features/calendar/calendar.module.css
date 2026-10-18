@@ -1,0 +1,642 @@
+/*
+ * Events, "Almanac" layout (PR8 D-1): a small month always open on its own
+ * paper sheet beside the event cards. Tokens only; light and dark come from
+ * the token values.
+ */
+
+/* Page head ------------------------------------------------------------ */
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  align-items: end;
+  gap: 1rem clamp(2rem, 5vw, 4.5rem);
+  padding-block: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 3vw, 2.25rem);
+  border-bottom: 1px solid var(--rule);
+}
+/* Scoped under .head so these win over the shared quiet type classes. */
+.head .title {
+  font-size: clamp(3.25rem, 8vw, 6.5rem);
+}
+.head .lede {
+  margin: 0 0 0.75rem;
+  max-width: 40ch;
+}
+
+/* Layout --------------------------------------------------------------- */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
+  gap: 3rem clamp(3rem, 6vw, 5rem);
+  padding-block: clamp(2.5rem, 5vw, 3.5rem) clamp(4rem, 8vw, 7rem);
+}
+.side {
+  align-self: start;
+  min-width: 0;
+}
+/* The almanac stays in view beside a long list, when the screen is tall
+   enough to hold all of it. */
+@media (min-width: 56.01rem) and (min-height: 54rem) {
+  .side {
+    position: sticky;
+    top: 6.5rem;
+  }
+}
+.main {
+  min-width: 0;
+}
+
+/* The almanac sheet ---------------------------------------------------- */
+.almanacWrap {
+  position: relative;
+  padding: 0.5rem;
+}
+.almanacBack {
+  position: absolute;
+  inset: 1.25rem -0.5rem -0.75rem 1rem;
+  background: var(--paper-deep);
+  transform: rotate(2deg);
+}
+.almanac {
+  position: relative;
+  padding: 1.25rem 1.1rem 1.1rem;
+  background: var(--paper-light);
+  box-shadow: 0 24px 50px var(--shadow);
+  transform: rotate(-0.8deg);
+}
+@media (forced-colors: active) {
+  .almanacBack {
+    display: none;
+  }
+  .almanac {
+    border: 1px solid CanvasText;
+    transform: none;
+  }
+}
+.almanacHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+.almanacTitle {
+  flex: 1;
+  margin: 0;
+  color: var(--ink);
+  font: 400 1.75rem/1 var(--font-display);
+  text-align: center;
+}
+.almanacTitle em {
+  color: var(--muted);
+}
+.almanacNav {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+.almanacNav:hover {
+  border-color: var(--ink);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--rule);
+  text-align: center;
+}
+.weekday {
+  padding-bottom: 0.35rem;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+}
+.cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 2.6rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+}
+.cellEvent {
+  color: var(--ink);
+  font: 400 1.2rem/1 var(--font-display);
+  text-decoration: none;
+}
+.cellEvent:hover .cellDay {
+  text-decoration: underline;
+}
+.cellDay {
+  position: relative;
+}
+.cellDot {
+  position: absolute;
+  bottom: 0.2rem;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: currentcolor;
+}
+.cellToday {
+  color: var(--ink);
+  font-weight: 600;
+}
+.cell > .cellRing {
+  inset: -0.15rem -0.35rem;
+  width: calc(100% + 0.7rem);
+  max-width: none;
+  height: calc(100% + 0.3rem);
+}
+
+/* Filters under the almanac ------------------------------------------- */
+.filters {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--rule);
+}
+.pair button {
+  min-height: 2.75rem;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+.pair button + button {
+  border-left: 1px solid var(--rule);
+}
+.pair button:hover {
+  color: var(--ink);
+}
+.pair button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.legend button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.legend button:hover {
+  color: var(--ink);
+}
+.legend button[aria-pressed="true"] {
+  border-color: var(--ink);
+  color: var(--ink);
+  font-weight: 600;
+}
+.legendDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentcolor;
+}
+.termRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+.label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.select {
+  min-height: 2.75rem;
+  padding: 0 1.75rem 0 0;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+.select option {
+  background: var(--paper-light);
+  color: var(--ink);
+}
+.count {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* States --------------------------------------------------------------- */
+.alert {
+  margin: 0 0 2rem;
+  padding: 1rem 0 1rem 1.25rem;
+  border-left: 2px solid var(--status-danger);
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
+  font-size: 1rem;
+}
+.empty {
+  padding: 3.5rem 0;
+  border-block: 1px solid var(--rule);
+  text-align: center;
+}
+.emptyTitle {
+  margin: 0;
+  color: var(--ink);
+  font: italic 400 clamp(1.6rem, 3vw, 2.1rem) / 1.2 var(--font-display);
+}
+.emptyHint {
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+/* Events as small sheets ---------------------------------------------- */
+.monthLabel {
+  margin: 0 0 1rem;
+  color: var(--ink);
+  font: 400 clamp(1.75rem, 3vw, 2.25rem) / 1 var(--font-display);
+}
+.monthLabel em {
+  color: var(--muted);
+}
+.group + .group .monthLabel {
+  margin-top: 3rem;
+}
+.cards {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.card {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 1.5rem 1.75rem;
+  border: 1px solid var(--rule);
+  background: var(--paper-light);
+  scroll-margin-top: 7rem;
+}
+.cardNext {
+  border-color: var(--ring);
+  box-shadow: inset 3px 0 0 var(--ring);
+}
+.card:target {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+.cardDate {
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  padding-right: 1.25rem;
+  border-right: 1px solid var(--rule);
+  color: var(--ink);
+}
+.cardDay {
+  font: 400 2.5rem/1 var(--font-display);
+}
+.cardWeekday {
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+}
+.cardBody {
+  min-width: 0;
+}
+.cardTitle {
+  color: var(--ink);
+  font: 400 clamp(1.45rem, 2.4vw, 1.85rem) / 1.2 var(--font-display);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.cardTitle:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.cardMeta {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.cardFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-top: 0.75rem;
+}
+
+/* Category · organization · term · pending ---------------------------- */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.cat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+}
+.cat::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentcolor;
+}
+.tag {
+  display: inline-block;
+  padding: 0 0.4rem;
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  font: 600 0.6875rem/1.6 var(--font-body);
+  letter-spacing: 0.08em;
+}
+
+/* Add to Calendar ------------------------------------------------------ */
+.add {
+  display: inline-flex;
+  text-decoration: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  color: var(--ink);
+  font: 600 0.9375rem/1 var(--font-body);
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+.addIcon {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+}
+.addUnderline {
+  composes: add;
+  padding: 0;
+  border: 0;
+  border-bottom: 1.5px solid var(--rule);
+  background: none;
+}
+.addUnderline:hover {
+  border-bottom-color: var(--ink);
+}
+.addInk {
+  composes: add;
+  min-height: 3.25rem;
+  padding: 0 1.6rem;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+.addInk:hover {
+  border-color: var(--ring);
+  background: var(--ring);
+}
+/* Beside a filled ticket button (PR6 D-82): outlined like Sign up. */
+.addOutline {
+  composes: add;
+  min-height: 3.25rem;
+  padding: 0 1.6rem;
+  border: 1px solid var(--rule);
+  background: transparent;
+}
+.addOutline:hover {
+  border-color: var(--ink);
+}
+/* The choices on a computer that is not a Mac (review 2): Google Calendar,
+   Outlook, or the file. */
+.addMenu {
+  z-index: var(--z-popover);
+  min-width: 13rem;
+  padding: 0.35rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-small);
+  background: var(--paper-light);
+  box-shadow: 0 10px 30px var(--shadow);
+}
+.addMenuItem {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 0.85rem;
+  border-radius: calc(var(--radius-small) - 0.35rem);
+  color: var(--ink);
+  font: 500 0.9375rem/1.2 var(--font-body);
+  text-decoration: none;
+  outline: none;
+  cursor: pointer;
+}
+.addMenuItem[data-highlighted] {
+  background: var(--paper-deep);
+}
+.addMenuItem:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+
+/* Single event page ---------------------------------------------------- */
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  margin-top: 1.5rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  letter-spacing: 0.18em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.back:hover {
+  color: var(--ink);
+}
+.detail {
+  display: grid;
+  grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
+  gap: 3rem clamp(3rem, 6vw, 5rem);
+  padding-block: 2rem clamp(4rem, 8vw, 7rem);
+}
+/* The story comes first in reading order; on wide screens the almanac
+   sheet sits in the left column beside it. */
+.detailMain {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+}
+.detailSide {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  min-width: 0;
+}
+.detailTitle {
+  margin: 1rem 0 0;
+  color: var(--ink);
+  font: 400 clamp(2.75rem, 6vw, 4.75rem) / 0.98 var(--font-display);
+  letter-spacing: var(--tracking-display);
+  overflow-wrap: anywhere;
+}
+.detailWhen {
+  margin: 1.25rem 0 0;
+  color: var(--muted);
+  font: italic 400 clamp(1.4rem, 2.4vw, 1.75rem) / 1.3 var(--font-display);
+}
+.detailActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin-top: 2rem;
+}
+/* On a phone the buttons stack at one width (review PR-4), not each its own. */
+@media (max-width: 30rem) {
+  .detailActions > * {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}
+.detailCopy {
+  margin: 1.75rem 0 0;
+  max-width: 62ch;
+  color: var(--ink);
+  font-size: 1.125rem;
+  line-height: var(--leading-body);
+  white-space: pre-line;
+}
+/* The event's flyer, shown whole (review fixes P3: `fit="contain"`): a
+   square sheet of paper, so a portrait flyer and a wide photo both fit. */
+.photo {
+  position: relative;
+  margin-top: 2.5rem;
+  aspect-ratio: 1 / 1;
+  max-height: 80svh;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  background: var(--paper-deep);
+}
+.photo img {
+  filter: var(--photo-filter);
+}
+.notice {
+  margin: 2rem 0 0;
+  max-width: 62ch;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.facts {
+  margin: 2rem 0 0;
+  border-top: 1px solid var(--rule);
+}
+.facts div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.9375rem;
+}
+.facts dt {
+  color: var(--muted);
+}
+.facts dd {
+  margin: 0;
+  color: var(--ink);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* Narrow screens ------------------------------------------------------- */
+@media (max-width: 56rem) {
+  .layout,
+  .detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .side,
+  .detailSide {
+    max-width: 30rem;
+  }
+  .detailMain,
+  .detailSide {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+@media (max-width: 44rem) {
+  .head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .card {
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.1rem 1rem;
+  }
+  .cardDate {
+    padding-right: 0.75rem;
+  }
+  .cardDay {
+    font-size: 2rem;
+  }
+}
+
+/* Event status (PR5a D-20): the line under a cancelled or postponed event's
+   title. A cancelled title is struck through, and the line says so in words,
+   never by colour alone. */
+.status {
+  margin: 0.4rem 0 0;
+  padding-inline-start: 0.6rem;
+  border-inline-start: 2px solid var(--ink);
+  color: var(--ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.status[data-status="cancelled"] {
+  border-color: var(--status-danger);
+  color: var(--status-danger);
+}
+.struck {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}

@@ -1,0 +1,74 @@
+# ==========================================================================
+# About. Kept short on purpose — nothing here is invented.
+# ==========================================================================
+
+# The sections below the page top, in the order visitors see them; `shown: false`
+# hides one and keeps its text (Pages, review 3 B; src/lib/content/page-layouts.ts).
+sections:
+  - { id: mission, shown: true }
+  - { id: what_we_do, shown: true }
+  - { id: team, shown: true }
+  - { id: at_sgu, shown: true }
+  - { id: contact, shown: true }
+
+hero:
+  eyebrow: "Who we are"
+  title: "About SGU MSA"
+  description: "Your Muslim home away from home."
+
+mission:
+  heading: "Our Mission"
+  body:
+    - "The SGU Muslim Students Association exists so that no Muslim student at St. George’s University has to choose between their studies and their deen."
+    - "We keep a place to pray, a calendar worth showing up to, and a community that notices when someone is missing. Everything the MSA does is organized by students, for students, on an island most of us arrived at alone."
+
+what_we_do:
+  heading: "What We Do"
+  items:
+    - id: prayer
+      title: "Prayer & Jumu’ah"
+      description: "Daily iqamah times and weekly Jumu’ah at the SGU Musallah."
+      icon: prayer
+    - id: learning
+      title: "Halaqas & Quran"
+      description: "Weekly circles for study, recitation, and discussion."
+      icon: book
+    - id: ramadan
+      title: "Ramadan"
+      description: "Iftars, tarawih, and nightly programming through the month."
+      icon: moon
+    - id: community
+      title: "Community"
+      description: "Socials, sports, and the banquet that closes out the year."
+      icon: community
+    - id: service
+      title: "Service"
+      description: "Fundraising and outreach beyond the campus gates."
+      icon: volunteer
+    - id: newcomers
+      title: "New Students"
+      description: "Mentorship and orientation for students arriving at SGU."
+      icon: graduation
+
+# The people on the team list come from People in the board dashboard, only
+# with recorded consent. This block holds the heading, the note and the text
+# shown while nobody is listed.
+board:
+  heading: "Our team"
+  note: "The MSA board is elected by students each year."
+
+at_sgu:
+  heading: "MSA at SGU"
+  body:
+    - "St. George’s University sits above True Blue Bay in Grenada, and draws students from more countries than most campuses many times its size. The MSA has been part of that campus for years — through Musallah moves, construction closures, and every intake of new students who arrive looking for the prayer room on their first Friday."
+    - "The organization is recognized as a student organization at SGU. Programming, funding, and facilities are coordinated with the university."
+  image:
+    src: "/images/community/campus-aerial.webp"
+    alt: "Aerial view of the St. George’s University True Blue campus"
+    historical: true
+
+contact:
+  heading: "Contact"
+  body: "For anything the site does not answer, email the MSA directly."
+  email: "so-msa@sgu.edu"
+  note: "Board members are students. Replies may take a few days during examination periods."

@@ -1,0 +1,364 @@
+/*
+ * About, option C "Chapters" (PR8 D-7; ADR 0018 Quiet Paper): a numbered
+ * chapter index beside the page, the team as seats, the page's verse under the
+ * team. Tokens only. Page shell, eyebrow, display type, the ink band and the
+ * layered photo come from src/shared/ui/page.module.css.
+ */
+
+/* Hero ------------------------------------------------------------------- */
+.hero {
+  padding-block: clamp(2.75rem, 6vw, 4.5rem) clamp(2.5rem, 5vw, 3.5rem);
+}
+.hero .display {
+  font-size: clamp(2.9rem, 6.4vw, 5.25rem);
+  line-height: 0.95;
+}
+.heroSub {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font: italic 400 clamp(1.6rem, 3.4vw, 2.75rem) / 1.08 var(--font-display);
+}
+
+/* Index beside the chapters ---------------------------------------------- */
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+  gap: 2rem clamp(2.5rem, 6vw, 5.5rem);
+  padding-bottom: clamp(2rem, 5vw, 3.5rem);
+}
+/* Chapters the board moved below the contact band (review 3 B). */
+.afterBand {
+  padding-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+.index {
+  position: sticky;
+  top: 7rem;
+  align-self: start;
+}
+.index ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1.5px solid var(--ink);
+}
+.index a {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  align-items: baseline;
+  min-height: 2.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
+  text-decoration: none;
+}
+.index a:hover > :last-child {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.indexNumber {
+  color: var(--muted);
+  font: 400 1.125rem / 1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Chapters --------------------------------------------------------------- */
+.chapter {
+  scroll-margin-top: 7rem;
+  padding-bottom: clamp(3.5rem, 7vw, 5.5rem);
+}
+.chapterHead {
+  display: flex;
+  align-items: baseline;
+  /* The number sits on the heading's line, not the small label's. */
+  align-items: last baseline;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+  padding-top: 1.1rem;
+  border-top: 1.5px solid var(--ink);
+}
+.chapterNumber {
+  flex: none;
+  color: var(--muted);
+  font: 400 clamp(1.75rem, 3vw, 2.5rem) / 1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+.chapterHeading {
+  min-width: 0;
+}
+.kicker {
+  margin: 0 0 0.6rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.chapterHead .chapterTitle {
+  font-size: clamp(2.25rem, 4vw, 3.25rem);
+  line-height: 1.02;
+  overflow-wrap: break-word;
+}
+
+/* Mission and MSA at SGU text -------------------------------------------- */
+.prose {
+  max-width: 62ch;
+}
+.prose p {
+  margin: 0;
+  color: var(--muted);
+  line-height: var(--leading-body);
+}
+.prose p + p {
+  margin-top: 1.1rem;
+}
+.prose .opening {
+  max-width: 34ch;
+  color: var(--ink);
+  font: 400 clamp(1.6rem, 2.6vw, 2.1rem) / 1.3 var(--font-display);
+}
+.prose .opening + p {
+  margin-top: 1.5rem;
+}
+
+/* What we do ------------------------------------------------------------- */
+.pairs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+  column-gap: 2.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pairs li {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.4rem;
+  color: var(--ring);
+}
+.itemTitle {
+  display: block;
+  margin: 0;
+  font: italic 400 1.375rem / 1.2 var(--font-display);
+}
+.itemText {
+  display: block;
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+/* The team as seats ------------------------------------------------------ */
+.note {
+  margin: 0;
+  color: var(--muted);
+}
+.team {
+  margin-top: 1.75rem;
+}
+.teamSection + .teamSection {
+  margin-top: 2.5rem;
+}
+.sectionName {
+  margin: 0;
+  font: italic 400 1.5rem / 1.2 var(--font-display);
+}
+/* The Executive board in tiers (review fixes P4): the President; the two
+   Vice Presidents; the Treasurer and the Secretary. One column on phones. */
+.tiers {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0 0;
+}
+.tier {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.seat {
+  display: flex;
+  flex: 0 1 15rem;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  padding: 1rem 1rem 1.25rem;
+  border: 1px solid var(--rule);
+  background: var(--paper-light);
+  overflow-wrap: anywhere;
+}
+.seatText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.portrait {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  background: var(--paper-deep);
+}
+.portrait img {
+  filter: var(--photo-filter);
+}
+@media (max-width: 40rem) {
+  .seat {
+    flex-basis: 100%;
+  }
+}
+
+/* "View all": the other groups by name and role, no photos. */
+.more {
+  margin-top: 2rem;
+}
+.moreButton {
+  padding-inline: 1.25rem;
+}
+.moreList {
+  margin-top: 0.5rem;
+}
+.moreList .teamSection {
+  margin-top: 2rem;
+}
+.roster {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 0.25rem 1.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.roster li {
+  display: flex;
+  flex-direction: column;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--rule);
+  overflow-wrap: anywhere;
+}
+.rosterName {
+  font: 400 1.0625rem / 1.35 var(--font-display);
+}
+.rosterRole {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.role {
+  color: var(--ink);
+  font: 600 1.05rem / 1.2 var(--font-lux);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.name {
+  font: 400 1.125rem / 1.35 var(--font-display);
+}
+.pending {
+  margin: 1.75rem 0 0;
+  padding: 1.25rem 1.25rem 1.4rem;
+  border: 1px solid var(--rule);
+  background: var(--paper-light);
+  color: var(--muted);
+  font: italic 400 1.125rem / 1.35 var(--font-display);
+}
+
+/* MSA at SGU photo ------------------------------------------------------- */
+figure.sguPhoto {
+  margin: 2.5rem 0 0;
+}
+.sguPhoto .photoWide {
+  display: block;
+  aspect-ratio: 16 / 9;
+}
+
+/* Contact: the ink band -------------------------------------------------- */
+.contact {
+  position: relative;
+  z-index: var(--z-base); /* like Home's Donate band: the thread runs over it */
+  scroll-margin-top: 7rem;
+  padding-block: clamp(3.5rem, 7vw, 6rem);
+}
+.contactInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem 3rem;
+}
+.contactCopy {
+  flex: 1 1 28rem;
+  min-width: 0;
+}
+.contactCopy .chapterHead {
+  margin-bottom: 0;
+}
+.contactText {
+  margin: 1.25rem 0 0;
+  max-width: 46ch;
+  color: var(--muted);
+}
+.contactNote {
+  margin: 0.75rem 0 0;
+  max-width: 46ch;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+/* Inside the ink band the tokens are swapped (quiet.ink), so --ink is the
+   paper colour here: a paper button with ink text. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 100%;
+  min-height: 3.25rem;
+  padding: 0.5rem 2rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+.button:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.button svg {
+  flex: none;
+}
+.contact :focus-visible {
+  outline-color: var(--ink);
+}
+
+/* Narrow screens --------------------------------------------------------- */
+@media (max-width: 56rem) {
+  .body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .index {
+    position: static;
+  }
+  .index ol {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.25rem;
+  }
+}
+@media (max-width: 44rem) {
+  .seat {
+    padding: 1rem 0.9rem 1.1rem;
+  }
+  .role {
+    font-size: 0.9375rem;
+    letter-spacing: 0.1em;
+  }
+}

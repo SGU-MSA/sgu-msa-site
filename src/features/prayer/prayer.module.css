@@ -1,0 +1,379 @@
+/* Prayer & Musallah (approved D1 Quiet Paper layout). Tokens only. */
+
+.hero {
+  padding-block: clamp(2.5rem, 6vw, 4.5rem) 1rem;
+}
+.heroTitle {
+  font-size: clamp(3rem, 8vw, 6.5rem);
+}
+.heroLede {
+  max-width: 46ch;
+}
+
+/* Today: begins and iqamah ----------------------------------------------- */
+.today {
+  padding-top: 2.5rem;
+}
+.hijri {
+  margin-top: 0.9rem;
+}
+.table {
+  width: 100%;
+  margin-top: 1.5rem;
+  border-collapse: collapse;
+  font-size: 1.1875rem;
+  font-variant-numeric: tabular-nums;
+}
+.table th,
+.table td {
+  padding: 1rem 0.5rem 1rem 0;
+  font-weight: 400;
+  text-align: start;
+}
+.table thead th {
+  padding-top: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.table tbody tr {
+  border-top: 1px solid var(--rule);
+}
+.table tbody tr:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+.table .now th,
+.table .now td {
+  position: relative;
+  padding-block: 1.4rem;
+  font: 400 clamp(1.5rem, 3vw, 2.125rem) / 1.2 var(--font-display);
+}
+.now .rowRing {
+  inset: 0.15rem auto auto -1.6rem;
+  width: 11.5rem;
+  height: 4.7rem;
+}
+.rowName {
+  position: relative;
+}
+.nowTag {
+  position: relative;
+  margin-inline-start: 0.5rem;
+  color: var(--ring);
+  font: 600 0.75rem var(--font-body);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.dim {
+  color: var(--muted);
+}
+.footnote {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* Jumu'ah (inverted ink card) ------------------------------------------ */
+.jumuah {
+  flex: 1 1 20rem;
+  min-width: 0;
+  align-self: flex-start;
+  scroll-margin-top: 7rem;
+}
+.jumuahInner {
+  padding: 2.25rem 2rem;
+}
+.jumuahArabic {
+  margin: 0;
+  color: var(--muted);
+  font: 400 2.1rem/1.5 var(--font-arabic);
+  text-align: left;
+}
+.jumuahTitle {
+  font-size: 2.75rem;
+}
+.gathering + .gathering {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+}
+.gatheringLabel {
+  margin: 1.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.jumuah dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5rem 0 0;
+  font-variant-numeric: tabular-nums;
+}
+.jumuah dl > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--rule);
+}
+.jumuah dl > div:last-child {
+  border-bottom: 0;
+}
+.jumuah dt {
+  color: var(--muted);
+}
+.jumuah dd {
+  margin: 0;
+  text-align: end;
+  font: 400 1.75rem var(--font-display);
+}
+.jumuahNote {
+  margin: 1.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+/* "Usually:" with several prayers: one line per prayer. */
+.usualLine {
+  display: block;
+}
+
+/* Find the Musallah ------------------------------------------------------ */
+.findInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 3rem 4.5rem;
+}
+.findCopy {
+  flex: 1 1 26rem;
+  min-width: 0;
+}
+.findAside {
+  flex: 1 1 26rem;
+  min-width: 0;
+}
+.stepsLabel {
+  margin: 2rem 0 0;
+  font: 500 0.75rem/1.4 var(--font-body);
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.steps {
+  margin: 1rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  list-style: none;
+  counter-reset: step;
+}
+.steps li {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--rule);
+  counter-increment: step;
+}
+.steps li::before {
+  content: counter(step);
+  color: var(--muted);
+  font: 400 1.375rem var(--font-display);
+}
+.landmark {
+  margin: 1rem 0 0;
+  color: var(--ink);
+  font-size: 0.9375rem;
+}
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1.5rem;
+  margin: 3rem 0 0;
+}
+/* Jumu'ah away from today's times (review 3 B): a card, not a full band. */
+.jumuahAlone > * {
+  max-width: 36rem;
+}
+
+/* The photos of the way in a band of their own, when the board moved them
+   away from the directions (review 3 B). */
+.galleryBand .gallery {
+  margin-top: 0;
+}
+.gallery figure {
+  margin: 0;
+}
+.galleryFrame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  background: var(--paper-deep);
+}
+.galleryFrame img {
+  filter: var(--photo-filter);
+}
+.gallery figcaption {
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+/* Find us on campus (map box) -------------------------------------------- */
+.map {
+  position: relative;
+  z-index: var(--z-raised);
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 1px solid var(--rule);
+  background: var(--paper-light);
+}
+.mapLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  color: var(--ink);
+  font: 400 1.5rem/1.2 var(--font-display);
+}
+.mapFrame {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  height: 18rem;
+  border: 1px solid var(--rule);
+  background: var(--paper-deep);
+}
+.mapMessage {
+  margin: 0;
+  padding: 1rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+.mapNote {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+/* Without JavaScript the map never loads: no empty box (the directions
+   buttons still work). */
+@media (scripting: none) {
+  .mapFrame {
+    display: none;
+  }
+}
+.directions {
+  margin-top: 1.25rem;
+}
+.directionsLabel {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  font: 600 0.6875rem/1.2 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.directionsButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Musallah information -------------------------------------------------- */
+.info {
+  padding-block: clamp(4rem, 7vw, 6rem);
+}
+.infoNote {
+  margin: 1rem 0 0;
+  max-width: 60ch;
+  color: var(--muted);
+}
+.facilities {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 2rem;
+  margin: 1.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.facilities li {
+  padding-top: 0.9rem;
+  border-top: 1.5px solid var(--ink);
+}
+.facilities h3 {
+  margin: 0;
+  color: var(--ink);
+  font: 600 1rem/1.4 var(--font-body);
+}
+.facilities p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.pending {
+  font-style: italic;
+}
+
+/* Musallah helpers ------------------------------------------------------- */
+.helper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem 3rem;
+  padding-block: clamp(3.5rem, 6vw, 5rem);
+}
+.helperCopy {
+  flex: 1 1 28rem;
+  max-width: 40rem;
+  min-width: 0;
+}
+.helperBody {
+  margin: 1rem 0 0;
+  color: var(--muted);
+}
+
+/* Home: "Your first visit" ----------------------------------------------- */
+.visit {
+  align-items: center;
+}
+.visitCopy {
+  flex: 1 1 26rem;
+  min-width: 0;
+}
+.visitText {
+  margin: 1.25rem 0 0;
+  max-width: 46ch;
+  color: var(--muted);
+}
+
+@media (max-width: 44rem) {
+  .table {
+    font-size: 1.0625rem;
+  }
+  .table .now th,
+  .table .now td {
+    font-size: 1.375rem;
+  }
+  .now .rowRing {
+    left: -0.9rem;
+    width: 8.5rem;
+    height: 3.8rem;
+  }
+  .nowTag {
+    display: block;
+    margin: 0.2rem 0 0;
+    font-size: 0.6875rem;
+  }
+  .jumuahInner {
+    padding: 1.75rem 1.25rem;
+  }
+}

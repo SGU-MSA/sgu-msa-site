@@ -1,0 +1,2059 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+@import "../styles/design.css";
+
+/* A mirror of src/styles/tokens.css for Tailwind utilities; values live there. */
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-light: var(--paper-light);
+  --color-paper-deep: var(--paper-deep);
+  --color-band: var(--band);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-ring: var(--ring);
+  --color-thread: var(--thread);
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-display);
+}
+
+/* Element defaults use :where() (zero specificity) so the shared :where()
+   patterns in src/shared/ui still override them; any class beats both. */
+:where(*),
+:where(*)::before,
+:where(*)::after {
+  box-sizing: border-box;
+}
+
+:where(html) {
+  min-width: 20rem;
+  background: var(--paper);
+  color: var(--ink);
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:where(body) {
+  min-height: 100dvh;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: var(--leading-body);
+}
+
+:where(body)::selection,
+:where(body *)::selection {
+  background: var(--selection);
+  color: var(--on-selection);
+}
+
+:where(h1),
+:where(h2),
+:where(h3),
+:where(h4),
+:where(h5),
+:where(h6) {
+  margin-block: 0;
+  color: inherit;
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+:where(p) {
+  margin-block: 0;
+  text-wrap: pretty;
+}
+
+:where(a) {
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+}
+
+:where(button),
+:where(input),
+:where(select),
+:where(textarea) {
+  font: inherit;
+}
+
+:where(button),
+:where([role="button"]) {
+  cursor: pointer;
+}
+
+:where(img),
+:where(picture),
+:where(svg),
+:where(video),
+:where(canvas) {
+  display: block;
+  max-width: 100%;
+}
+
+:where(:focus-visible) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 4px;
+}
+
+.skip-link {
+  position: fixed;
+  inset-block-start: var(--space-md);
+  inset-inline-start: var(--space-md);
+  z-index: var(--z-skip-link);
+  translate: 0 calc(-100% - var(--space-xl));
+  border: 1px solid var(--ring);
+  border-radius: var(--radius-small);
+  background: var(--paper-deep);
+  color: var(--ink);
+  padding: var(--space-sm) var(--space-md);
+  font-weight: 700;
+  text-decoration: none;
+  transition: translate var(--transition-fast);
+}
+
+.skip-link:focus-visible {
+  translate: 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Theme switch (Magic UI): the toggle animates the reveal itself. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media (forced-colors: active) {
+  :focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+/* ==========================================================
+   Older shared classes, kept for what still uses them: Section
+   and PageHero, the community feed on Home, the switched-off
+   Support page and the board dashboard (/admin, restyled after
+   PR3–PR7). New public UI uses CSS modules and src/shared/ui.
+   ========================================================== */
+
+.section-kicker {
+  color: var(--ring);
+  font-size: var(--type-label);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.section-y {
+  padding-block: var(--section-y);
+}
+
+.section-y-tight {
+  padding-block: var(--section-y-tight);
+}
+
+/* Governance label (the switched-off /support page) ------------------- */
+
+.poc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--muted);
+  padding: 0.3rem 0.6rem;
+  color: var(--ink);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Editorial prose blocks (the switched-off /support page) ------------- */
+
+.editorial-copy {
+  max-width: 46rem;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.editorial-copy > p + p {
+  margin-block-start: 1.1rem;
+}
+
+/* Board/public content primitives: readable defaults, shared with small screens. */
+.admin-shell {
+  width: min(100%, 72rem);
+  margin-inline: auto;
+  /* The same space under the site header as the public pages (Home's top,
+     review 3 A): the dashboard used to start ~150px lower. */
+  padding: clamp(3rem, 5vw, 4rem) var(--content-gutter) 4rem;
+}
+.admin-shell.narrow {
+  max-width: 54rem;
+}
+.admin-shell h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.15;
+  margin-block: 1rem;
+}
+.admin-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+/* Show me how (PR4 tours) and Sign out, side by side; they wrap on phones. */
+.admin-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+/* One tour step (react-joyride draws the arrow, the dimmed page and the spotlight). */
+.tour-step {
+  width: min(24rem, calc(100vw - 2rem));
+  padding: 1.25rem;
+  border: 1px solid var(--rule);
+  background: var(--paper-light);
+  color: var(--ink);
+  box-shadow: 0 6px 24px var(--shadow);
+  overflow-wrap: anywhere;
+}
+.tour-step h2 {
+  font-size: 1.35rem;
+  line-height: 1.25;
+  margin-block: 0.25rem 0.5rem;
+}
+.tour-step-progress {
+  color: var(--muted);
+  font-size: 0.9375rem;
+  margin: 0;
+}
+.tour-step-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-block-start: 1rem;
+}
+.admin-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.5rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.admin-breadcrumb li + li::before {
+  content: "›" / "";
+  margin-inline-end: 0.5rem;
+}
+.admin-breadcrumb [aria-current="page"] {
+  overflow-wrap: anywhere;
+}
+.muted {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.content-grid,
+.form-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  margin-block: 1.5rem;
+}
+.content-card {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--rule);
+  background: var(--paper-light);
+  margin-block: 1rem;
+  overflow-wrap: anywhere;
+}
+.content-card h2,
+.content-card h3 {
+  font-size: 1.65rem;
+  line-height: 1.25;
+  margin-block: 0.5rem 1rem;
+}
+.content-card p + p {
+  margin-top: 1rem;
+}
+.content-card p {
+  color: var(--muted);
+}
+.interactive-card {
+  transition:
+    border-color var(--transition-fast),
+    transform var(--transition-fast);
+}
+.interactive-card:hover {
+  border-color: var(--ring);
+  transform: translateY(-2px);
+}
+.text-link {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  overflow-wrap: anywhere;
+}
+.button-primary,
+.button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.7rem 1.1rem;
+  border: 1px solid var(--ring);
+  border-radius: var(--radius-small);
+  font-weight: 600;
+  transition: background var(--transition-fast);
+}
+.button-primary {
+  color: var(--paper);
+  background: var(--ring);
+}
+.button-secondary {
+  color: var(--ink);
+  background: transparent;
+}
+.button-primary:hover {
+  background: var(--ink);
+}
+.button-secondary:hover,
+.button-secondary[aria-pressed="true"] {
+  background: var(--paper-light);
+}
+/* The open tab of a board list (Current or Archived): shown by more than colour. */
+.button-secondary[aria-current="page"] {
+  background: var(--paper-light);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.35em;
+}
+
+/* Event category colours. Applied by name in code (`category-${event.category}`
+   in src/features/calendar), so a text search for the full class finds nothing. */
+.category-msa {
+  color: var(--category-msa);
+}
+.category-academic {
+  color: var(--category-academic);
+}
+.category-informational {
+  color: var(--category-informational);
+}
+.category-faith {
+  color: var(--category-faith);
+}
+.category-social {
+  color: var(--category-social);
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+.editor-form {
+  display: grid;
+  gap: 1.4rem;
+  margin-block: 2rem;
+}
+/* Labels in a row of boxes stay at the top, so every box lines up
+   (review fixes PR-1: a taller neighbour stretched them). */
+.editor-form label {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  min-width: 0;
+  font-weight: 500;
+}
+.editor-form input:not([type="checkbox"], [type="radio"]),
+.editor-form textarea,
+.editor-form select {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0.75rem;
+  border: 1px solid var(--muted);
+  border-radius: var(--radius-small);
+  background: var(--paper-light);
+  color: var(--ink);
+  font-size: 1rem;
+}
+/* One box height for one-line boxes and drop-downs, side by side. */
+.editor-form input:not([type="checkbox"], [type="radio"], [type="file"]),
+.editor-form select {
+  height: 48px;
+}
+.editor-form textarea {
+  resize: vertical;
+}
+.editor-form input[type="file"] {
+  white-space: normal;
+  overflow: hidden;
+}
+.editor-form fieldset {
+  min-width: 0;
+  border: 1px solid var(--rule);
+  padding: 1.25rem;
+  display: grid;
+  gap: 1.25rem;
+}
+.editor-form legend {
+  padding-inline: 0.5rem;
+  font-size: 1.4rem;
+  font-family: var(--font-display);
+}
+.editor-form .check-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 44px;
+  gap: 0.8rem;
+}
+.check-label input {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  accent-color: var(--ring);
+}
+.form-error {
+  color: var(--status-danger);
+  border-left: 3px solid var(--status-danger);
+  padding: 1rem;
+}
+/* A wrong box (review 2, 2026-10-05; `CheckedForm`, `FieldError`): a red
+   outline and one line under it, in both themes. Choices (radio buttons,
+   tick boxes) outline their group instead. */
+.editor-form [aria-invalid="true"] {
+  border-color: var(--status-danger);
+  outline: 1px solid var(--status-danger);
+  outline-offset: 0;
+}
+.editor-form [aria-invalid="true"]:focus-visible {
+  outline: 2px solid var(--status-danger);
+  outline-offset: 2px;
+}
+.editor-form fieldset[data-invalid="true"] {
+  border-color: var(--status-danger);
+}
+.field-error {
+  display: block;
+  margin: 0;
+  color: var(--status-danger);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.form-top-message:focus {
+  outline: none;
+}
+/* "Leave without saving?" (UnsavedChangesGuard). */
+.leave-dialog {
+  /* Centred on the screen (the base styles reset a dialog's margin). */
+  margin: auto;
+  max-width: min(28rem, calc(100vw - 2rem));
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-small);
+  background: var(--paper-light);
+  color: var(--ink);
+  padding: 1.5rem;
+  box-shadow: 0 12px 40px var(--shadow);
+}
+.leave-dialog::backdrop {
+  background: rgb(0 0 0 / 40%);
+}
+.leave-dialog h2 {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+}
+.leave-dialog p {
+  margin: 0 0 1.25rem;
+}
+.leave-dialog .admin-actions {
+  margin-block: 0;
+}
+/* History's Restore confirmation (review 3 D): the leave dialog's look, wide
+   enough for the version's picture, which scrolls inside while the sentence
+   and the Restore / Cancel buttons stay in view. */
+.restore-dialog {
+  width: 100%;
+  max-width: min(64rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+}
+.restore-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+.restore-dialog > p {
+  max-width: 44rem;
+}
+.restore-preview {
+  flex: 1 1 auto;
+  min-height: 8rem;
+  overflow: auto;
+  margin-block-end: 1.25rem;
+}
+.restore-dialog .form-error {
+  margin-block: 0 1rem;
+}
+.prayer-version {
+  margin-block: 0;
+  padding: 0.75rem;
+}
+/* A refused save's list of problems (FormMessages). */
+.form-error ul {
+  list-style: disc;
+  padding-inline-start: 1.25rem;
+  margin-block: 0.5rem 0;
+}
+/* Prayer & iqamah (PR4 WP-4): the automatic-starts note, the Daily iqamah
+   table with its Fixed time / After adhan switch, and the one-date cards. */
+.prayer-note {
+  border-inline-start: 3px solid var(--ring);
+  background: var(--paper-light);
+  padding: 0.75rem 1rem;
+}
+.editor-form .segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 0;
+  border: 1px solid var(--ring);
+  border-radius: var(--radius-small);
+  overflow: hidden;
+}
+.editor-form .segmented label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.segmented label:has(input:checked) {
+  background: var(--ink);
+  color: var(--paper);
+}
+.segmented label:has(input:focus-visible) {
+  outline: 2px solid var(--ring);
+  outline-offset: -4px;
+}
+@media (forced-colors: active) {
+  .segmented label:has(input:checked) {
+    outline: 2px solid CanvasText;
+    outline-offset: -4px;
+  }
+}
+/* Musallah location (PR7 D-4): the draggable pin map and its two links. */
+.pin-editor-map {
+  display: grid;
+  place-items: center;
+  height: 20rem;
+  margin-block: 1rem;
+  border: 1px solid var(--rule);
+  background: var(--paper-deep);
+}
+.pin-editor-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.5rem;
+}
+.iqamah-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.iqamah-table th,
+.iqamah-table td {
+  padding: 0.5rem;
+  border-block-end: 1px solid var(--rule);
+  text-align: start;
+  vertical-align: middle;
+}
+.iqamah-table thead th {
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.iqamah-table input {
+  max-width: 9rem;
+}
+.iqamah-minutes {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+/* A prayer stored with both kinds: its error under the two boxes (D-14). */
+.iqamah-both {
+  margin-block: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
+}
+.editor-form .date-change {
+  background: var(--paper-light);
+}
+/* The live line beside each prayer: "Adhan 12:31 PM → Iqamah 12:45 PM today" (review fixes P2). */
+.iqamah-preview {
+  margin-block: 0.5rem 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+}
+.iqamah-preview .keep {
+  white-space: nowrap;
+}
+/* The Jumu'ah prayers lists (weekly and one Friday): one card per prayer. */
+.editor-form .jumuah-sessions {
+  display: grid;
+  gap: 0.75rem;
+}
+.editor-form .jumuah-session {
+  display: grid;
+  gap: 0.75rem;
+}
+.editor-form .jumuah-session .form-grid {
+  margin-block: 0;
+}
+/* Narrow cards (a phone): the handle sits beside the prayer's name instead
+   of on a row of its own, as on Pages' section list. */
+@container (width <= 34rem) {
+  .editor-form .jumuah-sessions ol:not([data-single]) > li[data-sortable-item] {
+    grid-template-areas: "content";
+  }
+  .editor-form
+    .jumuah-sessions
+    ol:not([data-single])
+    > li
+    > [data-drag-handle] {
+    position: absolute;
+    inset-block-start: clamp(0.75rem, 2.5vw, 1.5rem);
+    inset-inline-start: clamp(0.75rem, 2.5vw, 1.5rem);
+  }
+  .editor-form
+    .jumuah-sessions
+    ol:not([data-single])
+    .jumuah-session
+    > .page-list-name {
+    min-block-size: 2.75rem;
+    align-content: center;
+    padding-inline-start: 3.5rem;
+  }
+}
+/* Phones: each prayer becomes a small card (its name, the switch, the box, the preview). */
+@media (max-width: 40rem) {
+  /* Boxes inside boxes (a date's Jumu'ah): less side room, so times fit on one line. */
+  .editor-form fieldset fieldset {
+    padding-inline: 0.75rem;
+  }
+  .iqamah-table,
+  .iqamah-table tbody {
+    display: block;
+  }
+  .iqamah-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .iqamah-table tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+    padding-block: 0.75rem;
+    border-block-end: 1px solid var(--rule);
+  }
+  .iqamah-table th,
+  .iqamah-table td {
+    padding: 0;
+    border: 0;
+  }
+  .iqamah-table td {
+    grid-column: 1 / -1;
+  }
+  .iqamah-table td[data-label]::before {
+    content: attr(data-label) " ";
+    color: var(--muted);
+  }
+}
+/* Content forms (PR4 WP-5): a box with its hint, a row of short boxes and
+   a plain question ("Who can see it?", "The newsletter"). */
+.editor-form .form-field {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  min-width: 0;
+}
+/* The name above a group of boxes (a time box), styled like a label. */
+.editor-form .field-name {
+  font-weight: 500;
+}
+.editor-form .form-field > .form-grid {
+  margin-block: 0;
+}
+.editor-form .form-grid.compact {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+}
+.editor-form fieldset.choice {
+  border: 0;
+  padding: 0;
+  gap: 0.25rem;
+}
+.editor-form fieldset.choice legend {
+  padding: 0 0 0.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+}
+/* PR5a: choice cards ("How important is it?", "Is it still happening?";
+   mockups announcement-editor, event-status). The chosen card has a thicker
+   border, not only a colour. */
+.editor-form .choice-cards {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+}
+.editor-form .choice-card {
+  display: grid;
+  align-content: start;
+  gap: 0.25rem;
+  padding: 0.5rem 0.9rem 0.8rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-small);
+  background: var(--paper-light);
+}
+.editor-form .choice-card:has(input:checked) {
+  border: 2px solid var(--ring);
+  padding: calc(0.5rem - 1px) calc(0.9rem - 1px) calc(0.8rem - 1px);
+}
+.editor-form .choice-card .check-label {
+  font-weight: 600;
+}
+.editor-form fieldset.priority,
+.editor-form fieldset.status {
+  gap: 1rem;
+}
+/* The Jumu'ah question under a changed Friday (PR5a D-3; mockup jumuah-notice). */
+.editor-form .jumuah-notice {
+  border: 2px solid var(--ring);
+  border-radius: var(--radius-small);
+  background: var(--paper);
+  gap: 0.75rem;
+}
+/* "Omar Haddad is President. Make … President instead?" under Role (2026-10-06):
+   the Jumu'ah question's look, with Yes / Cancel buttons. */
+.editor-form .role-question {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  border: 2px solid var(--ring);
+  border-radius: var(--radius-small);
+  background: var(--paper);
+}
+.editor-form .role-question p {
+  margin: 0;
+}
+.editor-form .role-question .admin-actions {
+  margin-block: 0.5rem 0;
+}
+/* A nudge inside a form (review fixes P4: "add a photo"). */
+.nudge-note {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--ring);
+  background: var(--paper-light);
+}
+.editor-form .role-question-done {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--ring);
+  background: var(--paper);
+}
+.editor-form .check-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.5rem;
+}
+.editor-preview {
+  padding: clamp(0.75rem, 2vw, 1.25rem);
+  border: 1px dashed var(--muted);
+  border-radius: var(--radius-small);
+}
+.editor-preview-label {
+  margin-block-end: 1rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.editor-preview-body {
+  display: grid;
+  gap: 1.5rem;
+  overflow: hidden;
+  background: var(--paper);
+}
+/* The section being edited, scrolled to below the site's sticky header
+   (review 3 B). */
+.editor-preview-body [data-page-section] > * {
+  scroll-margin-top: 7rem;
+}
+/* A note or a list of problems above a full-page preview (the season with
+   no page, a page with boxes to fix): in line with the page's text, inside
+   the same margins as the public pages' `Container` (px-5 sm:px-8 lg:px-12). */
+.preview-frame-root > .editor-preview-body > :is(p, [role="note"]) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding: 1.5rem 1.25rem 0;
+}
+@media (min-width: 40rem) {
+  .preview-frame-root > .editor-preview-body > :is(p, [role="note"]) {
+    padding-inline: 2rem;
+  }
+}
+@media (min-width: 64rem) {
+  .preview-frame-root > .editor-preview-body > :is(p, [role="note"]) {
+    padding-inline: 3rem;
+  }
+}
+.editor-preview-note {
+  font-weight: 600;
+}
+/* Preview's page switcher (shared text, option A, 2026-10-06): the page
+   shown is marked like the open tab, by more than colour. */
+.preview-pages {
+  align-items: center;
+  margin-block: 0 1rem;
+}
+.preview-pages [aria-pressed="true"] {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.35em;
+}
+.success-message {
+  color: var(--status-success);
+  padding-block: 1rem;
+}
+/* "Appears on: …" under an editor's title (review fixes P1, item 4). */
+.appears-on {
+  margin-block: 0.25rem 1.5rem;
+  color: var(--muted);
+}
+/* Read with the title it belongs to. */
+.admin-header + .appears-on {
+  margin-block-start: -1.5rem;
+}
+/* A board form's save state (review fixes P1, item 2; the bar the user
+   picked on 2026-10-07, `SaveStatus`): once something is changed, a thin bar
+   along the bottom of the screen with "Unsaved changes" and Save, gone once
+   saved. The page gets the bar's height as room at the bottom while it
+   shows, so the bar never covers the end of a form. */
+:root {
+  --unsaved-bar-height: 4rem;
+}
+body:has(> .unsaved-bar) {
+  padding-block-end: calc(
+    var(--unsaved-bar-height) + env(safe-area-inset-bottom)
+  );
+}
+/* A box scrolled to (the focus moving to a red box, the keyboard) stops
+   above the bar, not under it. */
+html:has(> body > .unsaved-bar) {
+  scroll-padding-block-end: calc(
+    var(--unsaved-bar-height) + env(safe-area-inset-bottom) + 1rem
+  );
+}
+.unsaved-bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: var(--z-sticky);
+  min-height: var(--unsaved-bar-height);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  padding: 0.5rem max(1rem, env(safe-area-inset-right))
+    max(0.5rem, env(safe-area-inset-bottom))
+    max(1rem, env(safe-area-inset-left));
+  border-top: 1px solid var(--rule);
+  background: var(--paper-light);
+  color: var(--ink);
+  box-shadow: 0 -4px 16px var(--shadow);
+}
+.unsaved-bar-text {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+.unsaved-bar-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--ring);
+}
+.unsaved-bar[data-state="saving"] .unsaved-bar-dot {
+  animation: unsaved-bar-pulse 1s ease-in-out infinite alternate;
+}
+@keyframes unsaved-bar-pulse {
+  to {
+    opacity: 0.25;
+  }
+}
+/* "Saved" (`SavedToast`): at the bottom of the screen for a few seconds,
+   then it fades. With reduced motion it simply goes (the global rule makes
+   the fade instant; the delay stays). */
+.saved-toast-region {
+  position: fixed;
+  inset-inline: 0;
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  padding-inline: 1rem;
+  pointer-events: none;
+}
+.saved-toast {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 100%;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-small);
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 0 8px 28px var(--shadow);
+  font-weight: 600;
+  animation: saved-toast-out 0.4s ease 3.6s forwards;
+}
+.saved-toast-mark {
+  font-weight: 700;
+}
+@keyframes saved-toast-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+.admin-list {
+  list-style: none;
+  padding: 0;
+  margin-block: 2rem;
+}
+/* Numbered how-to steps on a dashboard screen (Go2Pay, Google Forms). */
+.help-steps {
+  list-style: decimal;
+  padding-inline-start: 1.5rem;
+  margin-block: 1rem;
+  color: var(--muted);
+}
+.help-steps li + li {
+  margin-top: 0.5rem;
+}
+.admin-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-block-end: 1px solid var(--rule);
+  padding-block: 1.25rem;
+}
+.admin-list h2,
+.admin-list h3 {
+  font-size: 1.4rem;
+  overflow-wrap: anywhere;
+}
+/* An archived team group (review 2): its name and Restore, then the closed
+   Delete permanently under them. */
+.admin-list li.archived-group {
+  display: grid;
+  justify-content: stretch;
+  align-items: start;
+  gap: 0.5rem;
+}
+/* The Executive board (review 2): listed by role, nothing to drag. Its rows
+   look like the dragged rows (full-width line, 1rem above and below) and
+   their text lines up with the dragged lists' text (the handle's 2.75rem and
+   its 0.75rem gap). On a phone the empty gutter goes, so Edit keeps its room. */
+.admin-list.fixed-order {
+  margin-block: 1rem;
+  container-type: inline-size;
+}
+.admin-list.fixed-order > li {
+  padding-block: 1rem;
+  padding-inline-start: 3.5rem;
+}
+.admin-list.fixed-order > li > .order-row {
+  flex: 1;
+}
+@container (max-width: 34rem) {
+  .admin-list.fixed-order > li {
+    padding-inline-start: 0;
+  }
+}
+.archived-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block: 1.5rem;
+}
+/* A row of a dragged board list (review fixes PR-2, `OrderedList`): the
+   text, then its button, wrapping under it on a phone. */
+.order-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+.order-row h2,
+.order-row h3 {
+  font-size: 1.4rem;
+  overflow-wrap: anywhere;
+}
+.order-row > div {
+  min-width: 0;
+}
+/* A person on People: their labels wrap beside Edit, so Edit stays on the
+   right on a phone too (unless the name column would be under 12rem). */
+.person-row > div:first-child {
+  flex: 1 1 12rem;
+}
+/* Lists (review fixes P3): each option is its name box with Save name, then
+   Delete (or what uses it); Add sits under the list. One row on a computer;
+   on a phone the name takes the whole width and Save name sits beside
+   Delete under it. */
+.list-section > h2 {
+  font-size: 1.65rem;
+  line-height: 1.25;
+}
+.list-option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 12rem;
+  align-items: start;
+  gap: 0.5rem 1rem;
+}
+.list-option > .editor-form {
+  margin: 0;
+}
+.list-option > .editor-form > button {
+  justify-self: start;
+}
+.list-option-used {
+  margin: 0;
+  padding-block: 0.25rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.list-name-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.5rem 0.75rem;
+  min-width: 0;
+}
+.list-name-form input {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0.75rem;
+  border: 1px solid var(--muted);
+  border-radius: var(--radius-small);
+  background: var(--paper-light);
+  color: var(--ink);
+  font-size: 1rem;
+}
+.list-name-form > .field-error,
+.list-name-form > .form-top-message {
+  grid-column: 1 / -1;
+}
+/* On a narrow screen the option's name form lends its parts to the row's
+   grid: the message, the name box, its problem, then Save name beside
+   Delete (or what uses the option). */
+@container (max-width: 34rem) {
+  .list-option {
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 0;
+  }
+  .list-option > .list-name-form {
+    display: contents;
+  }
+  .list-option > .list-name-form > * {
+    grid-column: 1 / -1;
+  }
+  .list-option > .list-name-form > .form-top-message {
+    grid-row: 1;
+    margin-block-end: 0.5rem;
+  }
+  .list-option > .list-name-form > input {
+    grid-row: 2;
+  }
+  .list-option > .list-name-form > .field-error {
+    grid-row: 3;
+    margin-block-start: 0.25rem;
+  }
+  .list-option > .list-name-form > button,
+  .list-option > .editor-form,
+  .list-option > .list-option-used {
+    grid-row: 4;
+    margin-block-start: 0.5rem;
+  }
+  .list-option > .list-name-form > button {
+    grid-column: 1;
+  }
+  .list-option > .editor-form,
+  .list-option > .list-option-used {
+    grid-column: 2;
+  }
+}
+.list-add {
+  margin-block-start: 1.25rem;
+  padding-block-start: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+/* The heading of a dragged card (a section, a hand-over step). */
+.order-card-title {
+  font-size: 1.65rem;
+  line-height: 1.25;
+  margin-block: 0.4rem 1rem;
+  overflow-wrap: anywhere;
+}
+/* A group heading above a dragged list (the Funds list's Donate groups). */
+.order-group-title {
+  font-size: 1.4rem;
+  line-height: 1.25;
+  margin-block: 2rem 0.5rem;
+}
+/* "Save order" under a dragged list: stays in view while a long list scrolls. */
+.order-bar {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: var(--z-sticky);
+  display: grid;
+  gap: 0.75rem;
+  margin-block: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--ring);
+  border-radius: var(--radius-small);
+  background: var(--paper-light);
+  box-shadow: 0 -0.25rem 1rem var(--shadow);
+}
+/* With the "Unsaved changes" bar showing (`SaveStatus`), "Save order" and
+   "Undo" stick just above it instead of under it. */
+body:has(> .unsaved-bar) .order-bar {
+  inset-block-end: calc(
+    var(--unsaved-bar-height) + env(safe-area-inset-bottom) + 0.5rem
+  );
+}
+.order-bar > p {
+  color: var(--ink);
+  font-weight: 600;
+}
+.order-bar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.admin-group h2 {
+  font-size: 1.65rem;
+  line-height: 1.25;
+  margin-block-start: 2rem;
+}
+.admin-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-block-start: 0.5rem;
+}
+.admin-badge {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-small);
+  padding: 0.15rem 0.5rem;
+  color: var(--ink);
+  font-size: 0.8125rem;
+}
+/* A badge that asks for something (review fixes P4: "No photo yet"). */
+.admin-badge-nudge {
+  border-color: var(--ring);
+  border-style: dashed;
+}
+/* Recent changes (PR3 WP-E): prayer changes carry a gold edge and a label. */
+.activity-highlight {
+  border-inline-start: 3px solid var(--ring);
+}
+/* Needs attention: a rule between items, so each link sits with its own line. */
+.attention-item + .attention-item {
+  border-block-start: 1px solid var(--rule);
+  margin-block-start: 0.75rem;
+  padding-block-start: 0.75rem;
+}
+.activity-feed .activity-highlight {
+  padding-inline-start: 1rem;
+}
+.activity-feed li > div {
+  flex: 1;
+  min-width: 0;
+}
+/* An entry's control (History: Restore) sits clear of the change text. */
+.activity-feed li > div > button {
+  margin-block-start: 0.75rem;
+}
+/* A History restore in History and Recent changes (review 3 D). */
+.activity-restored {
+  display: inline-block;
+  margin-block: 0.5rem 0;
+  border: 1px solid var(--ring);
+  border-radius: var(--radius-small);
+  padding: 0.15rem 0.5rem;
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.activity-fields {
+  display: grid;
+  gap: 0.35rem;
+  margin-block-start: 0.75rem;
+}
+.activity-fields > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+}
+.activity-fields dt {
+  font-weight: 600;
+}
+.activity-fields dt::after {
+  content: ":";
+}
+.activity-fields dd {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+summary {
+  cursor: pointer;
+  min-height: 44px;
+}
+/* Recent changes filters (PR5a D-10, mockup `activity-filters`): Who, What,
+   From, Until and Show in one row on wide screens. */
+.editor-form.activity-filters {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  align-items: end;
+  gap: 1rem;
+  margin-block: 1.5rem 0.75rem;
+}
+/* The Show button is as tall as the boxes beside it, so the row is level. */
+.editor-form.activity-filters > button {
+  height: 48px;
+  padding-block: 0;
+}
+/* New board term (PR5a, mockup `handover`): the checklist beside who holds
+   each shared login; one column on phones. */
+.handover-layout {
+  display: grid;
+  gap: 1.5rem 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));
+  align-items: start;
+}
+.handover-layout > .content-card {
+  margin-block: 0;
+}
+.handover-progress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  color: var(--muted);
+}
+.handover-steps {
+  list-style: none;
+  padding: 0;
+  margin-block: 1rem;
+}
+.handover-step {
+  border-block-end: 1px solid var(--rule);
+  padding-block: 0.75rem;
+}
+.handover-tick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 1rem;
+}
+.handover-tick .check-label {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 44px;
+}
+.handover-step-title {
+  font-weight: 600;
+  color: var(--ink);
+}
+.handover-done {
+  color: var(--status-success);
+  font-size: 0.875rem;
+}
+.handover-details {
+  padding-inline-start: calc(22px + 0.8rem);
+}
+.handover-edit {
+  align-items: center;
+}
+.login-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block: 1rem;
+}
+.login-table th,
+.login-table td {
+  padding: 0.6rem 0.5rem;
+  border-block-end: 1px solid var(--rule);
+  text-align: start;
+  vertical-align: top;
+}
+.login-table thead th {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.login-table tbody th {
+  font-weight: 600;
+}
+.login-note {
+  display: block;
+  font-weight: 400;
+  font-size: 0.875rem;
+}
+.login-table td[data-label]::before {
+  content: none;
+}
+/* A narrow column (phones, or beside the checklist on smaller screens):
+   each account becomes a small card with its labels. */
+.handover-layout > section {
+  container-type: inline-size;
+}
+@container (max-width: 30rem) {
+  .login-table,
+  .login-table tbody,
+  .login-table tr,
+  .login-table th,
+  .login-table td {
+    display: block;
+  }
+  .login-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .login-table tr {
+    padding-block: 0.75rem;
+    border-block-end: 1px solid var(--rule);
+  }
+  .login-table th,
+  .login-table td {
+    padding: 0.15rem 0;
+    border: 0;
+  }
+  .login-table td[data-label]::before {
+    content: attr(data-label) " ";
+    color: var(--muted);
+  }
+}
+@media (max-width: 420px) {
+  .admin-header {
+    flex-direction: column;
+  }
+}
+
+/* Pages (PR5b): one page's text, drawn from its field list. */
+.editor-form .page-list-item {
+  display: grid;
+  gap: 1rem;
+}
+.editor-form .page-list-name {
+  font-weight: 600;
+}
+.editor-form .page-entries {
+  display: grid;
+  gap: 1rem;
+}
+.editor-form .page-photo-thumb {
+  width: min(100%, 12rem);
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid var(--rule);
+}
+
+/* Photos (photo library, 2026-10-06): the space used, then one card per
+   uploaded file: its picture, details, and where it is used or Delete. */
+.photo-space h2 {
+  font-size: 1.4rem;
+  margin-block: 0 0.75rem;
+}
+.photo-space-bar {
+  height: 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--paper);
+  overflow: hidden;
+  margin-block-end: 1rem;
+}
+.photo-space-bar span {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  background: var(--ring);
+}
+.photo-library {
+  list-style: none;
+  padding: 0;
+  margin-block: 1.5rem;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+.photo-card {
+  display: grid;
+  align-content: start;
+  border: 1px solid var(--rule);
+  background: var(--paper-light);
+  overflow-wrap: anywhere;
+}
+.photo-card-thumb {
+  aspect-ratio: 4 / 3;
+  border-block-end: 1px solid var(--rule);
+  background: var(--paper);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.photo-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-card-pdf {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.photo-card-pdf svg {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.photo-card-body {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem;
+  justify-items: start;
+}
+.photo-card-body > p {
+  margin: 0;
+}
+.photo-card-body > ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+/* "Choose from uploaded photos" on every photo box (photo library). */
+.photo-choose {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-block: 0.5rem 0;
+}
+.photo-chosen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+.photo-chosen-line {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+.photo-chosen img {
+  width: 6rem;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid var(--rule);
+}
+.photo-picker {
+  width: 100%;
+  max-width: min(56rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+}
+.photo-picker[open] {
+  display: flex;
+  flex-direction: column;
+}
+.photo-picker-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+  overflow: auto;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
+}
+.photo-picker-grid li {
+  display: grid;
+}
+/* Cards in a row share one height; the photo stays at the top. */
+.photo-picker-grid button {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  width: 100%;
+  height: 100%;
+  padding: 0.35rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-small);
+  background: var(--paper);
+  color: var(--ink);
+  text-align: start;
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+.photo-picker-grid button:hover,
+.photo-picker-grid button:focus-visible {
+  border-color: var(--ring);
+}
+.photo-picker-grid img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+/* Pages (review 3 B): a page as a list of its sections. Each row: its name,
+   labels and note, then "Show this section on the page" and Edit; Edit
+   unfolds its boxes under the row. The top (and Support's settings) are
+   fixed rows above the dragged list. */
+.editor-form .page-sections {
+  display: grid;
+  gap: 1rem;
+}
+.editor-form .page-section-row {
+  border: 1px solid var(--rule);
+  background: var(--paper-light);
+  padding: clamp(0.75rem, 2.5vw, 1.5rem);
+}
+.editor-form .page-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+}
+.editor-form .page-section-name {
+  flex: 1 1 14rem;
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.editor-form .page-section-name .admin-badges:empty {
+  display: none;
+}
+.editor-form .page-section-name p {
+  margin: 0;
+}
+/* Where a section's words come from: read after its name; shown under the
+   row's name and controls, the row's full width (under the name alone on a
+   narrow screen, below). */
+.editor-form .page-section-note {
+  margin: 0.5rem 0 0;
+}
+.editor-form .page-section-head > .page-section-note {
+  flex-basis: 100%;
+  order: 1;
+  margin: 0;
+}
+.editor-form .page-section-title {
+  font-size: 1.4rem;
+  overflow-wrap: anywhere;
+}
+.editor-form .page-section-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+}
+.editor-form .page-section-switch {
+  display: grid;
+}
+/* The switches of every row line up, Edit or not. */
+@media (min-width: 40rem) {
+  .editor-form .page-section-controls.with-switch {
+    display: grid;
+    grid-template-columns: auto 5.5rem;
+  }
+  .editor-form .page-section-controls.with-switch > :last-child {
+    justify-self: end;
+  }
+}
+/* The titles of every row in one column: the fixed rows above the dragged
+   list (the top, Support's settings) keep the room of its ⠿ handle (2.75rem)
+   and gap (0.75rem). On a narrow screen the handle sits beside the title
+   (and the note under it), so the row's boxes keep the full width. */
+.editor-form .page-sections.with-list {
+  container: page-sections / inline-size;
+}
+@container page-sections (width > 34rem) {
+  .editor-form .page-sections.with-list > .page-section-row,
+  .editor-form .page-section-list > .page-section-band {
+    padding-inline-start: calc(clamp(0.75rem, 2.5vw, 1.5rem) + 3.5rem);
+  }
+}
+/* A band section (About's Contact; review fixes P3) under the dragged list:
+   always last, no handle, its title in the same column. */
+.editor-form .page-section-list > .page-section-band {
+  margin-block-start: 1rem;
+}
+@container page-sections (width <= 34rem) {
+  .editor-form
+    .page-section-list
+    > .page-section-band
+    :is(.page-section-name, .page-section-note) {
+    padding-inline-start: 3.5rem;
+  }
+}
+/* A one-section list has no handle on a narrow screen (SortableList): no room
+   is kept for it there. */
+@container page-sections (width <= 34rem) {
+  .editor-form
+    .page-sections.with-list:not(
+      :has(> .page-section-list > div > ol[data-single])
+    )
+    > .page-section-row
+    :is(.page-section-name, .page-section-note) {
+    padding-inline-start: 3.5rem;
+  }
+}
+@container (width <= 34rem) {
+  .editor-form .page-section-list > div > ol > li[data-sortable-item] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "content";
+  }
+  .editor-form
+    .page-section-list
+    > div
+    > ol
+    > li[data-sortable-item]
+    > [data-drag-handle] {
+    position: absolute;
+    inset-block-start: clamp(0.75rem, 2.5vw, 1.5rem);
+    inset-inline-start: clamp(0.75rem, 2.5vw, 1.5rem);
+  }
+  .editor-form
+    .page-section-list
+    > div
+    > ol:not([data-single])
+    > li
+    :is(.page-section-name, .page-section-note) {
+    padding-inline-start: 3.5rem;
+  }
+  .editor-form .page-section-list .page-section-name {
+    min-block-size: 2.75rem;
+    align-content: center;
+  }
+  .editor-form .page-section-list .page-section-head > .page-section-note {
+    order: 0;
+  }
+}
+.editor-form .page-section-boxes {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+.editor-form .page-section-boxes[hidden] {
+  display: none;
+}
+.page-section-wrong {
+  border-color: var(--status-danger);
+  color: var(--status-danger);
+}
+
+/* PR6 giving screens (Funds, Tickets, Seasons, Payments; mockups
+   fund-editor, season-editor, seasons-list, payments-audit). One column on
+   phones; the season editor and its "Uses these dates" panel side by side
+   on wide screens. The fund slip preview is in the full-page Preview. */
+.giving-layout {
+  display: grid;
+  gap: 0 2rem;
+  align-items: start;
+}
+@media (min-width: 62rem) {
+  .giving-layout {
+    grid-template-columns: minmax(0, 3fr) minmax(16rem, 2fr);
+  }
+  .giving-aside {
+    position: sticky;
+    top: 1rem;
+  }
+}
+.giving-aside {
+  margin-block: 2rem 0;
+}
+/* A season (PR5c): the editor and its page Preview full width, "Uses these dates" under them. */
+.season-layout {
+  display: grid;
+  gap: 0;
+}
+.season-layout > .giving-aside {
+  position: static;
+}
+.giving-uses {
+  list-style: none;
+  padding: 0;
+  margin-block: 0.5rem 1rem;
+}
+.giving-uses li {
+  padding-block: 0.4rem;
+  border-block-end: 1px solid var(--rule);
+}
+.giving-locked {
+  margin-inline-start: 0.75rem;
+  font-family: inherit;
+  vertical-align: middle;
+}
+.giving-attention {
+  border-color: var(--status-danger);
+}
+.giving-rerun {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-inline-start: 3px solid var(--ring);
+  background: var(--paper-light);
+}
+.giving-when,
+.season-expected {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-small);
+  background: var(--paper-light);
+}
+.season-expected .admin-badge,
+.season-days .admin-badge {
+  margin-inline-start: 0.35rem;
+}
+/* A fund's Donate line on the Funds list (review fixes P4). */
+.giving-status {
+  margin: 0.35rem 0 0;
+  font-weight: 600;
+}
+.giving-status-off {
+  color: var(--muted);
+  font-weight: 400;
+}
+.giving-link-check {
+  padding-block: 0;
+}
+/* The copy box: label, text with its length, Copy button. */
+.giving-copy-box {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+.giving-copy-box > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.25rem 1rem;
+  align-items: start;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-small);
+  background: var(--paper-light);
+}
+.giving-copy-box dt {
+  grid-column: 1 / -1;
+  font-weight: 600;
+}
+.giving-copy-box dd {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.giving-copy-box .form-error {
+  padding: 0.25rem 0.5rem;
+}
+.giving-copy-box .giving-copy-action {
+  justify-items: end;
+}
+.giving-copy {
+  min-height: 44px;
+}
+/* Payments: the boxes (zakat in double-ruled boxes) and the tables. */
+.money-boxes {
+  display: grid;
+  gap: 1rem 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  margin-block: 1.5rem;
+}
+.money-boxes > .money-box {
+  margin-block: 0;
+}
+/* The unrestricted box has the most lines: a whole row under the zakat boxes. */
+.money-boxes > .money-box:not(.money-box-restricted) {
+  grid-column: 1 / -1;
+}
+.money-box-restricted {
+  border: 4px double var(--ink);
+}
+.money-lines {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block-start: 0.75rem;
+}
+.money-lines th,
+.money-lines td {
+  padding: 0.45rem 0.35rem;
+  border-block-end: 1px solid var(--rule);
+  text-align: end;
+  vertical-align: top;
+}
+.money-lines th:first-child {
+  text-align: start;
+}
+.money-lines thead th {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.money-lines tbody th,
+.money-lines tfoot th {
+  font-weight: 500;
+}
+.money-lines tfoot th,
+.money-lines tfoot td {
+  font-weight: 700;
+  border-block-end: 0;
+}
+.money-products {
+  display: block;
+  font-size: 0.8125rem;
+}
+.money-heading {
+  font-size: 1.65rem;
+  margin-block: 2rem 0.5rem;
+}
+/* The seasons table and every payment become small cards when narrow. */
+@media (max-width: 64rem) {
+  .money-table,
+  .money-table tbody,
+  .money-table tr,
+  .money-table th,
+  .money-table td {
+    display: block;
+  }
+  .money-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .money-table tr {
+    padding-block: 0.75rem;
+    border-block-end: 1px solid var(--rule);
+  }
+  .money-table th,
+  .money-table td {
+    padding: 0.15rem 0;
+    border: 0;
+  }
+  .money-table td[data-label]::before {
+    content: attr(data-label) " ";
+    color: var(--muted);
+  }
+}
+@media (max-width: 40rem) {
+  .giving-table,
+  .giving-table tbody,
+  .giving-table tr,
+  .giving-table th,
+  .giving-table td {
+    display: block;
+  }
+  .giving-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .giving-table tr {
+    padding-block: 0.75rem;
+    border-block-end: 1px solid var(--rule);
+  }
+  .giving-table th,
+  .giving-table td {
+    padding: 0.15rem 0;
+    border: 0;
+  }
+  .giving-table td[data-label]::before {
+    content: attr(data-label) " ";
+    color: var(--muted);
+  }
+}
+/* Qur'an verses (PR5b WP7; Review 3 E): each place's verse in "Verse on each
+   page", with "Change verse" opening a search inside the fixed library. */
+.editor-form fieldset.verse-choice {
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--paper);
+}
+.editor-form fieldset.verse-choice legend {
+  padding-inline: 0.25rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.verse-chosen > p,
+.verse-find > p {
+  margin: 0;
+}
+.verse-chosen {
+  display: grid;
+  gap: 0.25rem;
+}
+.verse-choice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.verse-find {
+  display: grid;
+  gap: 0.75rem;
+  padding-block-start: 0.75rem;
+  border-block-start: 1px solid var(--rule);
+}
+.verse-find > button {
+  justify-self: start;
+}
+.verse-results {
+  display: grid;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.verse-result {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+}
+.verse-result > p {
+  margin: 0;
+}
+p.verse-arabic {
+  color: var(--ink);
+  font-family: var(--font-arabic);
+  font-size: 1.5rem;
+  line-height: 2;
+}
+p.verse-meaning {
+  color: var(--ink);
+}
+.verse-result-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+/* On a phone the name and the button always stack, the same for every verse. */
+@media (max-width: 30rem) {
+  .verse-result-foot {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+.verse-preview-note {
+  max-width: 18rem;
+}
+/* Each place's verse name sits with its own verse, clear of the next rule. */
+.verse-preview-place {
+  padding-block-end: 1.5rem;
+}
+.verse-preview-note > aside {
+  margin-top: 0;
+}

@@ -1,0 +1,109 @@
+# Editorial homepage copy and photography. Operational prayer, events and
+# community updates come from the managed backend; FAQs remain editorial.
+
+# The sections below the page top, in the order visitors see them; `shown: false`
+# hides one and keeps its text (Pages, review 3 B; src/lib/content/page-layouts.ts).
+sections:
+  - { id: week, shown: true }
+  - { id: contribution, shown: true }
+  - { id: updates, shown: true }
+  - { id: visit, shown: true }
+  - { id: features, shown: true }
+  - { id: faq, shown: true }
+  - { id: giving, shown: true }
+
+hero:
+  eyebrow: "Faith. Knowledge. Community."
+  headline: "A little closer."
+  emphasis: "To faith. To each other."
+  body:
+    - "A place for prayer, growth, and brotherhood & sisterhood."
+    - "Welcome to your Muslim home away from home."
+  image:
+    src: "/images/community/island-landscape.webp"
+    alt: "The Grenada coastline near the SGU campus"
+    focal_point: "50% 50%"
+  primary_cta: { label: "What’s happening", href: "/calendar" }
+  secondary_cta: { label: "Find the Musallah", href: "/prayer#find-the-musallah" }
+  aside:
+    arabic: "شكر"
+    transliteration: "Shukr"
+    quote: "Give thanks in ease and in hardship, for what reaches you is by decree."
+
+week:
+  heading: "Upcoming at MSA"
+  empty_message: "No public events currently listed."
+
+contribution:
+  heading: "Our community, built by students"
+  items:
+    - id: musallah-helper
+      title: "Become a Musallah Helper"
+      short_description: "Help maintain our Musallah and facilities."
+      icon: help
+      href: "/get-involved#musallah-helper"
+    - id: student-khutbah
+      title: "Give a Student Khutbah"
+      short_description: "Share a khutbah as a student."
+      icon: mic
+      href: "/get-involved#student-khutbah"
+    - id: host-halaqa
+      title: "Host a Halaqa"
+      short_description: "Lead or host an Islamic gathering."
+      icon: halaqa
+      href: "/get-involved#host-halaqa"
+    - id: volunteer
+      title: "Volunteer"
+      short_description: "Serve at events and initiatives."
+      icon: volunteer
+      href: "/get-involved#volunteer"
+    - id: mentor
+      title: "Mentor"
+      short_description: "Guide an incoming or new student."
+      icon: mentor
+      href: "/get-involved#mentor"
+    - id: support-ramadan
+      title: "Support Ramadan"
+      short_description: "Donate or sponsor Ramadan programs."
+      icon: package
+      href: "/donate"
+
+# "Your first visit": the photo beside the fixed words and the map (photo library, 2026-10-06).
+visit:
+  image:
+    src: "/images/prayer/musallah-interior.webp"
+    alt: "Inside the SGU Musallah"
+    historical: false
+
+features:
+  - id: ramadan
+    eyebrow: "Seasonal community"
+    title: "Ramadan at SGU"
+    description: "Schedules, iftars, volunteering and donations."
+    href: "/ramadan"
+    cta: "Visit Ramadan hub"
+    image:
+      src: "/images/ramadan/hero-lanterns.webp"
+      alt: "Ramadan Mubarak sign lit by candlelight inside the SGU Musallah"
+      focal_point: "40% 50%"
+      historical: true
+  - id: shukr
+    eyebrow: "MSA collection"
+    title: "The Shukr Collection"
+    description: "Wear your identity. Support your community."
+    href: "/merch"
+    cta: "View merch"
+    image:
+      src: "/images/merch/shukr-back.webp"
+      alt: "The Shukr back print on the navy MSA long-sleeve"
+      focal_point: "50% 40%"
+  - id: newsletter
+    eyebrow: "Newsletter archive"
+    title: "Community newsletters"
+    description: "Published updates, reminders, and stories from the MSA."
+    href: "/resources?category=newsletter"
+    cta: "Browse newsletters"
+    image:
+      src: "/images/community/island-landscape.webp"
+      alt: "The Grenada coastline near the SGU campus"
+      focal_point: "50% 55%"

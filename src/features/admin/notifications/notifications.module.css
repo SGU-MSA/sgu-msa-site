@@ -1,0 +1,145 @@
+/* The dashboard's notifications bell and panel (review fixes P1, item 5). */
+.menu {
+  position: relative;
+  display: flex;
+}
+.bell {
+  position: relative;
+  min-width: 48px;
+  padding-inline: 0.75rem;
+}
+/* How many lines: ink for information only, red while something needs fixing. */
+.count {
+  position: absolute;
+  inset-block-start: -0.5rem;
+  inset-inline-end: -0.5rem;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding-inline: 0.35rem;
+  border: 2px solid var(--paper);
+  border-radius: 999px;
+  background: var(--ring);
+  color: var(--paper);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.2rem;
+  text-align: center;
+}
+.countProblem {
+  background: var(--status-danger);
+}
+.panel {
+  position: absolute;
+  z-index: var(--z-popover);
+  inset-block-start: calc(100% + 0.5rem);
+  inset-inline-end: 0;
+  width: min(26rem, calc(100vw - 2 * var(--content-gutter, 1rem)));
+  max-height: calc(100dvh - 12rem);
+  overflow: auto;
+  padding: 1rem 1.25rem 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-small);
+  /* When the lines do not fit, a shadow at the top or bottom edge shows
+     there is more to scroll to; the paper covers it once there is none. */
+  --edge: color-mix(in srgb, var(--ink) 28%, transparent);
+  background:
+    linear-gradient(var(--paper-light) 30%, transparent) center top / 100%
+      2.5rem no-repeat local,
+    linear-gradient(transparent, var(--paper-light) 70%) center bottom / 100%
+      2.5rem no-repeat local,
+    radial-gradient(farthest-side at 50% 0, var(--edge), transparent) center
+      top / 100% 1rem no-repeat scroll,
+    radial-gradient(farthest-side at 50% 100%, var(--edge), transparent) center
+      bottom / 100% 1rem no-repeat scroll,
+    var(--paper-light);
+  box-shadow: 0 12px 40px var(--shadow);
+  overflow-wrap: anywhere;
+}
+.panel[hidden] {
+  display: none;
+}
+.panel h2 {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+.panel h2:focus {
+  outline: none;
+}
+.empty {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+}
+.group {
+  margin: 1rem 0 0.25rem;
+  font-family: var(--font-body);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.item {
+  display: flex;
+  align-items: start;
+  gap: 0.5rem;
+  padding: 0.75rem 0 0.25rem 0.75rem;
+  border-inline-start: 3px solid var(--rule);
+}
+.item + .item {
+  margin-block-start: 0.5rem;
+}
+.problem {
+  border-inline-start-color: var(--status-danger);
+}
+.info {
+  border-inline-start-color: var(--ring);
+}
+.text {
+  flex: 1;
+  min-width: 0;
+}
+.title {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 600;
+  line-height: 1.4;
+}
+.detail {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.close {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-small);
+  color: var(--muted);
+  background: transparent;
+}
+.close:hover {
+  border-color: var(--rule);
+  color: var(--ink);
+}
+/* On a phone the header's buttons sit on the left: the panel opens
+   rightwards, and is as long as its lines (the page scrolls, not a box
+   inside it, so nothing is cut off below the screen's edge). */
+@media (max-width: 420px) {
+  .panel {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+    max-height: none;
+    overflow: visible;
+  }
+}

@@ -1,0 +1,252 @@
+/*
+ * A season page (PR5c), from Ramadan's option B "Tonight first" (PR8 D-7;
+ * ADR 0018 Quiet Paper).
+ * Tokens only. Page shell, eyebrow, display type, the ink band and the
+ * layered photo come from src/shared/ui/page.module.css.
+ * Scripture (the margin note verse) is always level and never under text.
+ */
+
+/* Type ---------------------------------------------------------------- */
+.display {
+  font-size: clamp(3.25rem, 8vw, 6.5rem);
+  line-height: 0.95;
+}
+.h2 {
+  margin: 0;
+  color: var(--ink);
+  font: 400 clamp(2rem, 3.5vw, 2.75rem) / 1.05 var(--font-display);
+}
+.body {
+  margin: 1rem 0 0;
+  max-width: 52ch;
+  color: var(--muted);
+  line-height: var(--leading-body);
+}
+.fine {
+  margin: 1rem 0 0;
+  max-width: 60ch;
+  color: var(--muted);
+  font-size: var(--type-small);
+  line-height: 1.6;
+}
+
+/* Hero: the headline beside tonight's sheet ---------------------------- */
+.hero {
+  display: grid;
+  gap: 3rem;
+  padding-block: clamp(3rem, 8vw, 6rem) clamp(3.5rem, 7vw, 5.5rem);
+}
+@media (min-width: 60rem) {
+  .hero {
+    grid-template-columns: minmax(0, 1.1fr) minmax(24rem, 0.9fr);
+    column-gap: clamp(3rem, 6vw, 6rem);
+    align-items: start;
+  }
+}
+.heroMain {
+  min-width: 0;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem 1.75rem;
+  margin-top: 2.25rem;
+}
+
+/* Tonight: a paper sheet on a turned sheet; everything on it stays level. */
+.tonight {
+  position: relative;
+  min-width: 0;
+  padding: 0.75rem 0.75rem 1.5rem 0.5rem;
+}
+.tonight::before {
+  content: "";
+  position: absolute;
+  inset: 0 1.5rem 0 0;
+  background: var(--paper-deep);
+  transform: rotate(-2deg);
+  pointer-events: none;
+}
+.sheet {
+  position: relative;
+  padding: clamp(1.75rem, 4vw, 2.75rem);
+  background: var(--paper-light);
+  box-shadow: 0 24px 50px var(--shadow);
+}
+.tonightTitle {
+  margin: 0.25rem 0 0;
+  color: var(--ink);
+  font: 400 clamp(2.5rem, 4.5vw, 3.5rem) / 1 var(--font-display);
+}
+.dateLabel {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--type-small);
+}
+.times {
+  margin: 1.25rem 0 0;
+  font-variant-numeric: tabular-nums;
+}
+.times > div {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--rule);
+}
+.times > div:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+.times dt {
+  color: var(--muted);
+  font-size: 1.1875rem;
+}
+.times dd {
+  margin: 0;
+  color: var(--ink);
+  font: 400 clamp(1.75rem, 3vw, 2.25rem) / 1.2 var(--font-display);
+}
+.timeKey dt {
+  color: var(--ink);
+}
+/* The ring is drawn around the row: its words sit inside it. */
+.times > .timeKey {
+  padding-inline: 1rem;
+}
+/* The ring is drawn from inside the <dd> (valid list markup) but is
+   positioned against the whole row; the label and time sit above it. */
+.timeKey dt,
+.timeValue {
+  position: relative;
+  z-index: var(--z-raised);
+}
+.rowRing {
+  position: absolute;
+  inset: -0.15rem -1rem -0.2rem -1.1rem;
+  pointer-events: none;
+}
+@media (forced-colors: active) {
+  .tonight::before {
+    display: none;
+  }
+  .sheet {
+    border: 1px solid CanvasText;
+  }
+}
+
+/* During the month: a numbered ledger ---------------------------------- */
+.month {
+  padding-block: clamp(3rem, 6vw, 5rem) clamp(4rem, 8vw, 6.5rem);
+  border-top: 1px solid var(--rule);
+}
+.ledger {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+  counter-reset: night;
+}
+.ledger li {
+  counter-increment: night;
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.25rem 1.25rem;
+  padding: 1.35rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.ledger li::before {
+  content: counter(night, decimal-leading-zero);
+  color: var(--muted);
+  font: 400 1.125rem/1.4 var(--font-display);
+}
+.ledgerLabel {
+  color: var(--ink);
+  font: 400 clamp(1.5rem, 2.4vw, 1.875rem) / 1.25 var(--font-display);
+}
+.ledgerDetail {
+  color: var(--ink);
+}
+@media (max-width: 40rem) {
+  .ledger li {
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+  }
+  .ledgerDetail {
+    grid-column: 2;
+  }
+}
+
+/* The season's events: Home's list under a rule ----------------------- */
+.events {
+  border-top: 1px solid var(--rule);
+}
+
+/* The season's open funds, as the Donate page's slips ------------------- */
+.funds {
+  margin-top: 1.5rem;
+}
+
+/* The next start, outside the season --------------------------------- */
+.next {
+  margin: 1.5rem 0 0;
+  max-width: 44ch;
+  padding: 0.85rem 1.1rem;
+  border-left: 3px solid var(--ring);
+  background: var(--paper-light);
+  color: var(--ink);
+  font: 400 clamp(1.25rem, 2vw, 1.5rem) / 1.3 var(--font-display);
+}
+.intro {
+  margin: 1.25rem 0 0;
+  max-width: 52ch;
+  color: var(--muted);
+  line-height: var(--leading-body);
+}
+
+/* The cover photo beside the headline, outside the month --------------- */
+.coverPhoto {
+  min-width: 0;
+}
+.cover {
+  object-fit: cover;
+  filter: var(--photo-filter);
+}
+
+/* Photos: prints laid on a table ----------------------------------------- */
+.gallery {
+  padding-block: clamp(3rem, 6vw, 5rem) clamp(4rem, 8vw, 6.5rem);
+  border-top: 1px solid var(--rule);
+}
+.strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 2.5rem 2rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 64rem) {
+  /* Staggered like prints laid on a table; every print stays level. */
+  .strip li:nth-child(even) {
+    margin-top: 3rem;
+  }
+}
+.figure {
+  margin: 0;
+}
+.frame {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--paper-deep);
+  box-shadow: 0 18px 36px var(--shadow);
+}
+.caption {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: var(--type-small);
+  line-height: 1.5;
+}

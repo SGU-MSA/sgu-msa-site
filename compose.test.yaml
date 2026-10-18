@@ -1,0 +1,24 @@
+# Throwaway database for `npm run test:db` (docs/contracts/pr3-people-permissions-activity.md, D-18).
+# Plain Postgres 17 (the hosted Supabase major version, supabase/config.toml) is enough: the migrations
+# only need the Supabase API roles, auth.users, auth.sessions, auth.uid() and the storage tables, which
+# tests/database/supabase-stubs.sql provides. Local only: trusted connections, bound to 127.0.0.1 on a
+# free port, data kept in memory and removed by `docker compose down`.
+name: sgu-msa-test
+services:
+  test-db:
+    image: postgres:17.11-alpine3.24
+    container_name: sgu-msa-test-db
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "127.0.0.1::5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    volumes:
+      - ./tests/database/supabase-stubs.sql:/docker-entrypoint-initdb.d/supabase-stubs.sql:ro
+    healthcheck:
+      # TCP check: the image's init phase listens on the socket only, so this passes once it is done.
+      test: ["CMD", "pg_isready", "--host", "127.0.0.1", "--username", "postgres"]
+      interval: 1s
+      timeout: 3s
+      retries: 60
