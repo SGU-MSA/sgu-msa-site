@@ -69,3 +69,36 @@ for (const scheme of ["light", "dark"] as const) {
     expect(scan.violations.map((v) => v.id)).toEqual([]);
   });
 }
+
+test("Copy link confirms visibly and is announced; a blocked clipboard shows the link", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/calendar");
+  await page.getByRole("button", { name: "Subscribe to calendar" }).click();
+  await page.getByRole("menuitem", { name: "Copy link" }).click();
+  await expect(
+    page.getByRole("status").filter({ hasText: "Link copied" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("menuitem", { name: "Link copied" }),
+  ).toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(
+    /^https?:\/\/.+\/calendar\.ics$/,
+  );
+  await expect(page.getByRole("menuitem", { name: "Copy link" })).toBeVisible({
+    timeout: 4000,
+  });
+
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: () => Promise.reject(new Error("blocked")) },
+    });
+  });
+  await page.getByRole("menuitem", { name: "Copy link" }).click();
+  const note = page.getByRole("status").filter({ hasText: "Couldn't copy" });
+  await expect(note).toContainText("press and hold the link to copy it");
+  await expect(note.locator("code")).toContainText("/calendar.ics");
+});

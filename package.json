@@ -23,8 +23,8 @@
     "build-storybook": "storybook build --quiet",
     "test:backend": "tsx --import ./tests/support/register.mjs scripts/test-backend.ts stack",
     "test:db": "node scripts/test-db.mjs",
-    "format": "prettier --write src .storybook next.config.ts tests scripts/test-backend.ts scripts/map-library.ts scripts/test-db.mjs scripts/agents scripts/validate-plan.mjs scripts/seal-art.mjs scripts/test-coverage.mjs playwright.config.ts playwright.smoke.config.ts",
-    "format:check": "prettier --check src .storybook next.config.ts tests scripts/test-backend.ts scripts/map-library.ts scripts/test-db.mjs scripts/agents scripts/validate-plan.mjs scripts/seal-art.mjs scripts/test-coverage.mjs playwright.config.ts playwright.smoke.config.ts",
+    "format": "prettier --write src .storybook next.config.ts tests scripts/test-backend.ts scripts/map-library.ts scripts/test-db.mjs scripts/agents scripts/validate-plan.mjs scripts/check-pr-body.mjs scripts/seal-art.mjs scripts/test-coverage.mjs playwright.config.ts playwright.smoke.config.ts",
+    "format:check": "prettier --check src .storybook next.config.ts tests scripts/test-backend.ts scripts/map-library.ts scripts/test-db.mjs scripts/agents scripts/validate-plan.mjs scripts/check-pr-body.mjs scripts/seal-art.mjs scripts/test-coverage.mjs playwright.config.ts playwright.smoke.config.ts",
     "agents:sync": "node scripts/agents/sync-mcp.mjs",
     "agents:check": "node scripts/agents/sync-mcp.mjs --check"
   },

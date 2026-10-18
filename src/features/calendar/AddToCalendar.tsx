@@ -1,8 +1,8 @@
 "use client";
 
-import { CalendarPlus } from "lucide-react";
+import { Check, CalendarPlus } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 import {
   calendarTarget,
@@ -11,6 +11,7 @@ import {
 } from "@/lib/calendar/targets";
 
 import c from "./calendar.module.css";
+import { copyMessages, copyText, type CopyResult } from "./copy-link";
 
 type AddToCalendarProps = {
   /** The event's file, Google Calendar and Outlook addresses (`calendarLinks`). */
@@ -63,7 +64,15 @@ export function AddToCalendar({
   kind = "event",
 }: AddToCalendarProps) {
   const feed = kind === "feed";
-  const [copied, setCopied] = useState(false);
+  const [copy, setCopy] = useState<CopyResult | null>(null);
+  const address = links.file.replace(/^webcal:/, "https:");
+  // A copied confirmation fades after 2 seconds; a failure stays so the
+  // link can be copied by hand.
+  useEffect(() => {
+    if (copy !== "copied") return;
+    const timer = setTimeout(() => setCopy(null), 2000);
+    return () => clearTimeout(timer);
+  }, [copy]);
   const target = useSyncExternalStore(noChanges, onThisDevice, onServer);
   const className =
     variant === "ink"
@@ -89,9 +98,18 @@ export function AddToCalendar({
         <DropdownMenu.Trigger className={className}>
           {label}
         </DropdownMenu.Trigger>
-        <span className="sr-only" role="status" aria-live="polite">
-          {copied ? "Link copied" : ""}
-        </span>
+        <p
+          className={
+            copy === "failed" ? c.copyFailed : copy ? c.copyNote : "sr-only"
+          }
+          role="status"
+          aria-live="polite"
+        >
+          {copy ? copyMessages[copy] : ""}
+          {copy === "failed" ? (
+            <code className={c.copyAddress}>{address}</code>
+          ) : null}
+        </p>
         <DropdownMenu.Portal>
           <DropdownMenu.Content
             className={c.addMenu}
@@ -115,14 +133,17 @@ export function AddToCalendar({
                 className={c.addMenuItem}
                 onSelect={(event) => {
                   event.preventDefault();
-                  const address = links.file.replace(/^webcal:/, "https:");
-                  void navigator.clipboard
-                    ?.writeText(address)
-                    .then(() => setCopied(true))
-                    .catch(() => {});
+                  void copyText(address).then(setCopy);
                 }}
               >
-                Copy link
+                {copy === "copied" ? (
+                  <>
+                    <Check aria-hidden="true" className={c.addIcon} />
+                    <span className={c.copyDone}>Link copied</span>
+                  </>
+                ) : (
+                  "Copy link"
+                )}
               </DropdownMenu.Item>
             ) : null}
           </DropdownMenu.Content>

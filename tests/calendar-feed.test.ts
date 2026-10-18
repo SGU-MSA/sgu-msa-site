@@ -9,6 +9,7 @@ import {
   feedEvents,
   type IcsCalendar,
 } from "../src/lib/calendar/ics";
+import { copyMessages, copyText } from "../src/features/calendar/copy-link";
 import { calendarFeedLinks } from "../src/lib/calendar/targets";
 
 // The subscribable calendar feed: one builder shared with the per-event file.
@@ -152,4 +153,25 @@ test("subscribe addresses: webcal, Google cid and Outlook url are encoded", () =
   );
   assert.equal(outlook.searchParams.get("name"), "SGU MSA & Co");
   assert.ok(!links.outlook.includes("& Co"));
+});
+
+test("copying reports success, and failure when the clipboard is missing or blocked", async () => {
+  const copied: string[] = [];
+  assert.equal(
+    await copyText("https://x/calendar.ics", {
+      writeText: async (text) => void copied.push(text),
+    }),
+    "copied",
+  );
+  assert.deepEqual(copied, ["https://x/calendar.ics"]);
+  assert.equal(await copyText("x", undefined), "failed");
+  assert.equal(
+    await copyText("x", {
+      writeText: async () => {
+        throw new Error("NotAllowedError");
+      },
+    }),
+    "failed",
+  );
+  assert.match(copyMessages.failed, /press and hold the link/);
 });
