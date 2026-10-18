@@ -220,7 +220,8 @@ const envelope = (extra: string[], body: string[]) =>
     "END:VCALENDAR",
   ]
     .map(fold)
-    .join("\r\n");
+    .join("\r\n")
+    .concat("\r\n");
 
 export function eventToIcs(event: SiteEvent, stamp = new Date()): string {
   return envelope([], eventLines(event, stamp));

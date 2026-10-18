@@ -297,6 +297,7 @@ const pagePreviews: { [K in PageTextKey]: Preview<K> | null } = {
         today={live.today}
         unavailable={live.unavailable}
         verse={live.verse}
+        subscribe={live.subscribe}
       />
     </Paper>
   ),

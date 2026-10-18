@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, CalendarPlus } from "lucide-react";
+import { CalendarPlus, Check, TriangleAlert } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
@@ -98,17 +98,10 @@ export function AddToCalendar({
         <DropdownMenu.Trigger className={className}>
           {label}
         </DropdownMenu.Trigger>
-        <p
-          className={
-            copy === "failed" ? c.copyFailed : copy ? c.copyNote : "sr-only"
-          }
-          role="status"
-          aria-live="polite"
-        >
+        {/* Announced to screen readers; the visible words are in the menu,
+            which would cover a line placed beside the button. */}
+        <p className="sr-only" role="status" aria-live="polite">
           {copy ? copyMessages[copy] : ""}
-          {copy === "failed" ? (
-            <code className={c.copyAddress}>{address}</code>
-          ) : null}
         </p>
         <DropdownMenu.Portal>
           <DropdownMenu.Content
@@ -141,10 +134,21 @@ export function AddToCalendar({
                     <Check aria-hidden="true" className={c.addIcon} />
                     <span className={c.copyDone}>Link copied</span>
                   </>
+                ) : copy === "failed" ? (
+                  <>
+                    <TriangleAlert aria-hidden="true" className={c.addIcon} />
+                    <span className={c.copyFail}>Couldn&rsquo;t copy</span>
+                  </>
                 ) : (
                   "Copy link"
                 )}
               </DropdownMenu.Item>
+            ) : null}
+            {feed && copy === "failed" ? (
+              <DropdownMenu.Label className={c.copyHint}>
+                {copyMessages.failed}
+                <code className={c.copyAddress}>{address}</code>
+              </DropdownMenu.Label>
             ) : null}
           </DropdownMenu.Content>
         </DropdownMenu.Portal>

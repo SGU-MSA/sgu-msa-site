@@ -46,7 +46,7 @@ const stamp = new Date("2026-10-18T10:00:00Z");
 test("the feed has the calendar envelope and properties, CRLF, folded lines", () => {
   const feed = eventsToIcs([event({ body: "x".repeat(400) })], calendar, stamp);
   assert.ok(feed.startsWith("BEGIN:VCALENDAR\r\nVERSION:2.0\r\n"));
-  assert.ok(feed.endsWith("END:VCALENDAR"));
+  assert.ok(feed.endsWith("END:VCALENDAR\r\n"));
   for (const line of [
     "PRODID:-//SGU MSA//Website//EN",
     "METHOD:PUBLISH",
@@ -173,5 +173,5 @@ test("copying reports success, and failure when the clipboard is missing or bloc
     }),
     "failed",
   );
-  assert.match(copyMessages.failed, /press and hold the link/);
+  assert.match(copyMessages.failed, /select the link below/);
 });

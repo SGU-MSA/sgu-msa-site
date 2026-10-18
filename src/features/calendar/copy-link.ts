@@ -4,7 +4,7 @@ export type CopyResult = "copied" | "failed";
 /** The words shown and announced for each result. */
 export const copyMessages = {
   copied: "Link copied",
-  failed: "Couldn't copy — press and hold the link to copy it",
+  failed: "Couldn't copy — select the link below and copy it.",
 } as const;
 
 /**

@@ -1,5 +1,7 @@
 import "server-only";
 
+import { calendarFeedLinks } from "@/lib/calendar/targets";
+import { siteUrl } from "@/lib/site-config";
 import { calendarEntries } from "@/features/calendar/entries";
 import { loadCommunityFeed } from "@/features/community/load";
 import { loadHomeLive } from "@/features/home/load";
@@ -93,11 +95,13 @@ const loaders = {
   jumuah: prayerLive,
   musallah: prayerLive,
   events: async () => {
-    const [events, verse] = await Promise.all([
+    const [events, verse, site] = await Promise.all([
       managedEvents(),
       placedReminder("events"),
+      getSite(),
     ]);
     return {
+      subscribe: calendarFeedLinks(siteUrl, site.brand.short_name),
       entries: calendarEntries(events.events),
       lists: events.lists,
       today: events.today,

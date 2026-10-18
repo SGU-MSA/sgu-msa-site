@@ -478,30 +478,29 @@
   outline-offset: -2px;
 }
 
-/* "Copy link" feedback: the same success and danger tokens as the board's notices. */
-.copyNote,
-.copyFailed {
-  margin: 0.5rem 0 0;
-  font-size: 0.875rem;
-  overflow-wrap: anywhere;
-}
-.copyNote {
+/* "Copy link" feedback, inside the menu where the person is looking: the same
+   success and danger tokens as the board's notices. */
+.copyDone {
   color: var(--status-success);
 }
-.copyFailed {
+.copyFail {
   color: var(--status-danger);
+}
+.copyHint {
+  padding: 0.5rem 0.85rem 0.6rem;
+  color: var(--status-danger);
+  font-size: 0.875rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 .copyAddress {
   display: block;
-  margin-top: 0.25rem;
+  margin-top: 0.35rem;
   color: var(--ink);
   user-select: all;
   -webkit-user-select: all;
 }
-.copyDone {
-  color: var(--status-success);
-}
-.addMenuItem:has(.copyDone) {
+.addMenuItem:has(.copyDone, .copyFail) {
   gap: 0.5rem;
 }
 
