@@ -53,3 +53,6 @@ Copy this shape for a new PRD.
 - [Daily check, warning emails and the notifications bell](daily-check.md): Nightly check, warning emails and the bell: what each warning asks the board to do.
 - [Prayer and iqamah times](prayer-times.md): Daily iqamah, Jumu'ah, one-date changes, History and what visitors see.
 - [Musallah location](musallah-location.md): The single musallah pin, the map and directions.
+- [Donations and payments](payments.md): Funds and zakat rules, tickets, Go2Pay pages, the Donate page and Money in.
+- [Merch](merch.md): Collections, items, sizes as Go2Pay products, stock and in-person sales.
+- [Seasons](seasons.md): Ramadan and Eid seasons, their days, public pages and seasonal funds.
