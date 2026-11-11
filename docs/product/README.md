@@ -5,6 +5,7 @@ A PRD says **what** a feature must do for the people who use it, and why: user s
 - One file per feature area: `docs/product/<feature>.md`. The board member is the main reader in mind: a non-technical student volunteer, often on a phone, who changes every year.
 - A PRD describes the product as it should be. Where the site falls short today, the PRD says so under **Known gaps** with a link to the ticket, instead of quietly describing the gap as intended.
 - Product decisions are the maintainer's ([ADR 0002](../adr/0002-product-principles.md)). A PRD records them and links the ADR or contract decision; it never invents one. An open question goes under **Open questions** until the maintainer answers it.
+- Acceptance lines describe outcomes a board member can check, not widgets. Screen, box and button names are quoted so readers can find today's screen; a redesign the maintainer approves may change them without changing the story.
 - Change a PRD in the same pull request that changes the behaviour it describes.
 
 ## Template
