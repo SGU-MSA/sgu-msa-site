@@ -50,3 +50,4 @@ Copy this shape for a new PRD.
 ## PRDs
 
 <!-- index: one line per PRD, added with each PRD -->
+- [Daily check, warning emails and the notifications bell](daily-check.md): Nightly check, warning emails and the bell: what each warning asks the board to do.
