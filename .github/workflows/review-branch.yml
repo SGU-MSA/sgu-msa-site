@@ -1,0 +1,19 @@
+name: Update review branch
+# Keeps the long-lived `review` branch equal to `main`, so Vercel builds the fixed review link
+# (staging review site, ADR 0035) from the current code. `review` never receives its own commits.
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+concurrency:
+  group: review-branch
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: git push --force origin HEAD:refs/heads/review
