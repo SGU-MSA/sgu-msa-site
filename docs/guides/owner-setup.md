@@ -39,6 +39,7 @@ An **account** is one person’s login. An **organization** groups club reposito
 - Vercel Hobby project `sgu-msa-site` uses `main` as its production branch. Before launch, its Git settings must show the new public repository `SGU-MSA/sgu-msa-site`; do not release until this is verified (§5).
 - The GitHub organization is `SGU-MSA`. Do not use a shared organization-owner login for routine work. Use an individually attributable account and the minimum required organization role.
 - Supabase projects: **staging** `qglftmxfjvxmrzppkxks`, **production** `thhpkztmjoiaiuscdmdh`. Project refs are identifiers, not keys or passwords.
+- Supabase staging and production are both in us-west-2, and the Vercel functions region is pdx1 (set 2026-11-10). Staging is the **review site** ([ADR 0035](../adr/0035-staging-is-the-review-site.md)): the fixed review link is built from the `review` branch and shows fake content; see the [developer guide](developer.md#staging-review-site).
 - The four follow-up production migrations have already been applied. Do not replay them (§8).
 - The President must be added as the first production dashboard admin after the public site is available. The exact information needed and board steps are in §10 and the [Board Handbook](../../handover/SGU-MSA-Website-Handbook.docx).
 
@@ -70,7 +71,7 @@ A repository can be public while the historical repository and its tracker stay 
 
 The Vercel Hobby project `sgu-msa-site` publishes the public repository's `main` branch. Pull requests and other branches do not publish production; merging a pull request into `main` does ([ADR 0010](../adr/0010-production-deploys-from-main-only.md), [ADR 0033](../adr/0033-pull-requests-merge-to-main.md)).
 
-Every pull request also gets a preview link on staging ([ADR 0034](../adr/0034-pull-request-previews-on-staging.md)); production keys never go in Preview.
+Every pull request also gets a preview link on staging ([ADR 0034](../adr/0034-pull-request-previews-on-staging.md)); production keys never go in Preview. The `review` branch (kept equal to `main` by a workflow) gives the fixed review link that the board and the university can open ([ADR 0035](../adr/0035-staging-is-the-review-site.md)).
 
 1. **Developers test on their own computers**, against Supabase staging or sample data, before asking for review.
 2. **Pull requests target `main`** in `SGU-MSA/sgu-msa-site`. After checks and independent review, the maintainer merges them, which publishes the live site.
@@ -116,7 +117,7 @@ References: [Supabase account roles and ownership](https://supabase.com/docs/gui
 
 1. In the **SGU MSA** organization click **New project**. Confirm the organization selector before proceeding.
 2. Enter **sgu-msa-staging** as the name. This is the rehearsal database, not real production content.
-3. Generate a strong database password and save it in the approved vault. It is not a board-member password and is not needed in the website’s Vercel environment variables.
+3. Generate a strong database password and save it in the approved vault. It is not a board-member password and is not needed in the website’s Vercel environment variables. The developer's staging reset also uses the staging password: keep it only in the vault and in the developer's ignored local file.
 4. Select a nearby supported region based on the club’s audience and hosting location; review availability rather than assuming a specific region label. Record the chosen region. Review any cost before creating.
 5. Click **Create project** and wait until the project is ready. Record its dashboard URL and project reference in the private operations record.
 6. Later, before launch, repeat with **sgu-msa-production**. Approve the plan/backup capability separately. Never point a developer's local copy at production credentials: edits there would change real content.

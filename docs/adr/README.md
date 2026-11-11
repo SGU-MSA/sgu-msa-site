@@ -38,3 +38,4 @@ How and when to write one: [ADR 0001](0001-record-architecture-decisions.md). Fe
 | [0032](0032-delegated-implementation-and-human-merge.md)            | Delegated implementation and human merge                                               | Accepted           | 2026-10-14 |
 | [0033](0033-pull-requests-merge-to-main.md)                         | Pull requests merge to main                                                            | Accepted           | 2026-10-18 |
 | [0034](0034-pull-request-previews-on-staging.md)                    | Pull request previews on staging                                                       | Accepted           | 2026-10-18 |
+| [0035](0035-staging-is-the-review-site.md)                          | Staging is the review site                                                             | Accepted           | 2026-11-10 |
