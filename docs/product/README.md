@@ -66,3 +66,4 @@ Copy this shape for a new PRD.
 - [Lists](lists.md): Event categories, terms and resource categories.
 - [Pages, sign-up forms and Qur'an verses](pages.md): Page text for every public page, Site-wide words, forms, FAQ and verses.
 - [Photos and uploads](photos.md): Uploads, the Photos screen, space and photo privacy.
+- [Newsletters](newsletters.md): Newsletter issues as a file or link, and the archive.
