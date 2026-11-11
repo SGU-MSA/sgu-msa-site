@@ -60,3 +60,9 @@ Copy this shape for a new PRD.
 - [Dashboard logins and permissions](logins-and-permissions.md): Invites, Manage people and Manage money, Pages editing, sign-in and passwords.
 - [New board term and hand-over](board-handover.md): New board term: hand-over steps, shared logins, term export.
 - [Recent changes (the activity log)](recent-changes.md): The add-only activity log, History and Restore.
+- [Events](events.md): Events, the Events page, cancelled and postponed events, calendar files.
+- [Announcements](announcements.md): Normal, Featured and Urgent notices and when they hide.
+- [Community news](news.md): Community news posts and the Community page.
+- [Lists](lists.md): Event categories, terms and resource categories.
+- [Pages, sign-up forms and Qur'an verses](pages.md): Page text for every public page, Site-wide words, forms, FAQ and verses.
+- [Photos and uploads](photos.md): Uploads, the Photos screen, space and photo privacy.
