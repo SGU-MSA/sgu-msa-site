@@ -6,16 +6,19 @@
 //
 // The input file holds the staging secret key, database URL and the three passwords; it stays
 // under ignored `.agents/local/` and is never printed. Only staging is ever accepted (plan.ts).
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import pg from "pg";
 import { parseGo2PayLink } from "../../src/lib/community/payment-policy";
 import { starterPageTexts } from "../starter-page-texts";
 import { resetDatabase } from "./database";
+import { ensureLogins } from "./logins";
 import {
+  PRESERVED_TABLES,
   RESET_TABLES,
   STAGING_PROJECT_REF,
   checkTarget,
+  databaseConfig,
   redact,
   resetInputSchema,
   reviewLogins,
@@ -81,39 +84,6 @@ async function allAuthUserIds(client: SupabaseClient) {
   }
 }
 
-async function ensureLogins(
-  client: SupabaseClient,
-  users: { id: string; email?: string }[],
-  input: ResetInput,
-) {
-  const ids = {} as Record<"president" | "treasurer" | "board", string>;
-  for (const login of reviewLogins(input.loginBase)) {
-    const password = input.passwords[login.role];
-    const known = users.find(
-      (user) => user.email?.toLowerCase() === login.email.toLowerCase(),
-    );
-    if (known) {
-      const { error } = await client.auth.admin.updateUserById(known.id, {
-        password,
-        email_confirm: true,
-        ban_duration: "none",
-      });
-      if (error) throw new Error(`Updating the ${login.role} login failed.`);
-      ids[login.role] = known.id;
-    } else {
-      const { data, error } = await client.auth.admin.createUser({
-        email: login.email,
-        password,
-        email_confirm: true,
-      });
-      if (error || !data.user)
-        throw new Error(`Creating the ${login.role} login failed.`);
-      ids[login.role] = data.user.id;
-    }
-  }
-  return ids;
-}
-
 async function emptyBucket(client: SupabaseClient) {
   const files: string[] = [];
   const walk = async (folder: string) => {
@@ -165,7 +135,18 @@ async function main(secrets: string[]) {
     links,
     pageTexts,
   );
+  let ca: string;
+  try {
+    ca = await readFile(input.databaseCaFile, "utf8");
+  } catch {
+    throw new Stop("Cannot read the CA certificate file named in the input.");
+  }
   if (!confirmed) {
+    const mode = (await stat(argument("--input") ?? defaultInput)).mode;
+    if (mode & 0o077)
+      console.log(
+        "Warning: the input file can be read by other users; run chmod 600 on it.",
+      );
     console.log(
       `Dry run: nothing is written. Target: staging (${STAGING_PROJECT_REF}).`,
     );
@@ -174,6 +155,7 @@ async function main(secrets: string[]) {
     console.log(
       `Emptied: ${RESET_TABLES.join(", ")}, and the ${bucket} storage bucket.`,
     );
+    console.log(`Kept: ${PRESERVED_TABLES.join(", ")}.`);
     console.log("Seeded rows:");
     for (const step of preview)
       console.log(`  ${step.table}: ${step.rows.length}`);
@@ -187,13 +169,12 @@ async function main(secrets: string[]) {
   const supabase = createClient(input.supabaseUrl, input.secretKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const database = new pg.Client({
-    connectionString: input.databaseUrl,
-    ssl: {
-      ca: await readFile(input.databaseCaFile, "utf8"),
-      rejectUnauthorized: true,
-    },
-  });
+  const database = new pg.Client(databaseConfig(input.databaseUrl, ca));
+  database.on("error", (error) =>
+    console.error(
+      redact(`Database connection problem: ${error.message}`, secrets),
+    ),
+  );
   await database.connect();
   try {
     const owner = await database.query("select current_user as name");
@@ -203,7 +184,11 @@ async function main(secrets: string[]) {
     const stored = await database.query("select id from auth.users");
     const here = new Set(users.map((user) => user.id));
     const there = new Set(stored.rows.map((row) => String(row.id)));
-    if (here.size !== there.size || [...here].some((id) => !there.has(id)))
+    if (
+      here.size === 0 ||
+      here.size !== there.size ||
+      [...here].some((id) => !there.has(id))
+    )
       throw new Stop(
         "Refused: the secret key and the database belong to different projects. Nothing was written.",
       );
@@ -218,15 +203,31 @@ async function main(secrets: string[]) {
       );
       await database.query("commit");
     } catch (error) {
-      await database.query("rollback");
+      try {
+        await database.query("rollback");
+      } catch {
+        // report the original error, not the rollback failure
+      }
       throw error;
     }
-    const removed = await emptyBucket(supabase);
+    let storageFailed = false;
+    let removed = 0;
+    try {
+      removed = await emptyBucket(supabase);
+    } catch (error) {
+      storageFailed = true;
+      console.error(
+        redact(
+          `The database was reset; run again to remove the remaining files. (${error instanceof Error ? error.message : "storage error"})`,
+          secrets,
+        ),
+      );
+    }
 
     console.log("Staging reset done. Rows per table:");
     for (const table of RESET_TABLES)
       console.log(`  ${table}: ${counts[table]}`);
-    console.log(`Storage files removed: ${removed}.`);
+    if (!storageFailed) console.log(`Storage files removed: ${removed}.`);
     console.log("Logins (passwords: in your local input file):");
     for (const login of logins) console.log(`  ${login.role}: ${login.email}`);
 
@@ -250,6 +251,7 @@ async function main(secrets: string[]) {
         "Next: redeploy the review branch in Vercel so cached page text refreshes, then open the review link.",
       );
     }
+    if (storageFailed) process.exitCode = 1;
   } finally {
     await database.end();
   }

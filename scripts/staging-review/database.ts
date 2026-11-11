@@ -22,6 +22,9 @@ export async function resetDatabase(
   sql: Sql,
   plan: readonly SeedStep[],
 ): Promise<Record<ResetTable, number>> {
+  // Fails fast outside a transaction and fails instead of waiting forever for a lock.
+  await sql.query("savepoint staging_reset");
+  await sql.query("set local lock_timeout = '15s'");
   const who = await sql.query("select current_user as name");
   if (who.rows[0]?.name !== "postgres")
     throw new Error("The reset must run as the database owner (postgres).");

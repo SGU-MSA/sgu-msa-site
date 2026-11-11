@@ -143,6 +143,10 @@ export function checkTarget(
   if (database) {
     const host = database.hostname.toLowerCase();
     const user = decodeURIComponent(database.username);
+    if (database.search || database.hash)
+      problems.push(
+        "The database URL must have no ? options or # part; the reset sets them itself.",
+      );
     if (!["postgres:", "postgresql:"].includes(database.protocol))
       problems.push("The database URL must be a postgres address.");
     if (localHosts.has(host))
@@ -158,6 +162,22 @@ export function checkTarget(
       problems.push("The database URL is not the staging project's database.");
   }
   return problems.length ? { ok: false, problems } : { ok: true };
+}
+
+/**
+ * The pg connection settings, built only from the parts `checkTarget` validated (never the raw
+ * URL, so a query string cannot redirect the connection or weaken TLS).
+ */
+export function databaseConfig(databaseUrl: string, ca: string) {
+  const url = new URL(databaseUrl);
+  return {
+    host: url.hostname,
+    port: url.port ? Number(url.port) : 5432,
+    user: decodeURIComponent(url.username),
+    password: decodeURIComponent(url.password),
+    database: decodeURIComponent(url.pathname.replace(/^\//, "")) || "postgres",
+    ssl: { ca, rejectUnauthorized: true },
+  };
 }
 
 export type ReviewRole = "president" | "treasurer" | "board";

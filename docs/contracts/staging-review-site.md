@@ -107,6 +107,7 @@ Maintainer decisions (recorded, not re-opened):
 - D-8: `review` is kept in step with `main` automatically by a GitHub workflow, confirming E-5 (maintainer, 2026-11-10; rejected: manual update at each reset).
 - D-9: Three logins only, confirming E-4 (President, Treasurer, Secretary as the "Board member"). No General board login: General board members are not expected to sign in (maintainer, 2026-11-10; rejected: a fourth General board login).
 - D-10: A short free `*.vercel.app` alias for `review` (preferred `sgu-msa-review.vercel.app` if free) is added by the planner after the first `review` build, confirming H-5 (maintainer, 2026-11-10). Remembering an executive's old permissions after a demotion is not built (maintainer, 2026-11-10: "not a big deal").
+- D-11: Go2Pay cannot create test products (the dashboard has no test option; `POST /products` with a test key returns 500, again on 2026-11-10). The review site links TEST payment requests instead (`POST /requests` with the payments-only test key; the link form `go2pay.gd/<id>` is accepted by `parseGo2PayLink`; the page shows "TEST PAYMENT No money will change hands"). A request may close after one payment; the developer makes new ones (maintainer, 2026-11-10).
 
 Planner engineering decisions within D-1 to D-6 (flagged for the maintainer to confirm when approving this contract; none changes a maintainer decision):
 
@@ -155,7 +156,7 @@ Order inside the CLI (each step stops the run on failure):
 1. Assert `select current_user` = `postgres`.
 2. `alter table public.activity_log disable trigger add_only`; for every table in `RESET_TABLES` that has a trigger named `activity` (read from `pg_trigger`), `alter table public.<table> disable trigger activity`.
 3. `truncate table <every RESET_TABLES entry, explicit list, no cascade> restart identity` (TRUNCATE fires no row triggers; an unknown referencing table makes it fail loudly).
-4. For each plan step in order, insert its rows: `insert into public.<table> (<columns>) select <columns> from jsonb_populate_recordset(null::public.<table>, $1::jsonb)`, where `<table>` comes only from `RESET_TABLES` and `<columns>` is the union of the rows' keys, each checked against `^[a-z_]+$`. Constraints and every non-`activity` trigger stay on.
+4. For each plan step in order, insert its rows: `insert into public.<table> (<columns>) select <columns> from jsonb_populate_recordset(null::public.<table>, $1::jsonb)`, where `<table>` comes only from `RESET_TABLES` and `<columns>` is the union of the rows' keys, each checked against `^[a-z][a-z0-9_]*$` (the first draft `^[a-z_]+$` rejected `go2pay_product_id`). Constraints and every non-`activity` trigger stay on.
 5. Re-enable every trigger disabled in step 2; assert none of them is still disabled (`tgenabled = 'O'`).
 6. Return the row count per table (`select count(*)`).
 

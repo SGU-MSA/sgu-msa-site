@@ -22,12 +22,14 @@ import {
   RESET_TABLES,
   STAGING_PROJECT_REF,
   checkTarget,
+  databaseConfig,
   redact,
   resetInputSchema,
   reviewLogins,
   stagingSeedPlan,
   type ResetInput,
 } from "../scripts/staging-review/plan";
+import { ensureLogins } from "../scripts/staging-review/logins";
 import { starterPageTexts } from "../scripts/starter-page-texts";
 import { demoSeed } from "./support/demo-seed";
 
@@ -147,6 +149,90 @@ test("checkTarget refuses every other target without leaking secrets", () => {
       assert.ok(!text.includes(secretKey), label);
     }
   }
+});
+
+test("checkTarget refuses a database URL with options that could redirect or weaken it", () => {
+  const encodedProd = PRODUCTION_PROJECT_REF.replace("t", "%74");
+  for (const suffix of [
+    `?host=db.${PRODUCTION_PROJECT_REF}.supabase.co`,
+    `?host=db.${encodedProd}.supabase.co`,
+    "?sslmode=disable",
+    "?sslmode=no-verify",
+    "?user=postgres",
+    "#fragment",
+  ]) {
+    const result = checkTarget(
+      input({ databaseUrl: `${direct}${suffix}` }),
+      {},
+    );
+    assert.equal(result.ok, false, suffix);
+    if (!result.ok)
+      assert.ok(!result.problems.join("\n").includes(dbPassword), suffix);
+  }
+});
+
+test("the pg config is built from the checked parts only", () => {
+  for (const url of [pooler, direct]) {
+    assert.deepEqual(checkTarget(input({ databaseUrl: url }), {}), {
+      ok: true,
+    });
+    const config = databaseConfig(url, "CA");
+    assert.equal(config.host, new URL(url).hostname);
+    assert.equal(config.password, dbPassword);
+    assert.equal(config.port, 5432);
+    assert.equal(config.database, "postgres");
+    assert.deepEqual(config.ssl, { ca: "CA", rejectUnauthorized: true });
+    assert.ok(!("connectionString" in config));
+  }
+});
+
+test("ensureLogins updates existing review logins and touches no other user", async () => {
+  const calls: string[] = [];
+  const users: { id: string; email: string }[] = [
+    { id: "u-other", email: "someone@example.invalid" },
+  ];
+  const fake = {
+    auth: {
+      admin: {
+        createUser: async ({ email }: { email: string }) => {
+          calls.push(`create ${email}`);
+          const user = { id: `u-${users.length}`, email };
+          users.push(user);
+          return { data: { user }, error: null };
+        },
+        updateUserById: async (id: string) => {
+          calls.push(`update ${id}`);
+          return { data: {}, error: null };
+        },
+      },
+    },
+  };
+  const run = () =>
+    ensureLogins(
+      fake as never,
+      users.map((u) => ({ ...u })),
+      input(),
+    );
+  const first = await run();
+  assert.equal(calls.filter((c) => c.startsWith("create")).length, 3);
+  assert.ok(calls.every((c) => !c.includes("u-other")));
+  calls.length = 0;
+  const second = await run();
+  assert.deepEqual(second, first);
+  assert.equal(calls.filter((c) => c.startsWith("create")).length, 0);
+  assert.equal(calls.length, 3);
+  assert.ok(calls.every((c) => !c.includes("u-other")));
+  const failing = {
+    auth: {
+      admin: {
+        createUser: async () => ({ data: {}, error: { message: "boom" } }),
+      },
+    },
+  };
+  await assert.rejects(
+    ensureLogins(failing as never, [], input()),
+    /login failed: boom/,
+  );
 });
 
 test("resetInputSchema refuses unsafe or malformed input", () => {
@@ -514,6 +600,12 @@ test("a broken row rolls the whole reset back and leaves every trigger enabled",
   const db = await database();
   try {
     await withJunk(db);
+    const logged = await first(
+      db,
+      "owner",
+      "select count(*) from public.activity_log",
+    );
+    assert.ok(Number(logged) > 0);
     const plan = planFor(new Date());
     const events = plan.find((step) => step.table === "events")!;
     events.rows[0] = { ...events.rows[0], start_time: "25:99" };
@@ -525,6 +617,10 @@ test("a broken row rolls the whole reset back and leaves every trigger enabled",
         "select count(*) from public.events where title = 'Old junk'",
       ),
       1,
+    );
+    assert.equal(
+      await first(db, "owner", "select count(*) from public.activity_log"),
+      logged,
     );
     assert.equal(
       await first(
@@ -554,7 +650,7 @@ test("the review-branch workflow only mirrors main to the review branch", async 
   const pushes = text.split("\n").filter((line) => line.includes("git push"));
   assert.deepEqual(
     pushes.map((line) => line.trim()),
-    ["- run: git push --force origin HEAD:refs/heads/review"],
+    ["- run: git push --force origin origin/main:refs/heads/review"],
   );
   assert.ok(!text.includes("secrets."));
   assert.ok(!text.includes("github.event"));

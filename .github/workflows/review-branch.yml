@@ -16,4 +16,5 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - run: git push --force origin HEAD:refs/heads/review
+      - run: git fetch origin main
+      - run: git push --force origin origin/main:refs/heads/review
