@@ -16,7 +16,7 @@ A persistent, shareable **review environment**: the staging Supabase project (re
 Requested by the maintainer (D-1 to D-6):
 
 1. A fixed link to the full public site and dashboard, running current `main` code against staging, that the board and the university can open without any account (Vercel Authentication is already off for previews, ADR 0034).
-2. Three dashboard logins on staging: President (manage people + manage money), Treasurer (manage money only), Board member (neither). Emails are plus-addresses of a base address the developer supplies; passwords are fixed, chosen by the developer and kept in an ignored local file.
+2. Three dashboard logins on staging: President (manage people + manage money), Treasurer (manage money only), Board member (neither). Emails are plus-addresses of a base address the developer supplies (refined by D-12: `president@`, `treasurer@`, `board@` on a domain with no inbox); passwords are fixed, chosen by the developer and kept in an ignored local file.
 3. `npm run staging:reset`: developer-run, manual only. Refuses any target other than the staging project. Empties staging's content tables and storage, re-seeds them from `src/lib/demo/fixtures.ts` (plus the YAML starter page text the sandbox shows), and (re)creates the three logins with their fixed passwords. Never prints a password or key.
 4. Funds, tickets and merch sizes link only to Go2Pay **test** products the maintainer makes by hand; the reset takes those links as input. No Go2Pay key on staging; the Payments screen shows "key off" there (accepted).
 5. Docs: how to reset and where the review link is (developer guide); regions and the review link (owner guide); a Latest changes entry; the environments diagram; a short ADR for the environment roles.
@@ -57,7 +57,7 @@ A developer-only tool under `scripts/staging-review/` owns the reset (it is not 
 - Which tables a reset empties versus keeps: `RESET_TABLES` / `PRESERVED_TABLES` in `scripts/staging-review/plan.ts`; a test proves the two lists together equal every table in `public` after all migrations.
 - Which project may be reset: the constant `STAGING_PROJECT_REF` in `scripts/staging-review/plan.ts` (the ref is already public in `.mcp.json` and the owner guide); the production ref `thhpkztmjoiaiuscdmdh` is an explicit refusal.
 - Who may do what on staging: the existing RLS and `admins` rows (three review logins).
-- Go2Pay test product links: the developer's ignored input file, parsed by `parseGo2PayLink`.
+- Go2Pay test payment request links (D-11): the developer's ignored input file, parsed by `parseGo2PayLink`.
 - Secrets (staging secret key, staging database URL, review passwords, optional deploy hook): only the ignored local input file `.agents/local/staging-review/reset.json`. Never in Git, never printed.
 
 ## Reuse and Duplication Analysis
@@ -108,13 +108,14 @@ Maintainer decisions (recorded, not re-opened):
 - D-9: Three logins only, confirming E-4 (President, Treasurer, Secretary as the "Board member"). No General board login: General board members are not expected to sign in (maintainer, 2026-11-10; rejected: a fourth General board login).
 - D-10: A short free `*.vercel.app` alias for `review` (preferred `sgu-msa-review.vercel.app` if free) is added by the planner after the first `review` build, confirming H-5 (maintainer, 2026-11-10). Remembering an executive's old permissions after a demotion is not built (maintainer, 2026-11-10: "not a big deal").
 - D-11: Go2Pay cannot create test products (the dashboard has no test option; `POST /products` with a test key returns 500, again on 2026-11-10). The review site links TEST payment requests instead (`POST /requests` with the payments-only test key; the link form `go2pay.gd/<id>` is accepted by `parseGo2PayLink`; the page shows "TEST PAYMENT No money will change hands"). A request may close after one payment; the developer makes new ones (maintainer, 2026-11-10).
+- D-12: Review logins are `president@`, `treasurer@` and `board@` on a domain with no inbox (e.g. `sgu-msa.invalid`), not plus-addresses of a real mailbox, so nobody can reset their passwords by email; opening `/admin/set-password` while signed in is accepted and undone by a reset (maintainer, 2026-11-10).
 
 Planner engineering decisions within D-1 to D-6 (flagged for the maintainer to confirm when approving this contract; none changes a maintainer decision):
 
 - E-1 (reset/keep, per D-5): reset = `events`, `announcements`, `news_posts`, `newsletters`, `list_options`, `people_sections`, `people`, `admins`, `seasons`, `merch_collections`, `merch_items`, `payment_items`, `payment_item_links`, `handover_steps`, `shared_logins`, `prayer_settings`, `musallah_location`, `page_texts`, `activity_log` (emptied, not seeded) and every object in the `community` storage bucket. Kept = `quran_verses` (fixed library, ADR 0026), `warning_emails_sent` (the daily check's ledger; the check never runs on staging), all `auth.users` other than the three review logins (developers keep their logins; their dashboard access ends with the old `admins` rows, so after a reset a developer signs in with a review login), the schema, RLS, functions, buckets and every Supabase setting.
 - E-2 (activity log, per D-5 "wipe"): a reset empties Recent changes so the board starts from a clean history, and the seed rows are not logged (as the starter migration does). This is a staging-only exception to ADR 0013's add-only log, made only inside the reset transaction and recorded in ADR 0035.
 - E-3 (ADR 0005 safety, refines D-6's "or leave fixture links"): the fixture's fake product numbers (9001-9203) are never written to staging, because the off gateway would send a visitor to a real stranger's `go2pay.gd/9001`. An item gets a link only when the input names a test product for its slug; an item without one stays listed in the dashboard with no link and is not payable on the public site.
-- E-4 (D-3 placement): President login → the fixture President (Omar Haddad); Treasurer login → the fixture Treasurer (Maryam Siddiqui); Board member login → the fixture Secretary (Hamza Ali), an Executive board member with neither permission, following the sandbox's "board" sign-in (`sandboxNoMoneyCredentials`: an Executive board entry without either permission). All three can edit Pages (ADR 0027). Plus-tags: `+president`, `+treasurer`, `+board`.
+- E-4 (D-3 placement): President login → the fixture President (Omar Haddad); Treasurer login → the fixture Treasurer (Maryam Siddiqui); Board member login → the fixture Secretary (Hamza Ali), an Executive board member with neither permission, following the sandbox's "board" sign-in (`sandboxNoMoneyCredentials`: an Executive board entry without either permission). All three can edit Pages (ADR 0027). Addresses: `president@`, `treasurer@`, `board@` (D-12).
 - E-5 (D-2 sync): a GitHub workflow force-updates `review` to every new `main` commit, so nobody has to remember; `review` never receives its own commits.
 - E-6 (cache): after a successful reset the script triggers a Vercel deploy hook for the `review` branch when one is in the input, so the review link shows the reset content at once (cached page text, prayer settings and pin are otherwise kept until a board save). Without a hook it prints the manual step.
 
@@ -182,7 +183,7 @@ Seed plan order and mapping (`stagingSeedPlan`):
 
 Not seeded, by design: `demoOrders` (Go2Pay data, no table; staging has no key), `demoAdmin`/sandbox credentials (replaced by the three logins), fixture product numbers (E-3), `activity_log` (empty, E-2). Every fixture otherwise maps cleanly: no fixture needs an upload, and the PGlite test proves every row passes the real constraints and triggers.
 
-Review logins (`reviewLogins(loginBase)`): `local+president@domain` → person `00000000-0000-4000-8000-00000000a001`, people true, money true; `local+treasurer@domain` → `…a011`, people false, money true; `local+board@domain` → `…a012`, people false, money false.
+Review logins (`reviewLogins(loginDomain)`): `president@domain` → person `00000000-0000-4000-8000-00000000a001`, people true, money true; `treasurer@domain` → `…a011`, people false, money true; `board@domain` → `…a012`, people false, money false.
 
 Review branch: `.github/workflows/review-branch.yml`, `on: push: branches: [main]`, `permissions: contents: write`, `concurrency: { group: review-branch, cancel-in-progress: false }`, one job: `actions/checkout@v4` with `fetch-depth: 0`, then `git push --force origin HEAD:refs/heads/review`. No other step, no secrets, no PR text interpolated.
 
@@ -194,12 +195,12 @@ Review branch: `.github/workflows/review-branch.yml`, `on: push: branches: [main
 - `RESET_TABLES` (the E-1 list in seed/insert order, `activity_log` last) and `PRESERVED_TABLES = ["quran_verses", "warning_emails_sent"]`, both `as const`; `type ResetTable`.
 - `resetInputSchema` (zod, strict object) and `type ResetInput`:
   - `supabaseUrl`: string; `secretKey`: string starting `sb_secret_`; `databaseUrl`: string; `databaseCaFile`: path string;
-  - `loginBase`: email without `+`;
+  - `loginDomain`: a bare domain (lowercase letters, digits, dots, hyphens, at least one dot, no `@`);
   - `passwords`: `{ president, treasurer, board }`, each passing `passwordSchema`, all three different;
   - `go2payTestLinks`: optional record from fixture payment-item slug to a link that `parseGo2PayLink` accepts; unknown slugs and repeated product ids refused;
   - `reviewDeployHook`: optional `https://api.vercel.com/v1/integrations/deploy/...` URL.
 - `checkTarget(input: ResetInput, env: { VERCEL_ENV?: string }): { ok: true } | { ok: false; problems: string[] }`. Refuses when: `env.VERCEL_ENV === "production"`; `supabaseUrl` is not exactly `https://qglftmxfjvxmrzppkxks.supabase.co` (trailing slash allowed); `PRODUCTION_PROJECT_REF` appears anywhere in `supabaseUrl` or `databaseUrl` (named as "the production project"); `databaseUrl` is not `postgres:`/`postgresql:` or is neither (a) user `postgres.qglftmxfjvxmrzppkxks` on a host ending `.pooler.supabase.com` nor (b) user `postgres` on host `db.qglftmxfjvxmrzppkxks.supabase.co`; the host is local (`localhost`, `127.0.0.1`, `::1`). Problem texts never include the URL's password or the key.
-- `reviewLogins(loginBase: string): { role: "president" | "treasurer" | "board"; email: string; personId: string; can_manage_people: boolean; can_manage_money: boolean }[]`.
+- `reviewLogins(loginDomain: string): { role: "president" | "treasurer" | "board"; email: string; personId: string; can_manage_people: boolean; can_manage_money: boolean }[]`.
 - `stagingSeedPlan(now: Date, accounts: Record<"president" | "treasurer" | "board", string>, links: ReadonlyMap<string, number>, pageTexts: readonly { key: string; document: unknown }[]): { table: ResetTable; rows: Record<string, unknown>[] }[]` (pure; steps as in Design).
 - `redact(text: string, secrets: readonly string[]): string` (every non-empty secret and the password part of `databaseUrl` replaced by `[hidden]`).
 
@@ -246,8 +247,8 @@ Hosted steps, done by the planner or developer after merge, never by the impleme
 
 - H-1: Confirm the public repository allows GitHub Actions `contents: write` for workflows (read the setting first); the first push to `main` after merge creates `review`, and Vercel builds it.
 - H-2: Create a Vercel deploy hook for branch `review` (Project → Settings → Git → Deploy Hooks, free) and put its URL in the developer's input file.
-- H-3: The maintainer creates the Go2Pay test products; the developer adds `go2payTestLinks` by fund slug.
-- H-4: The developer creates the input file (staging URL, staging secret key, session pooler URL with the staging database password from the vault, the Supabase CA certificate, base address, three passwords), runs a dry run, then `--yes`; the planner checks the review link and the three logins.
+- H-3: The maintainer creates the Go2Pay test payment requests (D-11); the developer adds `go2payTestLinks` by fund slug.
+- H-4: The developer creates the input file (staging URL, staging secret key, session pooler URL with the staging database password from the vault, the Supabase CA certificate, the no-inbox login domain, three passwords), runs a dry run, then `--yes`; the planner checks the review link and the three logins.
 - H-5: Optional free `*.vercel.app` alias for the `review` branch; name confirmed with the maintainer first (D-2).
 
 ## Parallel Work and Merge Order
@@ -286,7 +287,7 @@ No other open branch touches these files (base 868b2c7). One PR against `main`.
 - Reuse: fixtures, the five row mappers, `passwordSchema`, `parseGo2PayLink`, `z` from `src/lib/validation/zod`.
 - Required changes: everything `plan.ts` exports in Public Contract, exactly as specified.
 - Must not: read files, env, network or the clock; copy a fixture value; hand-write a column list; include fixture product numbers.
-- Tests (unit, no network): `checkTarget` accepts the staging pooler URL and the staging direct URL; refuses the production ref in either URL, another ref, an http or other host Supabase URL, `localhost`/`127.0.0.1`, a non-Postgres scheme, `VERCEL_ENV=production`, and its problems never contain the database password or the key. `resetInputSchema` refuses a weak password, two equal passwords, a `+` in `loginBase`, an unknown fund slug, a non-Go2Pay link, a repeated product id, a key without `sb_secret_`. `reviewLogins` gives the three plus-addresses with E-4's people and permissions. `stagingSeedPlan` (fixed `now`, e.g. `demoSeed` from `tests/support/demo-seed.ts`): steps in Design order; row counts equal the fixture counts; `payment_item_links` holds only the given links; no row contains 9001-9203 as a product id; the archived fund has `archived_at`; `page_texts` has every key; no `demoOrders` data. `redact` hides every secret and the URL password.
+- Tests (unit, no network): `checkTarget` accepts the staging pooler URL and the staging direct URL; refuses the production ref in either URL, another ref, an http or other host Supabase URL, `localhost`/`127.0.0.1`, a non-Postgres scheme, `VERCEL_ENV=production`, and its problems never contain the database password or the key. `resetInputSchema` refuses a weak password, two equal passwords, a `loginDomain` that is not a bare domain (`a@b`, `+`, spaces), an unknown fund slug, a non-Go2Pay link, a repeated product id, a key without `sb_secret_`. `reviewLogins` gives the three addresses with E-4's people and permissions. `stagingSeedPlan` (fixed `now`, e.g. `demoSeed` from `tests/support/demo-seed.ts`): steps in Design order; row counts equal the fixture counts; `payment_item_links` holds only the given links; no row contains 9001-9203 as a product id; the archived fund has `archived_at`; `page_texts` has every key; no `demoOrders` data. `redact` hides every secret and the URL password.
 - Done when: all tests pass.
 
 ### WP-3: Database reset
@@ -373,7 +374,7 @@ Stop and emit PLAN MISMATCH (Expected / Observed / Impact / Files) when:
 - After a reset, a visitor on the review link sees the sandbox's events (one cancelled, one postponed, a two-day night of prayer, Islamic Awareness Week), the urgent notices, news, the newsletter, the team on About, the Ramadan and Islamic Awareness Week pages, the three merch collections with their photos, and the prayer times with two Jumu'ah sessions.
 - The President login sees People with "manage people" controls and Payments ("key off"); the Treasurer login sees Payments but cannot change people's access; the Board member login sees neither; all three can edit Pages.
 - Recent changes is empty right after a reset and shows each later board edit.
-- Give buttons appear only for funds, tickets and sizes the developer linked to a Go2Pay test product, and each leads to that test product; no fixture product number is reachable.
+- Give buttons appear only for funds, tickets and sizes the developer linked to a Go2Pay test payment request (D-11), and each leads to that test product; no fixture product number is reachable.
 - Running the reset with the production ref, another project or a local database stops with a clear refusal before any connection; running with mismatched key and database stops before any write; no output ever shows a password, key or database URL.
 - A second reset gives the same content and the same three logins; developer logins still exist.
 - A push to `main` updates `review`, and Vercel builds a new review deployment.

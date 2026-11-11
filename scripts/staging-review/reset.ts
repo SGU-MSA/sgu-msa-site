@@ -128,7 +128,7 @@ async function main(secrets: string[]) {
 
   const links = linkMap(input);
   const pageTexts = starterPageTexts();
-  const logins = reviewLogins(input.loginBase);
+  const logins = reviewLogins(input.loginDomain);
   const preview = stagingSeedPlan(
     new Date(),
     { president: "-", treasurer: "-", board: "-" },

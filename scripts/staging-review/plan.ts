@@ -68,9 +68,12 @@ export const resetInputSchema = z.strictObject({
   secretKey: z.string().startsWith("sb_secret_"),
   databaseUrl: z.string().min(1),
   databaseCaFile: z.string().min(1),
-  loginBase: z
-    .email()
-    .refine((value) => !value.includes("+"), "Use the plain address, no +."),
+  loginDomain: z
+    .string()
+    .regex(
+      /^[a-z0-9-]+(\.[a-z0-9-]+)+$/,
+      "Use a bare domain such as sgu-msa.invalid (lowercase letters, digits, dots, hyphens).",
+    ),
   passwords: z
     .strictObject({
       president: passwordSchema,
@@ -183,16 +186,14 @@ export function databaseConfig(databaseUrl: string, ca: string) {
 export type ReviewRole = "president" | "treasurer" | "board";
 
 /** The three review logins and the fixture person each one is (E-4). */
-export function reviewLogins(loginBase: string): {
+export function reviewLogins(loginDomain: string): {
   role: ReviewRole;
   email: string;
   personId: string;
   can_manage_people: boolean;
   can_manage_money: boolean;
 }[] {
-  const at = loginBase.lastIndexOf("@");
-  const address = (tag: string) =>
-    `${loginBase.slice(0, at)}+${tag}${loginBase.slice(at)}`;
+  const address = (role: string) => `${role}@${loginDomain}`;
   const person = (n: string) => `00000000-0000-4000-8000-00000000${n}`;
   return [
     {
@@ -250,7 +251,7 @@ export function stagingSeedPlan(
     { table: "people", rows: rows(demoPeople()) },
     {
       table: "admins",
-      rows: reviewLogins("a@b").map((login) => ({
+      rows: reviewLogins("example.invalid").map((login) => ({
         user_id: accounts[login.role],
         person_id: login.personId,
         can_manage_people: login.can_manage_people,

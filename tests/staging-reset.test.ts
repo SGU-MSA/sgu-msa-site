@@ -47,7 +47,7 @@ const validInput = (): Record<string, unknown> => ({
   secretKey,
   databaseUrl: pooler,
   databaseCaFile: "ca.pem",
-  loginBase: "club@example.invalid",
+  loginDomain: "sgu-msa.invalid",
   passwords: {
     president: "Fake-President-1!x",
     treasurer: "Fake-Treasurer-2!x",
@@ -245,7 +245,16 @@ test("resetInputSchema refuses unsafe or malformed input", () => {
     board: "Fake-Board-Member-3!x",
   };
   assert.ok(!parsed({ passwords: same }).success, "equal passwords");
-  assert.ok(!parsed({ loginBase: "club+tag@example.invalid" }).success, "plus");
+  assert.ok(parsed({ loginDomain: "review.example.invalid" }).success);
+  for (const bad of [
+    "a@b",
+    "club@example.invalid",
+    "a+b.invalid",
+    "a b.invalid",
+    "nodot",
+    "Upper.invalid",
+  ])
+    assert.ok(!parsed({ loginDomain: bad }).success, bad);
   assert.ok(!parsed({ secretKey: "eyJhbGciOi" }).success, "key prefix");
   assert.ok(!parsed({ extra: 1 }).success, "unknown key");
   assert.ok(parsed({ go2payTestLinks: { sadaqah: "go2pay.gd/557" } }).success);
@@ -275,23 +284,25 @@ test("resetInputSchema refuses unsafe or malformed input", () => {
   );
 });
 
-test("reviewLogins gives the three plus-addresses with E-4's permissions", () => {
+test("reviewLogins gives the three addresses with E-4's permissions", () => {
   assert.deepEqual(
-    reviewLogins("club@example.invalid").map((l) => [
+    reviewLogins("sgu-msa.invalid").map((l) => [
       l.role,
       l.email,
       l.can_manage_people,
       l.can_manage_money,
     ]),
     [
-      ["president", "club+president@example.invalid", true, true],
-      ["treasurer", "club+treasurer@example.invalid", false, true],
-      ["board", "club+board@example.invalid", false, false],
+      ["president", "president@sgu-msa.invalid", true, true],
+      ["treasurer", "treasurer@sgu-msa.invalid", false, true],
+      ["board", "board@sgu-msa.invalid", false, false],
     ],
   );
   const people = new Map(demoPeople().map((p) => [p.id, p]));
   assert.deepEqual(
-    reviewLogins("a@b.c").map((l) => people.get(l.personId)?.role_title),
+    reviewLogins("example.invalid").map(
+      (l) => people.get(l.personId)?.role_title,
+    ),
     ["President", "Treasurer", "Secretary"],
   );
 });

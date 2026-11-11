@@ -8,7 +8,7 @@ export async function ensureLogins(
   input: ResetInput,
 ) {
   const ids = {} as Record<"president" | "treasurer" | "board", string>;
-  for (const login of reviewLogins(input.loginBase)) {
+  for (const login of reviewLogins(input.loginDomain)) {
     const password = input.passwords[login.role];
     const known = users.find(
       (user) => user.email?.toLowerCase() === login.email.toLowerCase(),
