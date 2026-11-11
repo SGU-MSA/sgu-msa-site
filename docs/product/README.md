@@ -51,3 +51,5 @@ Copy this shape for a new PRD.
 
 <!-- index: one line per PRD, added with each PRD -->
 - [Daily check, warning emails and the notifications bell](daily-check.md): Nightly check, warning emails and the bell: what each warning asks the board to do.
+- [Prayer and iqamah times](prayer-times.md): Daily iqamah, Jumu'ah, one-date changes, History and what visitors see.
+- [Musallah location](musallah-location.md): The single musallah pin, the map and directions.
