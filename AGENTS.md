@@ -96,6 +96,7 @@ Codex loads `.codex/config.toml` only after the repo root is trusted; then `code
 - Testing and release: `docs/release-checklist.md` (every PR adds a **Latest changes** entry).
 - Owner (accounts, hosting, Gmail for invite emails, sign-in settings, first admin, backups): `docs/guides/owner-setup.md`. Developers: `docs/guides/developer.md`. Topics: `docs/guides/prayer-times.md`, `docs/guides/photography.md`.
 - Decisions: `docs/adr/` (immutable; supersede, don't edit — ADR 0001). Feature decisions: `docs/contracts/<feature>.md`.
+- Product requirements: `docs/product/<feature>.md` (user stories and edge cases: the "what"); contracts are the "how" and link their PRD ([ADR 0036](docs/adr/0036-prds-define-what-contracts-define-how.md)).
 - Architecture: `docs/architecture.md` (Mermaid) — update it in the same PR that changes a flow. Roadmap: `docs/roadmap.md`. Provider notes: `docs/proposals/`. `docs/archive/` is history, not instructions.
 - Guides are capped and every local doc link is tested (`tests/documentation.test.ts`); extend a guide instead of adding one.
 

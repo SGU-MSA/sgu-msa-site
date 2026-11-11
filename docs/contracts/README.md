@@ -6,4 +6,5 @@ A contract is the approved plan for one non-trivial change: what capability chan
 - **Drafts** are written in `.plans/<feature>.md` (not committed). A draft moves here as `docs/contracts/<feature>.md` once every product decision is answered by the user.
 - **Status** (front matter): `draft` while being written, `approved` when the user has signed off, `done` once merged. Never rewrite an approved contract silently; amend it with the user and note the change under `Decisions`.
 - **Check structure:** `node scripts/validate-plan.mjs docs/contracts/<feature>.md` (add `--light` for lightweight contracts).
+- **PRD link:** a contract names the PRD in [`docs/product/`](../product/README.md) and the user stories it serves; the PRD says what and why, the contract says how ([ADR 0036](../adr/0036-prds-define-what-contracts-define-how.md)).
 - Cross-cutting decisions also get an ADR in [`docs/adr/`](../adr/README.md).

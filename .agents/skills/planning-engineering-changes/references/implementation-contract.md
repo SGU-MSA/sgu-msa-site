@@ -25,6 +25,8 @@ mode: full
 
 # <Feature name>
 
+PRD: `docs/product/<feature>.md` (stories US-<AREA>-<n> this change serves; ADR 0036).
+
 ## Capability
 
 <The system capability that changes, phrased as a capability, not a UI task.>
