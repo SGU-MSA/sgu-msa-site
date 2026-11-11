@@ -21,18 +21,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { load } from "js-yaml";
-import { pageTextKeys } from "../src/lib/content/documents.ts";
-import {
-  mergePageText,
-  pageTextSaveSchema,
-  withEveryField,
-} from "../src/lib/content/page-fields.ts";
+import { starterPageTexts } from "./starter-page-texts.ts";
 import { arabicEmEstimate, fitsOneLine } from "../src/shared/ui/arabicFit.ts";
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-const read = (key) =>
-  load(fs.readFileSync(path.join(root, "content", `${key}.yaml`), "utf8"));
 /** A dollar-quoted SQL literal whose tag never occurs in the text. */
 const quoted = (value) => {
   const tag = "$seed$";
@@ -41,26 +33,10 @@ const quoted = (value) => {
 };
 
 function pageTexts() {
-  const lines = [];
-  for (const key of pageTextKeys) {
-    const raw = read(key);
-    const merged = mergePageText(key, raw, withEveryField(key, raw));
-    if (!merged.ok)
-      throw new Error(`${key}: the field list does not fit the starter text.`);
-    const parsed = pageTextSaveSchema(key).safeParse(merged.document);
-    if (!parsed.success) {
-      const problems = parsed.error.issues
-        .map((issue) => `  · ${issue.message}`)
-        .join("\n");
-      throw new Error(
-        `${key}.yaml does not pass the board's save rules:\n${problems}`,
-      );
-    }
-    lines.push(
-      `insert into public.page_texts (key, document) values ('${key}', ${quoted(JSON.stringify(parsed.data))}::jsonb);`,
-    );
-  }
-  return lines;
+  return starterPageTexts().map(
+    ({ key, document }) =>
+      `insert into public.page_texts (key, document) values ('${key}', ${quoted(JSON.stringify(document))}::jsonb);`,
+  );
 }
 
 const service = "https://api.alquran.cloud/v1";
@@ -106,8 +82,7 @@ async function fetchVerses() {
         throw new Error(`${number}:${ayah.numberInSurah} does not match.`);
       total++;
       let text = ayah.text.replace(/^\uFEFF/, "");
-      if (ayah.numberInSurah === 1 && number !== 1)
-        text = withoutBasmala(text);
+      if (ayah.numberInSurah === 1 && number !== 1) text = withoutBasmala(text);
       if (!fitsOneLine(arabicEmEstimate(text))) continue;
       verses.push({
         surah: number,

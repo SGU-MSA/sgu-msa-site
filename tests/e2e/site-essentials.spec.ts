@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { demoSeed } from "../support/demo-seed";
 import { savedToast, signInToSandbox, submit } from "./actions";
 
 /**
@@ -16,6 +17,11 @@ test.beforeEach(({}, testInfo) => {
       !["desktop-light", "phone-dark"].includes(testInfo.project.name),
     "Explicit demo server required",
   );
+});
+
+// The server freezes sample data at the seed date; the Calendar filters by the browser clock.
+test.beforeEach(async ({ page }) => {
+  await page.clock.setFixedTime(new Date(demoSeed));
 });
 
 const publicRoutes = [

@@ -838,6 +838,20 @@ flowchart LR
   auth --> codex
 ```
 
+## Environments
+
+Three environments ([ADR 0035](adr/0035-staging-is-the-review-site.md)): the in-memory sandbox, the staging review site and production. Previews and the `review` branch read staging; only `main` reaches production.
+
+```mermaid
+flowchart LR
+  sandbox["Local sandbox (npm run demo, in memory)"]
+  pr["PR previews"] --> staging[("Staging Supabase: fake review content")]
+  review["review branch (equal to main) = fixed review link"] --> staging
+  reset["npm run staging:reset (developer, manual)"] --> staging
+  main["main"] -->|"merge publishes"| prod[("Production Supabase: real data only")]
+  main -->|"workflow"| review
+```
+
 ## Delegated engineering workflow
 
 [ADR 0032](adr/0032-delegated-implementation-and-human-merge.md) defines one process for both clients. The shared roles are documentation; native agent files select a model and reference them. Native adapters inherit runtime permissions.
