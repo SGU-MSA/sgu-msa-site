@@ -59,3 +59,4 @@ Copy this shape for a new PRD.
 - [People and team groups](people.md): People entries, team groups, the public team list and photos.
 - [Dashboard logins and permissions](logins-and-permissions.md): Invites, Manage people and Manage money, Pages editing, sign-in and passwords.
 - [New board term and hand-over](board-handover.md): New board term: hand-over steps, shared logins, term export.
+- [Recent changes (the activity log)](recent-changes.md): The add-only activity log, History and Restore.
