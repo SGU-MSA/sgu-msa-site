@@ -56,3 +56,5 @@ Copy this shape for a new PRD.
 - [Donations and payments](payments.md): Funds and zakat rules, tickets, Go2Pay pages, the Donate page and Money in.
 - [Merch](merch.md): Collections, items, sizes as Go2Pay products, stock and in-person sales.
 - [Seasons](seasons.md): Ramadan and Eid seasons, their days, public pages and seasonal funds.
+- [People and team groups](people.md): People entries, team groups, the public team list and photos.
+- [Dashboard logins and permissions](logins-and-permissions.md): Invites, Manage people and Manage money, Pages editing, sign-in and passwords.
