@@ -253,6 +253,9 @@ test("resetInputSchema refuses unsafe or malformed input", () => {
     "a b.invalid",
     "nodot",
     "Upper.invalid",
+    "gmail.com",
+    "example.com",
+    "-x.invalid",
   ])
     assert.ok(!parsed({ loginDomain: bad }).success, bad);
   assert.ok(!parsed({ secretKey: "eyJhbGciOi" }).success, "key prefix");

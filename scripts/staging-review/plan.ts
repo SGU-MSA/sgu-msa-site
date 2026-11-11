@@ -71,8 +71,8 @@ export const resetInputSchema = z.strictObject({
   loginDomain: z
     .string()
     .regex(
-      /^[a-z0-9-]+(\.[a-z0-9-]+)+$/,
-      "Use a bare domain such as sgu-msa.invalid (lowercase letters, digits, dots, hyphens).",
+      /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*\.invalid$/,
+      "Use a domain ending in .invalid, so the logins have no inbox.",
     ),
   passwords: z
     .strictObject({
@@ -224,7 +224,7 @@ export type SeedStep = { table: ResetTable; rows: Record<string, unknown>[] };
 
 /**
  * What a reset writes, table by table in insert order. `links` maps a fixture payment-item slug
- * to a Go2Pay test product; the fixtures' own product numbers are never used (E-3).
+ * to a Go2Pay test payment request (D-11); the fixtures' own product numbers are never used (E-3).
  */
 export function stagingSeedPlan(
   now: Date,
