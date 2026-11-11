@@ -58,3 +58,4 @@ Copy this shape for a new PRD.
 - [Seasons](seasons.md): Ramadan and Eid seasons, their days, public pages and seasonal funds.
 - [People and team groups](people.md): People entries, team groups, the public team list and photos.
 - [Dashboard logins and permissions](logins-and-permissions.md): Invites, Manage people and Manage money, Pages editing, sign-in and passwords.
+- [New board term and hand-over](board-handover.md): New board term: hand-over steps, shared logins, term export.
