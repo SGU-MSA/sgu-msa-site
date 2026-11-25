@@ -1,0 +1,132 @@
+/* Option 2: top bar with a Menu button; grouped sidebar from 1024px. */
+.frame {
+  --bar: 3.5rem;
+  min-height: 100dvh;
+}
+.plain {
+  min-height: 60dvh;
+}
+.plain > .brand {
+  padding: 0.75rem var(--content-gutter);
+}
+.top {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: var(--bar);
+  padding: 0.35rem var(--content-gutter);
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.brandName {
+  display: none;
+}
+@media (min-width: 560px) {
+  .brandName {
+    display: inline;
+  }
+}
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.menuButton {
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0.4rem 0.8rem;
+}
+.sidebar {
+  display: none;
+}
+.content {
+  min-width: 0;
+  padding-block-end: 2rem;
+}
+/* Inside the frame the page's own header is quieter: the bell, Show me how
+   and Sign out live in the top bar and the account menu. */
+.content :global(.admin-header-actions) {
+  display: none;
+}
+.content :global(.admin-shell) {
+  padding-block-start: 1.25rem;
+}
+.content :global(.admin-shell) h1 {
+  margin-block: 0.25rem 0.5rem;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+}
+.content :global(.admin-header) {
+  margin-bottom: 1rem;
+}
+.menu {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 1rem var(--content-gutter) calc(2rem + env(safe-area-inset-bottom));
+  border: 0;
+  overflow: auto;
+  background: var(--paper);
+  color: var(--ink);
+}
+.menuHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.menuHead h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+.menuHead button {
+  gap: 0.4rem;
+  min-height: 44px;
+}
+@media (min-width: 1024px) {
+  .frame {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+  .top {
+    grid-column: 1 / -1;
+  }
+  .menuButton,
+  .menu {
+    display: none;
+  }
+  .sidebar {
+    display: block;
+    position: sticky;
+    inset-block-start: var(--bar);
+    align-self: start;
+    max-height: calc(100dvh - var(--bar));
+    overflow: auto;
+    padding: 1rem 0.75rem;
+    border-inline-end: 1px solid var(--rule);
+  }
+  .content :global(.admin-shell) h1 {
+    font-size: clamp(2rem, 3.5vw, 3rem);
+  }
+}

@@ -3,6 +3,7 @@ import { LiveRefresh } from "./LiveRefresh";
 
 import { managedUrgentNotices } from "@/lib/community/managed";
 import { getSite, placedReminder, siteYear } from "@/lib/content";
+import { PublicOnly } from "./PublicOnly";
 import { Footer } from "./Footer";
 import { Navbar } from "./Navbar";
 import { UrgentBand } from "./UrgentBand";
@@ -27,31 +28,35 @@ export async function SiteChrome({ children }: { children: ReactNode }) {
   return (
     <>
       <LiveRefresh />
-      <Navbar
-        items={site.navigation}
-        cta={site.header_cta ?? null}
-        logoLabel={site.brand.logo.alt}
-        shortName={site.brand.short_name}
-        tagline={site.brand.tagline}
-      />
+      <PublicOnly>
+        <Navbar
+          items={site.navigation}
+          cta={site.header_cta ?? null}
+          logoLabel={site.brand.logo.alt}
+          shortName={site.brand.short_name}
+          tagline={site.brand.tagline}
+        />
+      </PublicOnly>
       <Suspense fallback={null}>
         <UrgentNotices />
       </Suspense>
       <main id="main-content" className="site-main">
         {children}
       </main>
-      <Footer
-        name={site.brand.name}
-        shortName={site.brand.short_name}
-        university={site.brand.university}
-        tagline={site.brand.tagline}
-        quickLinks={site.footer.quick_links}
-        socialLinks={site.social}
-        email={site.brand.email}
-        verse={footerVerse}
-        year={year}
-        adminLink={site.footer.admin_link ?? null}
-      />
+      <PublicOnly>
+        <Footer
+          name={site.brand.name}
+          shortName={site.brand.short_name}
+          university={site.brand.university}
+          tagline={site.brand.tagline}
+          quickLinks={site.footer.quick_links}
+          socialLinks={site.social}
+          email={site.brand.email}
+          verse={footerVerse}
+          year={year}
+          adminLink={site.footer.admin_link ?? null}
+        />
+      </PublicOnly>
     </>
   );
 }

@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { signOutAction } from "@/features/admin/actions";
 import { ShowMeHow } from "@/features/admin/tour/ShowMeHow";
 import type { TourId } from "@/features/admin/tour/steps";
+import { TourInMenu } from "@/features/admin/shell/TourInMenu";
 import { NotificationBell } from "./notifications/NotificationBell";
 
 /** A page above the current one in the breadcrumb trail. */
@@ -57,7 +58,11 @@ export function AdminHeader({
         <Suspense fallback={null}>
           <NotificationBell />
         </Suspense>
-        {tour ? <ShowMeHow tour={tour} /> : null}
+        {tour ? (
+          <TourInMenu>
+            <ShowMeHow tour={tour} />
+          </TourInMenu>
+        ) : null}
         <form action={signOutAction}>
           <button className="button-secondary">Sign out</button>
         </form>
