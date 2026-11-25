@@ -1,0 +1,74 @@
+/* Shared by the dashboard frames: account menu and section links. */
+.account {
+  position: relative;
+  display: flex;
+}
+.accountButton {
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0.4rem 0.8rem;
+}
+.accountPanel {
+  position: absolute;
+  z-index: var(--z-popover);
+  inset-block-start: calc(100% + 0.5rem);
+  inset-inline-end: 0;
+  display: grid;
+  gap: 0.5rem;
+  width: min(16rem, calc(100vw - 2rem));
+  padding: 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-small);
+  background: var(--paper-light);
+  box-shadow: 0 12px 40px var(--shadow);
+}
+.accountPanel[hidden] {
+  display: none;
+}
+.accountPanel :global(.button-secondary),
+.accountPanel button {
+  width: 100%;
+  min-height: 44px;
+}
+.tourSlot:empty {
+  display: none;
+}
+.groups {
+  display: grid;
+  gap: 1.25rem;
+}
+.groupTitle {
+  margin: 0 0 0.35rem;
+  padding-inline: 0.75rem;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: var(--type-small);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.list {
+  display: grid;
+  gap: 0.125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-small);
+  color: var(--ink);
+  font-weight: 500;
+  text-decoration: none;
+}
+.link:hover {
+  background: var(--paper-deep);
+}
+.link[aria-current="page"] {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 700;
+}
