@@ -1,0 +1,37 @@
+# Keeps the free staging Supabase project from pausing, and renews its own schedule
+# so the 60-day inactivity shut-off never applies (docs/contracts/staging-keep-awake.md).
+name: Keep staging awake
+
+on:
+  schedule:
+    - cron: "23 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  read-staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Renew the daily schedule
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method PUT "repos/${{ github.repository }}/actions/workflows/staging-keep-awake.yml/enable"
+      - name: Read one row from staging
+        if: always()
+        env:
+          KEY: ${{ secrets.STAGING_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "::error::STAGING_SUPABASE_PUBLISHABLE_KEY is not set"
+            exit 1
+          fi
+          status=$(curl --fail --silent --show-error \
+            --retry 3 --retry-all-errors --retry-delay 20 --max-time 30 \
+            --output /dev/null --write-out '%{http_code}' \
+            --header "apikey: $KEY" \
+            "https://qglftmxfjvxmrzppkxks.supabase.co/rest/v1/prayer_settings?select=id&limit=1")
+          [ "$status" = 200 ] || { echo "::error::Staging answered HTTP $status"; exit 1; }
+          echo "Staging answered with HTTP $status"
