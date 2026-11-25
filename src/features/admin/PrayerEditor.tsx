@@ -37,10 +37,11 @@ import { jumuahNoticeBoxes } from "./jumuah-notices";
 import { NoticeQuestion } from "./NoticeQuestion";
 import { prayerFormProblems } from "./prayer-form";
 import { DateField } from "@/shared/ui/DateField";
-import { TimeField } from "@/shared/ui/TimeField";
+import { StepTimeField as TimeField } from "@/shared/ui/StepTimeField";
+import { PrayerEndWarning } from "./PrayerEndWarning";
 import { anyDate, anyTime, todayOrLater } from "@/lib/time/field-rules";
 import { formatTimeOfDay } from "@/lib/time/time-of-day";
-import { weekdayDateLabel } from "@/lib/time/date-label";
+import { longDateLabel, weekdayDateLabel } from "@/lib/time/date-label";
 import { useFormBoxes } from "@/shared/ui/form-boxes";
 
 /** The form's text: field name → value, as posted (`prayerFormText`). */
@@ -79,8 +80,11 @@ function IqamahPreview({
   minutes,
   adhan,
   today,
+  compact = false,
 }: {
   id: PrayerId;
+  /** Leave out the adhan (the row shows it above). */
+  compact?: boolean;
   /** The typed fixed clock (`HH:MM`), or "" (or when After adhan is picked). */
   fixed: string;
   /** The typed minutes after the adhan, or null (or when Fixed time is picked). */
@@ -129,7 +133,7 @@ function IqamahPreview({
   );
   return (
     <p className="iqamah-preview" ref={ref}>
-      {adhan ? (
+      {adhan && !compact ? (
         <>
           {prayerEditorWords.adhan(formatTimeOfDay(clockOf(adhan)))}{" "}
           <span aria-hidden="true">→</span>
@@ -155,9 +159,12 @@ function IqamahRow({
   values,
   adhan,
   today,
+  hidden,
 }: {
   id: PrayerId;
   values: Values;
+  /** Not on screen now (it stays in the form, so it still posts). */
+  hidden: boolean;
   /** Today's calculated adhan for this prayer (ISO), when known. */
   adhan: string | undefined;
   /** Today in Grenada (server clock). */
@@ -173,9 +180,16 @@ function IqamahRow({
   const minutes = mode === "fixed" ? null : typedMinutes(offset);
   const fixed = mode === "after" ? "" : typedClock(time);
   return (
-    <tr>
-      <th scope="row">{name}</th>
-      <td>
+    <div className="term-row" hidden={hidden}>
+      <div className="term-row-head">
+        <h3>{name}</h3>
+        {adhan ? (
+          <span className="term-adhan">
+            {prayerEditorWords.adhan(formatTimeOfDay(clockOf(adhan)))}
+          </span>
+        ) : null}
+      </div>
+      <div className="term-row-control">
         <fieldset
           className="segmented"
           aria-describedby={both ? errorId : undefined}
@@ -196,23 +210,21 @@ function IqamahRow({
           ))}
         </fieldset>
         {both ? <input type="hidden" name={`mode_${id}`} value="both" /> : null}
-      </td>
-      <td>
         {mode !== "after" ? (
           <TimeField
             name={id}
             label={`${name} iqamah time`}
             rule={anyTime}
             defaultValue={time}
+            start={adhan ? clockOf(adhan) : undefined}
             onChange={setTime}
           />
         ) : null}
-        {/* With both (not picked yet) the row's own line says why. */}
-        {both ? null : <FieldError name={id} />}
         {mode !== "fixed" ? (
           <span className="iqamah-minutes">
             <input
               type="number"
+              inputMode="numeric"
               name={`offset_${id}`}
               min={0}
               max={120}
@@ -220,25 +232,27 @@ function IqamahRow({
               value={offset}
               onChange={(event) => setOffset(event.target.value)}
             />
-            <span aria-hidden="true">min</span>
+            <span aria-hidden="true">min after adhan</span>
           </span>
         ) : null}
-        {both ? null : <FieldError name={`offset_${id}`} />}
-        {both ? (
-          <p id={errorId} className="form-error iqamah-both">
-            {iqamahBothMessage(id)}
-          </p>
-        ) : null}
-        {/* Under the box, on the 12-hour clock as everywhere (review fixes P1). */}
-        <IqamahPreview
-          id={id}
-          fixed={fixed}
-          minutes={minutes}
-          adhan={adhan}
-          today={today}
-        />
-      </td>
-    </tr>
+      </div>
+      {/* With both (not picked yet) the row's own line says why. */}
+      {both ? null : <FieldError name={id} />}
+      {both ? null : <FieldError name={`offset_${id}`} />}
+      {both ? (
+        <p id={errorId} className="form-error iqamah-both">
+          {iqamahBothMessage(id)}
+        </p>
+      ) : null}
+      <IqamahPreview
+        id={id}
+        fixed={fixed}
+        minutes={minutes}
+        adhan={adhan}
+        today={today}
+        compact
+      />
+    </div>
   );
 }
 
@@ -386,9 +400,11 @@ function DateChange({
           tour="prayer-jumuah-notice"
         />
       ) : null}
-      <p className="muted">
-        The Jumu’ah choices appear only when the date is a Friday.
-      </p>
+      {isFridayDate(date) ? null : (
+        <p className="muted">
+          The Jumu’ah choices appear only when the date is a Friday.
+        </p>
+      )}
       <details open={prayerIds.some((id) => read(id))}>
         <summary>Different iqamah for a daily prayer on this date</summary>
         <div className="form-grid">
@@ -444,7 +460,7 @@ function DateChanges({
   const [nextKey, setNextKey] = useState(rows.length);
   return (
     <fieldset data-tour="prayer-dates">
-      <legend>3. {prayerBoxNames.exceptions}</legend>
+      <legend className="sr-only">{prayerBoxNames.exceptions}</legend>
       <p className="muted">
         Only that date changes. The next day goes back to normal by itself.
       </p>
@@ -496,29 +512,135 @@ function DateChanges({
   );
 }
 
+type View = "home" | "term" | "one";
+const stepNames = [
+  "Term dates",
+  "Iqamah times",
+  "Jumu’ah",
+  "Check and save",
+] as const;
+
+/** The step that holds a box with a problem (0-based), or null (More). */
+const stepOf = (key: string): number | null =>
+  key === "valid_from" || key === "valid_until"
+    ? 0
+    : key.startsWith("jumuah")
+      ? 2
+      : key.startsWith("exception") || key === "notice"
+        ? null
+        : 1;
+
+const summaryBoxes = [
+  "valid_from",
+  "valid_until",
+  ...prayerIds.flatMap((id) => [id, `offset_${id}`, `mode_${id}`]),
+];
+
+/** Step 4: what the new term will be, read from the boxes as typed. */
+function TermCheck({ weekly }: { weekly: readonly SessionRow[] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const boxes = useFormBoxes(ref, summaryBoxes);
+  const box = (name: string) => boxes[name] ?? "";
+  const sessions = complete(weekly);
+  return (
+    <div ref={ref} className="term-check">
+      <dl>
+        <div>
+          <dt>Times start on</dt>
+          <dd>
+            {box("valid_from") ? longDateLabel(box("valid_from")) : "Not set"}
+          </dd>
+        </div>
+        <div>
+          <dt>Times end on</dt>
+          <dd>
+            {box("valid_until") ? longDateLabel(box("valid_until")) : "Not set"}
+          </dd>
+        </div>
+        {prayerIds.map((id) => {
+          const clock = typedClock(box(id));
+          const minutes = typedMinutes(box(`offset_${id}`));
+          const after = box(`mode_${id}`) === "after";
+          return (
+            <div key={id}>
+              <dt>{prayerLabel(id)} iqamah</dt>
+              <dd>
+                {after
+                  ? minutes === null
+                    ? "Not set"
+                    : `${minutes} min after adhan`
+                  : clock
+                    ? formatTimeOfDay(clock)
+                    : "Not set"}
+              </dd>
+            </div>
+          );
+        })}
+        <div>
+          <dt>Jumu’ah</dt>
+          <dd>
+            {sessions.length
+              ? sessions
+                  .map(
+                    (row) =>
+                      `${formatTimeOfDay(row.khutbah)} khutbah, ${formatTimeOfDay(row.iqamah)} iqamah`,
+                  )
+                  .join("; ")
+              : "None"}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  );
+}
+
+/** A closed part of the screen; it opens by itself when it holds a problem. */
+function Fold({
+  title,
+  problem,
+  children,
+}: {
+  title: string;
+  problem?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  if (problem && !open) setOpen(true);
+  return (
+    <details
+      className="fold"
+      open={open}
+      onToggle={(event) => setOpen(event.currentTarget.open)}
+    >
+      <summary>{title}</summary>
+      <div className="fold-body">{children}</div>
+    </details>
+  );
+}
+
 /**
- * The Prayer & iqamah screen (PR4 D-1): one page, three numbered sections
- * and one Save, so one version check covers everything. Prayer starts are
- * calculated (ADR 0017); the board sets only the iqamah, the weekly Jumu'ah
- * prayers and one-date changes. The Hijri date stays as calculated (review
- * fixes P2). A refused save shows what was typed again (`KeptFormState`).
+ * The Prayer & iqamah screen as a guided update (design option): a summary
+ * first, then "Start a new term" (four steps, one Save at the end) or
+ * "Change one time". One-date changes, the note, the location and history
+ * wait under "More". Every part is in one form (one version check), so each
+ * Save posts the whole form; the parts not on screen are only hidden.
  */
 export function PrayerEditor({
   values: stored,
   version,
-  method,
   today,
+  location,
 }: {
   /** The saved settings as form text (`prayerFormText`). */
   values: Values;
   version: string;
-  /** The fixed calculation's name (`prayerCalculation.label`). */
-  method: string;
   /** Today (Grenada, server clock) and its calculated adhan per prayer (ISO), when known. */
   today: {
     date: string;
     adhan: Partial<Record<string, string>>;
   };
+  /** The Musallah location editor (its own form). */
+  location: React.ReactNode;
 }) {
   const [state, action, pending] = useActionState(
     savePrayerAction,
@@ -526,18 +648,26 @@ export function PrayerEditor({
   );
   // A refused save shows what was typed; `attempt` re-mounts the fields with it.
   const values = state.values ?? stored;
+  const [view, setView] = useState<View>("home");
+  const home = view === "home";
   return (
-    <PrayerForm
-      key={state.attempt}
-      values={values}
-      stored={stored}
-      version={version}
-      method={method}
-      today={today}
-      action={action}
-      state={state}
-      pending={pending}
-    />
+    <>
+      <PrayerForm
+        key={state.attempt}
+        values={values}
+        stored={stored}
+        version={version}
+        today={today}
+        action={action}
+        state={state}
+        pending={pending}
+        view={view}
+        onView={setView}
+      />
+      <div hidden={!home}>
+        <Fold title="Musallah location">{location}</Fold>
+      </div>
+    </>
   );
 }
 
@@ -546,124 +676,310 @@ function PrayerForm({
   values,
   stored,
   version,
-  method,
   today,
   action,
   state,
   pending,
+  view,
+  onView,
 }: {
   values: Values;
   stored: Values;
   version: string;
-  method: string;
   today: { date: string; adhan: Partial<Record<string, string>> };
   action: (form: FormData) => void;
   state: Awaited<ReturnType<typeof savePrayerAction>>;
   pending: boolean;
+  view: View;
+  onView: (view: View) => void;
 }) {
   // The weekly Jumu'ah prayers, kept here: a Friday change starts from them.
   const [weekly, setWeekly] = useState<SessionRow[]>(() =>
     sessionRows(sessionsIn(values, weeklyJumuahPrefix)),
+  );
+  const [step, setStep] = useState(0);
+  const [picked, setPicked] = useState<PrayerId | null>(null);
+  const [problem, setProblem] = useState<readonly string[]>([]);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const home = view === "home";
+  const go = (next: View, nextStep = 0) => {
+    onView(next);
+    setStep(nextStep);
+    requestAnimationFrame(() => heading.current?.focus());
+  };
+  const saved = weeklyFromStored(stored);
+  const submit = (text: string) => (
+    <div>
+      <button className="button-primary" disabled={pending}>
+        {pending ? "Saving…" : text}
+      </button>
+    </div>
   );
   return (
     <CheckedForm
       action={action}
       state={state}
       check={prayerFormProblems}
+      // A refused save moves to the part that holds the problem.
+      onProblems={(keys) => {
+        setProblem(keys);
+        if (!keys.length) return;
+        const where = stepOf(keys[0]);
+        if (view === "term" && where !== null) setStep(where);
+        else if (view === "one" || (view === "term" && where === null))
+          go("home");
+      }}
       className="editor-form"
     >
       <input type="hidden" name="version" value={version} />
-      <p className="prayer-note" data-tour="prayer-note">
-        Prayer <strong>start</strong> times (adhan) are worked out automatically
-        for the Musallah: {method}. You only set the <strong>iqamah</strong>.
-      </p>
-      <fieldset>
-        <legend>1. Daily iqamah</legend>
-        <table className="iqamah-table" data-tour="prayer-daily">
-          <thead>
-            <tr>
-              <th scope="col">Prayer</th>
-              <th scope="col">How is iqamah set?</th>
-              <th scope="col">Time or minutes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {prayerIds.map((id) => (
-              <IqamahRow
-                key={id}
-                id={id}
-                values={values}
-                adhan={today.adhan[id]}
-                today={today.date}
+      <section className="content-card term-card">
+        <h2 tabIndex={-1} ref={heading}>
+          {view === "term"
+            ? `New term: step ${step + 1} of 4, ${stepNames[step]}`
+            : view === "one"
+              ? "Change one time"
+              : "Prayer times today"}
+        </h2>
+        <PrayerEndWarning saved={stored.valid_until ?? ""} today={today.date} />
+
+        {/* Home: today's times, the term, and the two actions. */}
+        {home ? (
+          <>
+            <div className="term-rows" data-tour="prayer-daily">
+              {prayerIds.map((id) => {
+                const mode = stored[`mode_${id}`] ?? "fixed";
+                return (
+                  <div className="term-row" key={id}>
+                    <div className="term-row-head">
+                      <h3>{prayerLabel(id)}</h3>
+                    </div>
+                    <IqamahPreview
+                      id={id}
+                      fixed={
+                        mode === "after" ? "" : typedClock(stored[id] ?? "")
+                      }
+                      minutes={
+                        mode === "fixed"
+                          ? null
+                          : typedMinutes(stored[`offset_${id}`] ?? "")
+                      }
+                      adhan={today.adhan[id]}
+                      today={today.date}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <p className="term-facts">
+              <strong>This term:</strong>{" "}
+              {stored.valid_from && stored.valid_until
+                ? `${longDateLabel(stored.valid_from)} to ${longDateLabel(stored.valid_until)}`
+                : "dates not set"}
+              <br />
+              <strong>Jumu’ah:</strong>{" "}
+              {saved.length
+                ? saved
+                    .map(
+                      (row) =>
+                        `${formatTimeOfDay(row.khutbah)} khutbah, ${formatTimeOfDay(row.iqamah)} iqamah`,
+                    )
+                    .join("; ")
+                : "none"}
+            </p>
+            <div className="term-actions">
+              <button
+                type="button"
+                className="button-primary"
+                onClick={() => go("term")}
+              >
+                Start a new term
+              </button>
+              <button
+                type="button"
+                className="button-secondary"
+                onClick={() => go("one")}
+              >
+                Change one time
+              </button>
+            </div>
+          </>
+        ) : null}
+
+        {/* Change one time: pick a prayer, change it, save. */}
+        {view === "one" ? (
+          <>
+            <div role="group" aria-label="Which prayer?" className="pick-row">
+              {prayerIds.map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  className="button-secondary"
+                  aria-pressed={picked === id}
+                  onClick={() => setPicked(id)}
+                >
+                  {prayerLabel(id)}
+                </button>
+              ))}
+            </div>
+            {picked ? null : <p className="muted">Pick a prayer to change.</p>}
+          </>
+        ) : null}
+
+        {/* Step 1: the dates stay mounted, so they always post. */}
+        <div hidden={!(view === "term" && step === 0)} className="step-panel">
+          <p className="muted">
+            Iqamah times show on the website between these two dates.
+          </p>
+          <div className="term-dates form-grid" data-tour="prayer-dates-term">
+            <label>
+              {prayerBoxNames.valid_from}
+              <DateField
+                name="valid_from"
+                rule={anyDate}
+                defaultValue={values.valid_from ?? ""}
               />
-            ))}
-          </tbody>
-        </table>
-        <div className="form-grid">
-          <label>
-            {prayerBoxNames.valid_from}
-            <DateField
-              name="valid_from"
-              rule={anyDate}
-              defaultValue={values.valid_from ?? ""}
+              <FieldError name="valid_from" />
+            </label>
+            <label>
+              {prayerBoxNames.valid_until}
+              <DateField
+                name="valid_until"
+                rule={todayOrLater(today.date, { box: "valid_from" })}
+                defaultValue={values.valid_until ?? ""}
+              />
+              <FieldError name="valid_until" />
+            </label>
+          </div>
+        </div>
+
+        {/* Step 2 (and Change one time): the prayer rows. */}
+        <div className="term-rows">
+          {prayerIds.map((id) => (
+            <IqamahRow
+              key={id}
+              id={id}
+              values={values}
+              adhan={today.adhan[id]}
+              today={today.date}
+              hidden={
+                !(
+                  (view === "term" && step === 1) ||
+                  (view === "one" && picked === id)
+                )
+              }
             />
-            <FieldError name="valid_from" />
-          </label>
+          ))}
+        </div>
+
+        {/* Step 3: Jumu'ah. */}
+        <div
+          hidden={!(view === "term" && step === 2)}
+          className="step-panel"
+          data-tour="prayer-jumuah"
+        >
+          <JumuahSessionsField
+            prefix={weeklyJumuahPrefix}
+            rows={weekly}
+            onChange={setWeekly}
+            label="Jumu’ah prayers every Friday"
+            empty={prayerEditorWords.noWeekly}
+            listError="jumuah_sessions"
+          />
+        </div>
+
+        {/* Step 4: check and save. */}
+        {view === "term" && step === 3 ? (
+          <div className="step-panel">
+            <p className="muted">Check the new term, then save.</p>
+            <TermCheck weekly={weekly} />
+          </div>
+        ) : null}
+
+        {view === "term" ? (
+          <div className="term-actions" data-tour="prayer-save">
+            {step > 0 ? (
+              <button
+                type="button"
+                className="button-secondary"
+                onClick={() => setStep(step - 1)}
+              >
+                Back
+              </button>
+            ) : null}
+            {step < 3 ? (
+              <button
+                type="button"
+                className="button-primary"
+                onClick={() => setStep(step + 1)}
+              >
+                Next
+              </button>
+            ) : (
+              submit("Save new term")
+            )}
+            <button
+              type="button"
+              className="button-secondary"
+              onClick={() => go("home")}
+            >
+              Cancel
+            </button>
+          </div>
+        ) : null}
+        {view === "one" ? (
+          <div className="term-actions">
+            {picked ? submit("Save this time") : null}
+            <button
+              type="button"
+              className="button-secondary"
+              onClick={() => go("home")}
+            >
+              Cancel
+            </button>
+          </div>
+        ) : null}
+      </section>
+
+      {/* More: rarely used parts. In the form, so they post with it. */}
+      <div hidden={!home} className="more-parts">
+        <h2 className="more-heading">More</h2>
+        <Fold
+          title={prayerBoxNames.exceptions}
+          problem={problem.some((key) => key.startsWith("exception"))}
+        >
+          <DateChanges
+            values={values}
+            saved={stored}
+            usual={weekly}
+            today={today.date}
+          />
+          {submit("Save date changes")}
+        </Fold>
+        <Fold
+          title="Note under the prayer table"
+          problem={problem.includes("notice")}
+        >
           <label>
-            {prayerBoxNames.valid_until}
-            {/* Today or later (the plan, P2) and not before the start. */}
-            <DateField
-              name="valid_until"
-              rule={todayOrLater(today.date, { box: "valid_from" })}
-              defaultValue={values.valid_until ?? ""}
+            {prayerBoxNames.notice} (optional)
+            <textarea
+              name="notice"
+              maxLength={1000}
+              rows={3}
+              defaultValue={values.notice ?? ""}
             />
-            <FieldError name="valid_until" />
+            <FieldError name="notice" />
             <span className="muted">
-              After this date the iqamah times are hidden until you update them.
+              Shown under the prayer table, for example “Sisters’ entrance is
+              via the side door this week.”
             </span>
           </label>
-        </div>
-      </fieldset>
-      <fieldset data-tour="prayer-jumuah">
-        <legend>2. Jumu’ah (every Friday)</legend>
-        <JumuahSessionsField
-          prefix={weeklyJumuahPrefix}
-          rows={weekly}
-          onChange={setWeekly}
-          label="Jumu’ah prayers every Friday"
-          empty={prayerEditorWords.noWeekly}
-          listError="jumuah_sessions"
-        />
-      </fieldset>
-      <DateChanges
-        values={values}
-        saved={stored}
-        usual={weekly}
-        today={today.date}
-      />
-      <label>
-        {prayerBoxNames.notice} (optional)
-        <textarea
-          name="notice"
-          maxLength={1000}
-          rows={3}
-          defaultValue={values.notice ?? ""}
-        />
-        <FieldError name="notice" />
-        <span className="muted">
-          Shown under the prayer table, for example “Sisters’ entrance is via
-          the side door this week.”
-        </span>
-      </label>
-      <div>
-        <button
-          className="button-primary"
-          disabled={pending}
-          data-tour="prayer-save"
-        >
-          {pending ? "Saving…" : "Save prayer settings"}
-        </button>
+          {submit("Save note")}
+        </Fold>
       </div>
     </CheckedForm>
   );
 }
+
+/** The saved weekly Jumu'ah prayers, complete ones only. */
+const weeklyFromStored = (stored: Values) =>
+  complete(sessionsIn(stored, weeklyJumuahPrefix));
