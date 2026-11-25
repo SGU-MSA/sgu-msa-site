@@ -18,6 +18,7 @@ type Workflow = {
         run?: string;
         if?: string;
         env?: Record<string, string>;
+        "continue-on-error"?: unknown;
       }[];
     }
   >;
@@ -51,17 +52,25 @@ test("renews its own schedule with the run's own token", () => {
   const file = basename(WORKFLOW);
   const renew = steps().find((s) => s.run?.includes("gh api --method PUT"));
   assert.ok(renew, "a step calls gh api --method PUT");
-  assert.ok(
-    renew.run?.includes(
-      `repos/\${{ github.repository }}/actions/workflows/${file}/enable`,
-    ),
+  assert.equal(
+    renew.run?.trim(),
+    `gh api --method PUT "repos/\${{ github.repository }}/actions/workflows/${file}/enable"`,
   );
+  assert.ok(!("continue-on-error" in renew));
   assert.deepEqual(renew.env, { GH_TOKEN: "${{ github.token }}" });
 });
 
 test("reads staging even when the renewal fails", () => {
   const read = steps().find((s) => s.run?.includes("curl"));
   assert.equal(read?.if, "always()");
+  assert.ok(read?.run?.includes('[ "$status" = 200 ]'));
+});
+
+test("has exactly the schedule and manual triggers", () => {
+  assert.deepEqual(Object.keys(workflow.on).sort(), [
+    "schedule",
+    "workflow_dispatch",
+  ]);
 });
 
 test("uses only the staging key secret", () => {
