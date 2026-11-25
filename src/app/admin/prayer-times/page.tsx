@@ -15,7 +15,6 @@ import {
 import { pinStarts } from "@/lib/community/managed";
 import { directionsLinks } from "@/lib/maps/location";
 import { localDate } from "@/lib/community/schema";
-import { prayerCalculation } from "@/lib/prayer/calculate";
 import { prayerFormText } from "@/lib/prayer/congregation";
 import { clock } from "@/lib/runtime/providers";
 import { boardPage } from "@/features/admin/page-state/board-page";
@@ -47,6 +46,27 @@ async function PrayerAdmin({
     readAdminMusallahPin(),
   ]);
   const query = await searchParams;
+  const location = pin ? (
+    <PinEditor
+      key={pin.version}
+      pin={pin.pin}
+      version={pin.version}
+      links={directionsLinks(pin.pin)}
+      appearsOn={<AppearsOn area="musallah" />}
+    />
+  ) : (
+    <section
+      id="musallah-location"
+      className="content-card"
+      aria-labelledby="musallah-location-heading"
+    >
+      <h2 id="musallah-location-heading">Musallah location</h2>
+      <p role="alert">
+        The musallah location could not be loaded. Check your connection and
+        reload.
+      </p>
+    </section>
+  );
   return (
     <div className="admin-shell narrow">
       <AdminHeader title="Prayer & iqamah" tour="prayer" />
@@ -61,18 +81,14 @@ async function PrayerAdmin({
           Earlier prayer settings restored. Check the times on the Prayer page.
         </p>
       ) : null}
-      {!data ? (
-        <p role="alert">
-          Settings could not be loaded. Check database setup and reload.
-        </p>
-      ) : (
+      {data ? (
         <>
           <PrayerEditor
             key={data.version}
             values={prayerFormText(data.settings)}
             version={data.version}
-            method={prayerCalculation.label}
             today={await today()}
+            location={location}
           />
           <PrayerHistory
             entries={history.entries}
@@ -80,27 +96,15 @@ async function PrayerAdmin({
             version={data.version}
           />
         </>
-      )}
-      {pin ? (
-        <PinEditor
-          key={pin.version}
-          pin={pin.pin}
-          version={pin.version}
-          links={directionsLinks(pin.pin)}
-          appearsOn={<AppearsOn area="musallah" />}
-        />
       ) : (
-        <section
-          id="musallah-location"
-          className="content-card"
-          aria-labelledby="musallah-location-heading"
-        >
-          <h2 id="musallah-location-heading">Musallah location</h2>
+        <>
           <p role="alert">
-            The musallah location could not be loaded. Check your connection and
-            reload.
+            The prayer settings could not be loaded. Reload the page in a
+            moment. If it keeps happening, tell the person who looks after the
+            site.
           </p>
-        </section>
+          {location}
+        </>
       )}
     </div>
   );

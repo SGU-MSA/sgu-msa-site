@@ -37,7 +37,8 @@ import { jumuahNoticeBoxes } from "./jumuah-notices";
 import { NoticeQuestion } from "./NoticeQuestion";
 import { prayerFormProblems } from "./prayer-form";
 import { DateField } from "@/shared/ui/DateField";
-import { TimeField } from "@/shared/ui/TimeField";
+import { SelectTimeField as TimeField } from "@/shared/ui/SelectTimeField";
+import { PrayerEndWarning } from "./PrayerEndWarning";
 import { anyDate, anyTime, todayOrLater } from "@/lib/time/field-rules";
 import { formatTimeOfDay } from "@/lib/time/time-of-day";
 import { weekdayDateLabel } from "@/lib/time/date-label";
@@ -213,6 +214,7 @@ function IqamahRow({
           <span className="iqamah-minutes">
             <input
               type="number"
+              inputMode="numeric"
               name={`offset_${id}`}
               min={0}
               max={120}
@@ -386,9 +388,11 @@ function DateChange({
           tour="prayer-jumuah-notice"
         />
       ) : null}
-      <p className="muted">
-        The Jumu’ah choices appear only when the date is a Friday.
-      </p>
+      {isFridayDate(date) ? null : (
+        <p className="muted">
+          The Jumu’ah choices appear only when the date is a Friday.
+        </p>
+      )}
       <details open={prayerIds.some((id) => read(id))}>
         <summary>Different iqamah for a daily prayer on this date</summary>
         <div className="form-grid">
@@ -444,7 +448,7 @@ function DateChanges({
   const [nextKey, setNextKey] = useState(rows.length);
   return (
     <fieldset data-tour="prayer-dates">
-      <legend>3. {prayerBoxNames.exceptions}</legend>
+      <legend className="sr-only">{prayerBoxNames.exceptions}</legend>
       <p className="muted">
         Only that date changes. The next day goes back to normal by itself.
       </p>
@@ -496,48 +500,120 @@ function DateChanges({
   );
 }
 
+const tabs = [
+  { id: "daily", label: "Daily times", save: "Save daily times" },
+  { id: "jumuah", label: "Jumu’ah", save: "Save Jumu’ah times" },
+  { id: "special", label: "Special dates", save: "Save special dates" },
+  { id: "location", label: "Location", save: "" },
+] as const;
+type TabId = (typeof tabs)[number]["id"];
+
+/** The tab that holds a box with a problem. */
+const tabOf = (key: string): TabId =>
+  key.startsWith("jumuah")
+    ? "jumuah"
+    : key.startsWith("exception")
+      ? "special"
+      : "daily";
+
 /**
- * The Prayer & iqamah screen (PR4 D-1): one page, three numbered sections
- * and one Save, so one version check covers everything. Prayer starts are
- * calculated (ADR 0017); the board sets only the iqamah, the weekly Jumu'ah
- * prayers and one-date changes. The Hijri date stays as calculated (review
- * fixes P2). A refused save shows what was typed again (`KeptFormState`).
+ * The Prayer & iqamah screen as four tabs (design option): Daily times,
+ * Jumu'ah, Special dates and Location. The first three are panels of one
+ * form (one version check; every Save in it posts the whole form); Location
+ * is its own form, passed in. The end-date warning shows above every tab.
  */
 export function PrayerEditor({
   values: stored,
   version,
-  method,
   today,
+  location,
 }: {
   /** The saved settings as form text (`prayerFormText`). */
   values: Values;
   version: string;
-  /** The fixed calculation's name (`prayerCalculation.label`). */
-  method: string;
   /** Today (Grenada, server clock) and its calculated adhan per prayer (ISO), when known. */
   today: {
     date: string;
     adhan: Partial<Record<string, string>>;
   };
+  /** The Musallah location editor (its own form). */
+  location: React.ReactNode;
 }) {
   const [state, action, pending] = useActionState(
     savePrayerAction,
     initialKeptForm,
   );
+  const [tab, setTab] = useState<TabId>("daily");
   // A refused save shows what was typed; `attempt` re-mounts the fields with it.
   const values = state.values ?? stored;
+  const select = (id: TabId, focus = false) => {
+    setTab(id);
+    if (focus)
+      requestAnimationFrame(() =>
+        document.getElementById(`prayer-tab-${id}`)?.focus(),
+      );
+  };
+  const onKeyDown = (event: React.KeyboardEvent) => {
+    const index = tabs.findIndex((item) => item.id === tab);
+    const next =
+      event.key === "ArrowRight"
+        ? (index + 1) % tabs.length
+        : event.key === "ArrowLeft"
+          ? (index + tabs.length - 1) % tabs.length
+          : event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? tabs.length - 1
+              : -1;
+    if (next < 0) return;
+    event.preventDefault();
+    select(tabs[next].id, true);
+  };
   return (
-    <PrayerForm
-      key={state.attempt}
-      values={values}
-      stored={stored}
-      version={version}
-      method={method}
-      today={today}
-      action={action}
-      state={state}
-      pending={pending}
-    />
+    <>
+      <div
+        role="tablist"
+        aria-label="Prayer settings"
+        className="prayer-tabs"
+        onKeyDown={onKeyDown}
+      >
+        {tabs.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            role="tab"
+            id={`prayer-tab-${item.id}`}
+            aria-selected={tab === item.id}
+            aria-controls={`prayer-panel-${item.id}`}
+            tabIndex={tab === item.id ? 0 : -1}
+            onClick={() => select(item.id)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+      <PrayerForm
+        key={state.attempt}
+        values={values}
+        stored={stored}
+        version={version}
+        today={today}
+        action={action}
+        state={state}
+        pending={pending}
+        tab={tab}
+        onTab={select}
+      />
+      <div
+        role="tabpanel"
+        id="prayer-panel-location"
+        aria-labelledby="prayer-tab-location"
+        hidden={tab !== "location"}
+      >
+        <PrayerEndWarning saved={stored.valid_until ?? ""} today={today.date} />
+        {location}
+      </div>
+    </>
   );
 }
 
@@ -546,124 +622,158 @@ function PrayerForm({
   values,
   stored,
   version,
-  method,
   today,
   action,
   state,
   pending,
+  tab,
+  onTab,
 }: {
   values: Values;
   stored: Values;
   version: string;
-  method: string;
   today: { date: string; adhan: Partial<Record<string, string>> };
   action: (form: FormData) => void;
   state: Awaited<ReturnType<typeof savePrayerAction>>;
   pending: boolean;
+  tab: TabId;
+  onTab: (id: TabId) => void;
 }) {
   // The weekly Jumu'ah prayers, kept here: a Friday change starts from them.
   const [weekly, setWeekly] = useState<SessionRow[]>(() =>
     sessionRows(sessionsIn(values, weeklyJumuahPrefix)),
+  );
+  const panel = (id: TabId, children: React.ReactNode) => (
+    <div
+      role="tabpanel"
+      id={`prayer-panel-${id}`}
+      aria-labelledby={`prayer-tab-${id}`}
+      hidden={tab !== id}
+      className="prayer-panel"
+    >
+      {children}
+      <div>
+        <button
+          className="button-primary"
+          disabled={pending}
+          data-tour={id === "daily" ? "prayer-save" : undefined}
+        >
+          {pending ? "Saving…" : tabs.find((item) => item.id === id)?.save}
+        </button>
+      </div>
+    </div>
   );
   return (
     <CheckedForm
       action={action}
       state={state}
       check={prayerFormProblems}
+      // A refused save opens the first tab that holds a problem.
+      onProblems={(keys) => {
+        if (keys.length && !keys.some((key) => tabOf(key) === tab))
+          onTab(tabOf(keys[0]));
+      }}
       className="editor-form"
     >
       <input type="hidden" name="version" value={version} />
-      <p className="prayer-note" data-tour="prayer-note">
-        Prayer <strong>start</strong> times (adhan) are worked out automatically
-        for the Musallah: {method}. You only set the <strong>iqamah</strong>.
-      </p>
-      <fieldset>
-        <legend>1. Daily iqamah</legend>
-        <table className="iqamah-table" data-tour="prayer-daily">
-          <thead>
-            <tr>
-              <th scope="col">Prayer</th>
-              <th scope="col">How is iqamah set?</th>
-              <th scope="col">Time or minutes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {prayerIds.map((id) => (
-              <IqamahRow
-                key={id}
-                id={id}
-                values={values}
-                adhan={today.adhan[id]}
-                today={today.date}
-              />
-            ))}
-          </tbody>
-        </table>
-        <div className="form-grid">
+      {tab === "location" ? null : (
+        <PrayerEndWarning saved={stored.valid_until ?? ""} today={today.date} />
+      )}
+      {panel(
+        "daily",
+        <>
+          <p className="prayer-note" data-tour="prayer-note">
+            Prayer <strong>start</strong> times (adhan) are worked out
+            automatically for the Musallah. You only set the{" "}
+            <strong>iqamah</strong>.
+          </p>
+          <fieldset>
+            <legend>Daily iqamah</legend>
+            <table className="iqamah-table" data-tour="prayer-daily">
+              <thead>
+                <tr>
+                  <th scope="col">Prayer</th>
+                  <th scope="col">How is iqamah set?</th>
+                  <th scope="col">Time or minutes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {prayerIds.map((id) => (
+                  <IqamahRow
+                    key={id}
+                    id={id}
+                    values={values}
+                    adhan={today.adhan[id]}
+                    today={today.date}
+                  />
+                ))}
+              </tbody>
+            </table>
+            <div className="form-grid">
+              <label>
+                {prayerBoxNames.valid_from}
+                <DateField
+                  name="valid_from"
+                  rule={anyDate}
+                  defaultValue={values.valid_from ?? ""}
+                />
+                <FieldError name="valid_from" />
+              </label>
+              <label>
+                {prayerBoxNames.valid_until}
+                {/* Today or later (the plan, P2) and not before the start. */}
+                <DateField
+                  name="valid_until"
+                  rule={todayOrLater(today.date, { box: "valid_from" })}
+                  defaultValue={values.valid_until ?? ""}
+                />
+                <FieldError name="valid_until" />
+                <span className="muted">
+                  After this date the iqamah times are hidden until you update
+                  them.
+                </span>
+              </label>
+            </div>
+          </fieldset>
           <label>
-            {prayerBoxNames.valid_from}
-            <DateField
-              name="valid_from"
-              rule={anyDate}
-              defaultValue={values.valid_from ?? ""}
+            {prayerBoxNames.notice} (optional)
+            <textarea
+              name="notice"
+              maxLength={1000}
+              rows={3}
+              defaultValue={values.notice ?? ""}
             />
-            <FieldError name="valid_from" />
-          </label>
-          <label>
-            {prayerBoxNames.valid_until}
-            {/* Today or later (the plan, P2) and not before the start. */}
-            <DateField
-              name="valid_until"
-              rule={todayOrLater(today.date, { box: "valid_from" })}
-              defaultValue={values.valid_until ?? ""}
-            />
-            <FieldError name="valid_until" />
+            <FieldError name="notice" />
             <span className="muted">
-              After this date the iqamah times are hidden until you update them.
+              Shown under the prayer table, for example “Sisters’ entrance is
+              via the side door this week.”
             </span>
           </label>
-        </div>
-      </fieldset>
-      <fieldset data-tour="prayer-jumuah">
-        <legend>2. Jumu’ah (every Friday)</legend>
-        <JumuahSessionsField
-          prefix={weeklyJumuahPrefix}
-          rows={weekly}
-          onChange={setWeekly}
-          label="Jumu’ah prayers every Friday"
-          empty={prayerEditorWords.noWeekly}
-          listError="jumuah_sessions"
-        />
-      </fieldset>
-      <DateChanges
-        values={values}
-        saved={stored}
-        usual={weekly}
-        today={today.date}
-      />
-      <label>
-        {prayerBoxNames.notice} (optional)
-        <textarea
-          name="notice"
-          maxLength={1000}
-          rows={3}
-          defaultValue={values.notice ?? ""}
-        />
-        <FieldError name="notice" />
-        <span className="muted">
-          Shown under the prayer table, for example “Sisters’ entrance is via
-          the side door this week.”
-        </span>
-      </label>
-      <div>
-        <button
-          className="button-primary"
-          disabled={pending}
-          data-tour="prayer-save"
-        >
-          {pending ? "Saving…" : "Save prayer settings"}
-        </button>
-      </div>
+        </>,
+      )}
+      {panel(
+        "jumuah",
+        <fieldset data-tour="prayer-jumuah">
+          <legend>Jumu’ah (every Friday)</legend>
+          <JumuahSessionsField
+            prefix={weeklyJumuahPrefix}
+            rows={weekly}
+            onChange={setWeekly}
+            label="Jumu’ah prayers every Friday"
+            empty={prayerEditorWords.noWeekly}
+            listError="jumuah_sessions"
+          />
+        </fieldset>,
+      )}
+      {panel(
+        "special",
+        <DateChanges
+          values={values}
+          saved={stored}
+          usual={weekly}
+          today={today.date}
+        />,
+      )}
     </CheckedForm>
   );
 }

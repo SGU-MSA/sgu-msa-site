@@ -2089,3 +2089,58 @@ p.verse-meaning {
   outline: 2px solid var(--focus-ring);
   outline-offset: -4px;
 }
+
+/* Prayer & iqamah as tabs (design option). */
+.prayer-tabs {
+  display: flex;
+  overflow-x: auto;
+  margin-block: 1.5rem 1rem;
+  border-block-end: 1px solid var(--rule);
+}
+.prayer-tabs [role="tab"] {
+  flex: 1 0 auto;
+  min-height: 48px;
+  padding-inline: 0.4rem;
+  border: 0;
+  border-block-end: 3px solid transparent;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.prayer-tabs [role="tab"][aria-selected="true"] {
+  border-block-end-color: var(--ink);
+  color: var(--ink);
+}
+.prayer-tabs [role="tab"]:hover {
+  color: var(--ink);
+}
+.prayer-tabs [role="tab"]:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -4px;
+}
+.prayer-panel {
+  display: grid;
+  gap: 1.4rem;
+}
+.prayer-panel[hidden] {
+  display: none;
+}
+.editor-form select[class*="SelectTimeField"] {
+  width: auto;
+  min-width: 9.5rem;
+}
+.end-warning {
+  margin-block: 0 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--status-danger);
+  border-inline-start-width: 4px;
+  background: var(--paper);
+  color: var(--ink);
+}
+.end-warning strong {
+  color: var(--status-danger);
+}
