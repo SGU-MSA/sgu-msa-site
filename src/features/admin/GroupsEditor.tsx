@@ -1,5 +1,5 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, type ReactNode } from "react";
 import {
   archiveSectionAction,
   deleteSectionAction,
@@ -14,7 +14,12 @@ import { noProblems } from "./form-check/problems";
 import { initialKeptForm, typedValues } from "./form-state";
 import { ArchiveActions, ArchivedRow } from "./ArchiveActions";
 import { groupNotEmpty, teamListWords } from "./fields";
-import { OrderedList } from "./OrderedList";
+import {
+  CancelButton,
+  OpenInPlaceList,
+  rowKey,
+  useOneOpen,
+} from "./OpenInPlace";
 import { sectionFromForm } from "./person-form";
 
 type EditableGroup = {
@@ -26,12 +31,11 @@ type EditableGroup = {
   kind: PermanentGroup | null;
   /** The group's `updated_at`. */
   version: string;
-};
-
-type ArchivedGroup = EditableGroup & {
-  /** How many People entries, archived or not, are still in it. */
+  /** How many People entries, archived or not, are in it. */
   people: number;
 };
+
+type ArchivedGroup = EditableGroup;
 
 /**
  * Name of one group and its start answer for new people; also adds a new
@@ -41,9 +45,12 @@ type ArchivedGroup = EditableGroup & {
 function GroupForm({
   group,
   submitLabel,
+  actions,
 }: {
   group: EditableGroup | { id: string; version: null };
   submitLabel: string;
+  /** Buttons beside Save (Cancel). */
+  actions?: ReactNode;
 }) {
   const [state, action, pending] = useActionState(
     saveSectionAction,
@@ -107,9 +114,15 @@ function GroupForm({
           New people in this group start with “Show on public page” ticked
         </label>
       )}
-      <button className="button-primary" disabled={pending}>
-        {pending ? "Saving…" : submitLabel}
-      </button>
+      <div className="admin-actions">
+        {/* Nothing to save on the Executive board (always kept, always listed). */}
+        {saved?.kind === "executive" ? null : (
+          <button className="button-primary" disabled={pending}>
+            {pending ? "Saving…" : submitLabel}
+          </button>
+        )}
+        {actions}
+      </div>
     </CheckedForm>
   );
 }
@@ -152,35 +165,43 @@ export function GroupsEditor({
   /** The signed-in board member holds "manage people" (a UX mirror). */
   canDelete: boolean;
 }) {
+  const addKey = rowKey(newId, null);
+  const ctl = useOneOpen([
+    addKey,
+    ...groups.map((group) => rowKey(group.id, group.version)),
+  ]);
   return (
     <>
       <p className="muted">{systemText.order.hint}</p>
-      <OrderedList
+      <OpenInPlaceList
+        ctl={ctl}
+        idPrefix="groups"
         list="people_sections"
         label="Team groups"
-        look="cards"
+        addLabel="Add a group"
+        addKey={addKey}
+        addForm={
+          <GroupForm
+            group={{ id: newId, version: null }}
+            submitLabel="Add group"
+            actions={<CancelButton ctl={ctl} />}
+          />
+        }
         rows={groups.map((group) => ({
           id: group.id,
           version: group.version,
           name: group.name,
-          content: (
-            <section aria-labelledby={`group-${group.id}`}>
-              <h2 id={`group-${group.id}`} className="order-card-title">
-                {group.name}
-              </h2>
-              <GroupForm key={group.version} group={group} submitLabel="Save" />
-              {group.kind ? null : <ArchiveGroup group={group} />}
-            </section>
+          summary: `${group.people === 1 ? "1 person" : `${group.people} people`}${group.kind ? " · Always kept" : ""}`,
+          form: (
+            <GroupForm
+              group={group}
+              submitLabel="Save"
+              actions={<CancelButton ctl={ctl} />}
+            />
           ),
+          below: group.kind ? null : <ArchiveGroup group={group} />,
         }))}
       />
-      <section className="content-card" aria-labelledby="add-group">
-        <h2 id="add-group">Add a group</h2>
-        <GroupForm
-          group={{ id: newId, version: null }}
-          submitLabel="Add group"
-        />
-      </section>
       {archived.length ? (
         <section className="admin-group" aria-labelledby="archived-groups">
           <h2 id="archived-groups">Archived groups</h2>
