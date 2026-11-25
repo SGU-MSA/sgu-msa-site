@@ -2089,3 +2089,92 @@ p.verse-meaning {
   outline: 2px solid var(--focus-ring);
   outline-offset: -4px;
 }
+
+/* Prayer & iqamah, "This term" first (design option): compact prayer rows,
+   the end-date warning and the closed parts under the term card. */
+.end-warning {
+  margin-block: 0 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--status-danger);
+  border-inline-start-width: 4px;
+  background: var(--paper);
+  color: var(--ink);
+}
+.end-warning strong {
+  color: var(--status-danger);
+}
+.term-card {
+  display: grid;
+  gap: 0.75rem;
+}
+.term-card .form-grid {
+  margin-block: 0;
+  gap: 1rem;
+}
+.term-rows {
+  display: grid;
+}
+.term-row {
+  display: grid;
+  gap: 0.5rem;
+  padding-block: 0.75rem;
+  border-block-end: 1px solid var(--rule);
+}
+.term-row:first-child {
+  border-block-start: 1px solid var(--rule);
+}
+.term-row-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+}
+.content-card .term-row-head h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.term-adhan {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.term-row-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+.term-row .iqamah-preview {
+  margin: 0;
+}
+.term-row .iqamah-minutes input {
+  width: 5.5rem;
+}
+.fold {
+  border: 1px solid var(--rule);
+  background: var(--paper-light);
+  padding-inline: clamp(1rem, 3vw, 1.5rem);
+}
+.fold > summary {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+}
+.fold[open] > summary {
+  border-block-end: 1px solid var(--rule);
+}
+.fold-body {
+  display: grid;
+  gap: 1.25rem;
+  padding-block: 1.25rem;
+}
+.fold-body fieldset {
+  border: 0;
+  padding: 0;
+}
+.editor-form .term-row-control input[type="time"] {
+  width: auto;
+  min-width: 10rem;
+}

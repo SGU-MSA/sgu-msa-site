@@ -15,7 +15,6 @@ import {
 import { pinStarts } from "@/lib/community/managed";
 import { directionsLinks } from "@/lib/maps/location";
 import { localDate } from "@/lib/community/schema";
-import { prayerCalculation } from "@/lib/prayer/calculate";
 import { prayerFormText } from "@/lib/prayer/congregation";
 import { clock } from "@/lib/runtime/providers";
 import { boardPage } from "@/features/admin/page-state/board-page";
@@ -63,7 +62,8 @@ async function PrayerAdmin({
       ) : null}
       {!data ? (
         <p role="alert">
-          Settings could not be loaded. Check database setup and reload.
+          The prayer settings could not be loaded. Reload the page in a moment.
+          If it keeps happening, tell the person who looks after the site.
         </p>
       ) : (
         <>
@@ -71,13 +71,7 @@ async function PrayerAdmin({
             key={data.version}
             values={prayerFormText(data.settings)}
             version={data.version}
-            method={prayerCalculation.label}
             today={await today()}
-          />
-          <PrayerHistory
-            entries={history.entries}
-            unavailable={history.unavailable}
-            version={data.version}
           />
         </>
       )}
@@ -102,6 +96,13 @@ async function PrayerAdmin({
           </p>
         </section>
       )}
+      {data ? (
+        <PrayerHistory
+          entries={history.entries}
+          unavailable={history.unavailable}
+          version={data.version}
+        />
+      ) : null}
     </div>
   );
 }

@@ -8,7 +8,7 @@ import { jumuahSessionBox } from "@/lib/prayer/congregation";
 import { anyTime, laterThan } from "@/lib/time/field-rules";
 import { systemText } from "@/lib/system-text";
 import { SortableList } from "@/shared/ui/SortableList";
-import { TimeField } from "@/shared/ui/TimeField";
+import { NativeTimeField as TimeField } from "@/shared/ui/NativeTimeField";
 import { FieldError } from "./form-check/FieldError";
 import { prayerEditorWords as words } from "./fields";
 
