@@ -34,17 +34,31 @@ test("requests no token permissions", () => {
 });
 
 test("uses only the staging key secret", () => {
-  const used = [...raw.matchAll(/secrets\.([A-Za-z0-9_]+)/g)].map((m) => m[1]);
-  assert.ok(used.length > 0);
-  assert.deepEqual([...new Set(used)], ["STAGING_SUPABASE_PUBLISHABLE_KEY"]);
+  const all = [...raw.matchAll(/\bsecrets\b/g)];
+  assert.ok(all.length > 0);
+  for (const m of all) {
+    assert.ok(
+      raw
+        .slice(m.index + m[0].length)
+        .startsWith(".STAGING_SUPABASE_PUBLISHABLE_KEY"),
+      "every use of secrets names STAGING_SUPABASE_PUBLISHABLE_KEY",
+    );
+  }
 });
 
-test("reads the staging project named in .mcp.json", () => {
-  const hosts = [...script.matchAll(/https:\/\/([^/\s"']+)/g)].map((m) => m[1]);
-  assert.deepEqual(hosts, [`${stagingRef()}.supabase.co`]);
+test("contacts only the staging project named in .mcp.json", () => {
+  const hosts = [...raw.matchAll(/https?:\/\/([^/\s"']+)/g)].map((m) => m[1]);
+  assert.ok(hosts.length > 0);
+  for (const host of hosts) assert.equal(host, `${stagingRef()}.supabase.co`);
+});
+
+test("runs no third-party actions", () => {
+  for (const job of Object.values(workflow.jobs)) {
+    for (const step of job.steps) assert.ok(!("uses" in step));
+  }
 });
 
 test("fails on a bad status and sends no Authorization header", () => {
   assert.ok(script.includes("--fail"));
-  assert.ok(!script.includes("Authorization"));
+  assert.ok(!/authorization|bearer/i.test(raw));
 });

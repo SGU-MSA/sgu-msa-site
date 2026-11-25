@@ -26,4 +26,5 @@ jobs:
             --output /dev/null --write-out '%{http_code}' \
             --header "apikey: $KEY" \
             "https://qglftmxfjvxmrzppkxks.supabase.co/rest/v1/prayer_settings?select=id&limit=1")
+          [ "$status" = 200 ] || { echo "::error::Staging answered HTTP $status"; exit 1; }
           echo "Staging answered with HTTP $status"

@@ -46,6 +46,7 @@ None. This is developer infrastructure that no board member sees.
 - D-2 (planner, engineering): a GitHub Actions schedule. Rejected: a Vercel cron (production deployments only); pg_cron inside staging (it cannot run while the database is paused, and it may not count as outside activity); an outside uptime service (one more account to own and hand over).
 - D-3 (planner, engineering): a REST read using the publishable key. It is the same kind of request the previews make. No secret or service-role key is involved.
 - D-4 (planner, engineering): no automatic restore. Restoring needs a Supabase management token, which means a new secret and more power. A paused staging is restored by hand from the Supabase dashboard (developer guide line).
+- D-5 (planner, review 2026-11-25): require exactly HTTP 200; harden the test against bracket/toJSON secrets, lowercase headers and other hosts; document GitHub's 60-day schedule shut-off.
 
 ## Board Self-Sufficiency Check
 
@@ -72,6 +73,7 @@ Not board-facing. Staging belongs to the developers, and the board's live site i
 ## Test Strategy
 
 `tests/staging-keep-awake.test.ts` parses the workflow with `js-yaml` and asserts that:
+
 - it has a `schedule` with exactly one cron, and `workflow_dispatch`;
 - `permissions` is an empty object;
 - the only `secrets.*` used anywhere is `STAGING_SUPABASE_PUBLISHABLE_KEY`;
