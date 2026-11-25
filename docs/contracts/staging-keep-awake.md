@@ -16,7 +16,8 @@ The free staging Supabase project (`qglftmxfjvxmrzppkxks`, used by every pull re
 1. Once a day, a GitHub Actions job makes one small read from the staging database through its public REST API: `GET https://qglftmxfjvxmrzppkxks.supabase.co/rest/v1/prayer_settings?select=id&limit=1` with the header `apikey: <staging publishable key>`. It needs HTTP 200. An empty array still counts as success.
 2. The job can also be started by hand (`workflow_dispatch`).
 3. A missing key secret, a network error or a status other than 200 fails the job, after a few retries. GitHub then emails the developer, because a scheduled run's failure goes to whoever last edited the workflow's schedule. The log never prints the key or the response body.
-4. The job never contacts anything except the staging project. Production stays awake through its own nightly check and is never named in this workflow.
+4. The job never contacts anything except the staging project and the GitHub API for this repository. Production stays awake through its own nightly check and is never named in this workflow.
+5. Each run also renews the schedule itself: it calls GitHub's "enable workflow" API for this workflow, so GitHub's 60-day no-commit shut-off of scheduled workflows in public repositories never triggers. The renewal runs even when the staging read fails, and a failed renewal fails the run, so the developer is warned while there is still time.
 
 ## Existing System Evidence
 
@@ -47,6 +48,7 @@ None. This is developer infrastructure that no board member sees.
 - D-3 (planner, engineering): a REST read using the publishable key. It is the same kind of request the previews make. No secret or service-role key is involved.
 - D-4 (planner, engineering): no automatic restore. Restoring needs a Supabase management token, which means a new secret and more power. A paused staging is restored by hand from the Supabase dashboard (developer guide line).
 - D-5 (planner, review 2026-11-25): require exactly HTTP 200; harden the test against bracket/toJSON secrets, lowercase headers and other hosts; document GitHub's 60-day schedule shut-off.
+- D-6 (maintainer, 2026-11-25, option A of three): the repository will often go more than 60 days without commits, so the job renews itself through `PUT /repos/{owner}/{repo}/actions/workflows/{file}/enable` with the run's own `github.token` (`actions: write`). Rejected: B, production's Vercel cron also pinging staging (mixes environments); C, a Google Apps Script on the MSA Gmail (code outside the repo, alerts go to the board); dummy commits (a commit to `main` publishes the site and skips review). Known limits: GitHub does not document that enabling an enabled workflow resets the inactivity counter (community tools such as gh-workflow-immortality rely on it); if GitHub ever disables the job anyway, whoever turns it back on receives its failure emails. A free project paused for more than about 90 days can no longer be restored, so a paused staging must be restored promptly.
 
 ## Board Self-Sufficiency Check
 
@@ -63,9 +65,10 @@ Not board-facing. Staging belongs to the developers, and the board's live site i
   - This contract.
 - Workflow shape:
   - `on: schedule` once a day at an off-the-hour minute (for example `"23 7 * * *"`), plus `workflow_dispatch`.
-  - `permissions: {}` (no repository token scopes).
-  - One job on `ubuntu-latest` with `timeout-minutes: 5` and no checkout.
-  - One `run` step. It fails with a clear `::error::` line if the secret is empty, then runs `curl` with `--fail`, `--silent`, `--show-error`, `--retry 3`, `--retry-all-errors`, `--retry-delay 20`, `--max-time 30` and `--output /dev/null`, and writes the status code. The key goes in through `env:` from `secrets.STAGING_SUPABASE_PUBLISHABLE_KEY`, never inline in the command.
+  - `permissions: { actions: write }` and nothing else (needed only for the renewal call).
+  - One job on `ubuntu-latest` with `timeout-minutes: 5`, no checkout and no `uses:` steps.
+  - Step 1, "Renew the daily schedule": `gh api --method PUT "repos/${{ github.repository }}/actions/workflows/staging-keep-awake.yml/enable"` with `env: GH_TOKEN: ${{ github.token }}` (the preinstalled `gh`; no new secret).
+  - Step 2, the read, with `if: always()` so a failed renewal never skips it. It fails with a clear `::error::` line if the secret is empty, then runs `curl` with `--fail`, `--silent`, `--show-error`, `--retry 3`, `--retry-all-errors`, `--retry-delay 20`, `--max-time 30` and `--output /dev/null`, and writes the status code. The key goes in through `env:` from `secrets.STAGING_SUPABASE_PUBLISHABLE_KEY`, never inline in the command.
 - No `Authorization` header (a publishable key is not a JWT), no other secret, no production URL, no `SUPABASE_SECRET_KEY`.
 - No new dependency (the test uses the existing `js-yaml`). Do not touch `vercel.json`, `src/` or migrations.
 - Stop with PLAN MISMATCH if `prayer_settings` turns out not to be readable by `anon`, or if `.mcp.json` no longer names a single staging ref.
@@ -75,7 +78,9 @@ Not board-facing. Staging belongs to the developers, and the board's live site i
 `tests/staging-keep-awake.test.ts` parses the workflow with `js-yaml` and asserts that:
 
 - it has a `schedule` with exactly one cron, and `workflow_dispatch`;
-- `permissions` is an empty object;
+- `permissions` deep-equals `{ actions: "write" }`;
+- a step runs `gh api --method PUT` on `repos/${{ github.repository }}/actions/workflows/<file>/enable`, where `<file>` equals the workflow's own file name, with `GH_TOKEN` from `github.token` only;
+- the read step has `if: always()`;
 - the only `secrets.*` used anywhere is `STAGING_SUPABASE_PUBLISHABLE_KEY`;
 - the request host is `<ref>.supabase.co`, where `<ref>` is the `project_ref` parsed from `.mcp.json`;
 - the run script contains `--fail` and does not contain `Authorization`.
@@ -86,5 +91,6 @@ Run `npm run check`. After merge, the planner starts the job once by hand and co
 
 - The workflow runs daily and on demand, and passes against a running staging.
 - When staging is paused or the secret is missing, the run fails and GitHub sends its failure email. The log shows no key.
-- The test fails if the workflow's ref drifts from `.mcp.json`, or if another secret or an `Authorization` header is added.
+- The test fails if the workflow's ref drifts from `.mcp.json`, if another secret or an `Authorization` header is added, if permissions grow beyond `actions: write`, or if the renewal step is removed or names another workflow file.
+- After merge, a manual run shows both steps green and the Actions page shows the workflow enabled.
 - `npm run check` passes. The docs links resolve (`tests/documentation.test.ts`).

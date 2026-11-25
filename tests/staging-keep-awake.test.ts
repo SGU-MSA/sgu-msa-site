@@ -2,13 +2,25 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { basename } from "node:path";
 import { load } from "js-yaml";
 
-const raw = readFileSync(".github/workflows/staging-keep-awake.yml", "utf8");
+const WORKFLOW = ".github/workflows/staging-keep-awake.yml";
+const raw = readFileSync(WORKFLOW, "utf8");
 type Workflow = {
   on: { schedule?: { cron: string }[]; workflow_dispatch?: unknown };
   permissions: unknown;
-  jobs: Record<string, { steps: { run?: string }[] }>;
+  jobs: Record<
+    string,
+    {
+      steps: {
+        name?: string;
+        run?: string;
+        if?: string;
+        env?: Record<string, string>;
+      }[];
+    }
+  >;
 };
 const workflow = load(raw) as Workflow;
 const script = Object.values(workflow.jobs)
@@ -29,8 +41,27 @@ test("runs once a day and by hand", () => {
   assert.ok("workflow_dispatch" in workflow.on);
 });
 
-test("requests no token permissions", () => {
-  assert.deepEqual(workflow.permissions, {});
+test("requests only the actions write permission", () => {
+  assert.deepEqual(workflow.permissions, { actions: "write" });
+});
+
+const steps = () => Object.values(workflow.jobs).flatMap((job) => job.steps);
+
+test("renews its own schedule with the run's own token", () => {
+  const file = basename(WORKFLOW);
+  const renew = steps().find((s) => s.run?.includes("gh api --method PUT"));
+  assert.ok(renew, "a step calls gh api --method PUT");
+  assert.ok(
+    renew.run?.includes(
+      `repos/\${{ github.repository }}/actions/workflows/${file}/enable`,
+    ),
+  );
+  assert.deepEqual(renew.env, { GH_TOKEN: "${{ github.token }}" });
+});
+
+test("reads staging even when the renewal fails", () => {
+  const read = steps().find((s) => s.run?.includes("curl"));
+  assert.equal(read?.if, "always()");
 });
 
 test("uses only the staging key secret", () => {
