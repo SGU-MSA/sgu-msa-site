@@ -281,6 +281,8 @@ flowchart LR
 
 Any read that fails stops the night's email (the next night catches up); the dashboard lists what it could read. The dashboard shows the list in the notifications bell of every page's header (review fixes P1, 2026-10-07): worked out again on every load, so a fixed problem is gone on the next page; problems cannot be closed, information lines can (remembered in that browser only).
 
+The nightly check only runs on production, so staging is kept awake by a daily GitHub Actions read (`.github/workflows/staging-keep-awake.yml`) instead.
+
 The photo library (2026-10-06; [PR5a contract](contracts/pr5a-notices-events-continuity.md) amendment): one screen lists every stored file and where it is used; every photo box can reuse one.
 
 ```mermaid
