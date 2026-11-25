@@ -1,9 +1,10 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, type ReactNode } from "react";
 import { systemText } from "@/lib/system-text";
 import { CheckedForm } from "../form-check/CheckedForm";
 import { FieldError } from "../form-check/FieldError";
-import { OrderedList } from "../OrderedList";
+import { firstLine } from "../ItemRows";
+import { SheetList, rowKey } from "../SheetList";
 import { ArchiveActions, ArchivedRow } from "../ArchiveActions";
 import { initialKeptForm, typedValues } from "../form-state";
 import { problemsIn, stepFromForm } from "./handover-forms";
@@ -46,9 +47,12 @@ function PageChoice({ value }: { value: string }) {
 function StepForm({
   step,
   submitLabel,
+  actions,
 }: {
   step: ChecklistStep | { id: string; version: null };
   submitLabel: string;
+  /** Buttons beside Save (Cancel). */
+  actions?: ReactNode;
 }) {
   const [state, action, pending] = useActionState(
     saveHandoverStepAction,
@@ -105,9 +109,12 @@ function StepForm({
         <span className="muted">Never write passwords or codes here.</span>
       </label>
       <PageChoice value={values.link ?? ""} />
-      <button className="button-primary" disabled={pending}>
-        {pending ? "Saving…" : submitLabel}
-      </button>
+      <div className="admin-actions">
+        <button className="button-primary" disabled={pending}>
+          {pending ? "Saving…" : submitLabel}
+        </button>
+        {actions}
+      </div>
     </CheckedForm>
   );
 }
@@ -146,38 +153,34 @@ export function StepsEditor({
   archived: readonly ChecklistStep[];
   newId: string;
 }) {
+  const addKey = rowKey(newId, null);
   return (
     <>
-      {steps.length ? (
-        <>
-          <p className="muted">{systemText.order.hint}</p>
-          <OrderedList
-            list="handover_steps"
-            label="Hand-over steps"
-            look="cards"
-            rows={steps.map((step) => ({
-              id: step.id,
-              version: step.version,
-              name: step.title,
-              content: (
-                <section aria-labelledby={`step-${step.id}`}>
-                  <h2 id={`step-${step.id}`} className="order-card-title">
-                    {step.title}
-                  </h2>
-                  <StepForm key={step.version} step={step} submitLabel="Save" />
-                  <ArchiveStep step={step} />
-                </section>
-              ),
-            }))}
+      <p className="muted">{systemText.order.hint}</p>
+      <SheetList
+        idPrefix="steps"
+        list="handover_steps"
+        label="Hand-over steps"
+        addLabel="Add a step"
+        addKey={addKey}
+        addForm={
+          <StepForm
+            step={{ id: newId, version: null }}
+            submitLabel="Add step"
           />
-        </>
-      ) : (
+        }
+        rows={steps.map((step) => ({
+          id: step.id,
+          version: step.version,
+          name: step.title,
+          summary: firstLine(step.details, "No details"),
+          form: <StepForm step={step} submitLabel="Save" />,
+          below: <ArchiveStep step={step} />,
+        }))}
+      />
+      {steps.length ? null : (
         <p className="content-card">No steps yet. Add the first one.</p>
       )}
-      <section className="content-card" aria-labelledby="add-step">
-        <h2 id="add-step">Add a step</h2>
-        <StepForm step={{ id: newId, version: null }} submitLabel="Add step" />
-      </section>
       {archived.length ? (
         <section className="admin-group" aria-labelledby="archived-steps">
           <h2 id="archived-steps">Archived steps</h2>

@@ -1,0 +1,126 @@
+/* A list item as a read-only row: its name, one line about it, and its
+   one action. Used by Edit the steps, Team groups and Lists. */
+.row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  min-block-size: 2.75rem;
+}
+.text {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+.row > :last-child {
+  flex: none;
+}
+.title {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.3;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.summary {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-block: 1rem;
+}
+.top > h2 {
+  margin: 0;
+}
+.back {
+  margin-block-end: 0.5rem;
+}
+.tap {
+  cursor: pointer;
+}
+/* The form of one item: a bottom sheet on a phone, a centred dialog on a
+   computer. */
+.sheet {
+  inline-size: min(34rem, calc(100vw - 2rem));
+  max-block-size: calc(100dvh - 2rem);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-small);
+  background: var(--paper-light);
+  color: var(--ink);
+  box-shadow: 0 0.75rem 2.5rem var(--shadow);
+}
+.sheet::backdrop {
+  background: var(--overlay-strong);
+}
+.sheetBody {
+  padding: 0 1.25rem 1.25rem;
+}
+.sheetHead {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-raised);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.75rem;
+  background: var(--paper-light);
+}
+.sheetTitle {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.sheetClose {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-small);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.sheetClose:hover {
+  background: var(--paper-deep);
+}
+@media (max-width: 767.98px) {
+  .sheet {
+    inline-size: 100%;
+    max-inline-size: none;
+    max-block-size: 90dvh;
+    margin: auto 0 0;
+    border-inline: 0;
+    border-block-end: 0;
+    border-radius: var(--radius-medium) var(--radius-medium) 0 0;
+  }
+}
+@media (max-width: 767.98px) and (prefers-reduced-motion: no-preference) {
+  .sheet[open] {
+    animation: slide-up var(--transition-standard);
+  }
+  @keyframes slide-up {
+    from {
+      transform: translateY(2rem);
+      opacity: 0;
+    }
+  }
+}
