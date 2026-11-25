@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useActionState } from "react";
 import {
   archiveSectionAction,
@@ -14,6 +15,7 @@ import { noProblems } from "./form-check/problems";
 import { initialKeptForm, typedValues } from "./form-state";
 import { ArchiveActions, ArchivedRow } from "./ArchiveActions";
 import { groupNotEmpty, teamListWords } from "./fields";
+import { ItemRow, ListTop } from "./ItemRows";
 import { OrderedList } from "./OrderedList";
 import { sectionFromForm } from "./person-form";
 
@@ -26,19 +28,18 @@ type EditableGroup = {
   kind: PermanentGroup | null;
   /** The group's `updated_at`. */
   version: string;
-};
-
-type ArchivedGroup = EditableGroup & {
-  /** How many People entries, archived or not, are still in it. */
+  /** How many People entries, archived or not, are in it. */
   people: number;
 };
+
+type ArchivedGroup = EditableGroup;
 
 /**
  * Name of one group and its start answer for new people; also adds a new
  * one. A permanent group keeps its name (review 2): only its start answer is
  * changed here. The order is set by dragging the groups (review fixes PR-2).
  */
-function GroupForm({
+export function GroupForm({
   group,
   submitLabel,
 }: {
@@ -107,15 +108,18 @@ function GroupForm({
           New people in this group start with “Show on public page” ticked
         </label>
       )}
-      <button className="button-primary" disabled={pending}>
-        {pending ? "Saving…" : submitLabel}
-      </button>
+      {/* Nothing here to save on the Executive board (always kept, always listed). */}
+      {saved?.kind === "executive" ? null : (
+        <button className="button-primary" disabled={pending}>
+          {pending ? "Saving…" : submitLabel}
+        </button>
+      )}
     </CheckedForm>
   );
 }
 
 /** Archive: a board group's other control (only an empty one, D-22). */
-function ArchiveGroup({ group }: { group: EditableGroup }) {
+export function ArchiveGroup({ group }: { group: EditableGroup }) {
   return (
     <ArchiveActions
       archived={false}
@@ -143,44 +147,45 @@ function ArchiveGroup({ group }: { group: EditableGroup }) {
 export function GroupsEditor({
   groups,
   archived,
-  newId,
   canDelete,
 }: {
   groups: EditableGroup[];
   archived: ArchivedGroup[];
-  newId: string;
   /** The signed-in board member holds "manage people" (a UX mirror). */
   canDelete: boolean;
 }) {
   return (
     <>
+      <ListTop>
+        <Link href="/admin/people/groups/new" className="button-primary">
+          Add a group
+        </Link>
+      </ListTop>
       <p className="muted">{systemText.order.hint}</p>
       <OrderedList
         list="people_sections"
         label="Team groups"
-        look="cards"
+        look="rows"
         rows={groups.map((group) => ({
           id: group.id,
           version: group.version,
           name: group.name,
           content: (
-            <section aria-labelledby={`group-${group.id}`}>
-              <h2 id={`group-${group.id}`} className="order-card-title">
-                {group.name}
-              </h2>
-              <GroupForm key={group.version} group={group} submitLabel="Save" />
-              {group.kind ? null : <ArchiveGroup group={group} />}
-            </section>
+            <ItemRow
+              title={group.name}
+              summary={`${group.people === 1 ? "1 person" : `${group.people} people`}${group.kind ? " · Always kept" : ""}`}
+              action={
+                <Link
+                  href={`/admin/people/groups/${group.id}`}
+                  className="button-secondary"
+                >
+                  Edit<span className="sr-only"> {group.name}</span>
+                </Link>
+              }
+            />
           ),
         }))}
       />
-      <section className="content-card" aria-labelledby="add-group">
-        <h2 id="add-group">Add a group</h2>
-        <GroupForm
-          group={{ id: newId, version: null }}
-          submitLabel="Add group"
-        />
-      </section>
       {archived.length ? (
         <section className="admin-group" aria-labelledby="archived-groups">
           <h2 id="archived-groups">Archived groups</h2>

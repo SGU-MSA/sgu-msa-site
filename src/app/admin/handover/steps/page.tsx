@@ -45,7 +45,6 @@ async function HandoverStepsPage({
         <StepsEditor
           steps={current.steps.map(checklistStep)}
           archived={archived.steps.map(checklistStep)}
-          newId={crypto.randomUUID()}
         />
       )}
     </div>

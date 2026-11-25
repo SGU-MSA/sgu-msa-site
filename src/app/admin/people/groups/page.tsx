@@ -27,15 +27,16 @@ async function GroupsPage({
     archived.unavailable ||
     people.unavailable ||
     archivedPeople.unavailable;
-  const editable = (section: VersionedSection) => ({
+  // Archived people stay in their group, so it is not empty yet.
+  const everyone = [...people.people, ...archivedPeople.people];
+  const editable = (pool: typeof everyone) => (section: VersionedSection) => ({
+    people: pool.filter((person) => person.section_id === section.id).length,
     id: section.id,
     name: section.name,
     shownByDefault: section.shown_by_default,
     kind: section.kind,
     version: section.updated_at,
   });
-  // Archived people stay in their group, so it is not empty yet.
-  const everyone = [...people.people, ...archivedPeople.people];
   return (
     <div className="admin-shell narrow">
       <AdminHeader
@@ -67,14 +68,8 @@ async function GroupsPage({
         </p>
       ) : (
         <GroupsEditor
-          groups={current.sections.map(editable)}
-          archived={archived.sections.map((section) => ({
-            ...editable(section),
-            people: everyone.filter(
-              (person) => person.section_id === section.id,
-            ).length,
-          }))}
-          newId={crypto.randomUUID()}
+          groups={current.sections.map(editable(people.people))}
+          archived={archived.sections.map(editable(everyone))}
           canDelete={admin.canManagePeople}
         />
       )}

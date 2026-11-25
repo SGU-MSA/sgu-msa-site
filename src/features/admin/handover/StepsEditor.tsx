@@ -1,10 +1,12 @@
 "use client";
+import Link from "next/link";
 import { useActionState } from "react";
 import { systemText } from "@/lib/system-text";
 import { CheckedForm } from "../form-check/CheckedForm";
 import { FieldError } from "../form-check/FieldError";
 import { OrderedList } from "../OrderedList";
 import { ArchiveActions, ArchivedRow } from "../ArchiveActions";
+import { ItemRow, ListTop, firstLine } from "../ItemRows";
 import { initialKeptForm, typedValues } from "../form-state";
 import { problemsIn, stepFromForm } from "./handover-forms";
 import {
@@ -43,7 +45,7 @@ function PageChoice({ value }: { value: string }) {
  * The words of one step: a new one ("Add a step") or a current one. Its tick
  * and order number are kept as they are.
  */
-function StepForm({
+export function StepForm({
   step,
   submitLabel,
 }: {
@@ -113,7 +115,7 @@ function StepForm({
 }
 
 /** Archive: one current step's other control. */
-function ArchiveStep({ step }: { step: ChecklistStep }) {
+export function ArchiveStep({ step }: { step: ChecklistStep }) {
   return (
     <ArchiveActions
       archived={false}
@@ -140,33 +142,41 @@ function ArchiveStep({ step }: { step: ChecklistStep }) {
 export function StepsEditor({
   steps,
   archived,
-  newId,
 }: {
   steps: readonly ChecklistStep[];
   archived: readonly ChecklistStep[];
-  newId: string;
 }) {
   return (
     <>
+      <ListTop>
+        <Link href="/admin/handover/steps/new" className="button-primary">
+          Add a step
+        </Link>
+      </ListTop>
       {steps.length ? (
         <>
           <p className="muted">{systemText.order.hint}</p>
           <OrderedList
             list="handover_steps"
             label="Hand-over steps"
-            look="cards"
+            look="rows"
             rows={steps.map((step) => ({
               id: step.id,
               version: step.version,
               name: step.title,
               content: (
-                <section aria-labelledby={`step-${step.id}`}>
-                  <h2 id={`step-${step.id}`} className="order-card-title">
-                    {step.title}
-                  </h2>
-                  <StepForm key={step.version} step={step} submitLabel="Save" />
-                  <ArchiveStep step={step} />
-                </section>
+                <ItemRow
+                  title={step.title}
+                  summary={firstLine(step.details, "No details")}
+                  action={
+                    <Link
+                      href={`/admin/handover/steps/${step.id}`}
+                      className="button-secondary"
+                    >
+                      Edit<span className="sr-only"> {step.title}</span>
+                    </Link>
+                  }
+                />
               ),
             }))}
           />
@@ -174,10 +184,6 @@ export function StepsEditor({
       ) : (
         <p className="content-card">No steps yet. Add the first one.</p>
       )}
-      <section className="content-card" aria-labelledby="add-step">
-        <h2 id="add-step">Add a step</h2>
-        <StepForm step={{ id: newId, version: null }} submitLabel="Add step" />
-      </section>
       {archived.length ? (
         <section className="admin-group" aria-labelledby="archived-steps">
           <h2 id="archived-steps">Archived steps</h2>
